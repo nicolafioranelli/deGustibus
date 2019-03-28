@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">deGustibus</string>
+
+    <!-- EDIT PROFILE -->
+    <string name="default_fullname">Name</string>
+    <string name="default_email">Email</string>
+    <string name="default_desc">Description</string>
+    <string name="default_phone">Phone</string>
+    <string name="default_location">Zones</string>
+    <string name="default_availab">Availability</string>
+    <string name="default_car">Vehicle</string>
+
+    <string name="camera">Capture photo from camera</string>
+    <string name="gallery">Select photo from gallery</string>
+    <string name="saved">Saved!</string>
+
+</resources>
