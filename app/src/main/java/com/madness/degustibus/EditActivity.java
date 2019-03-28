@@ -30,7 +30,24 @@ import java.io.IOException;
 
 public class EditActivity extends AppCompatActivity {
 
-        /* TODO remove: Nicola was here */
+        /* TODO remove: Nicola was here and also the other Nicola
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        *
+        * */
     /* Views */
     private Toolbar toolbar;
     private EditText fullname;
