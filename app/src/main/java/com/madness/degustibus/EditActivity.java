@@ -59,7 +59,7 @@ public class EditActivity extends AppCompatActivity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    int a = 1;
+    int a = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
