@@ -49,7 +49,7 @@ public class EditActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
-        toolbar.setSubtitle("for Riders");
+        toolbar.setSubtitle("Riders");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
 
