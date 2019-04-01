@@ -50,7 +50,7 @@ public class EditActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.lightGrey));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);

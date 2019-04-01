@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-include ':app'
-=======
+
+include ':app', ':restaurant'
 include ':app', ':deliveryman'
->>>>>>> cfca588d840ae73ac39b8f9beec579f60bd0a046
