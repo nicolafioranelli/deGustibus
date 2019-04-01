@@ -48,6 +48,7 @@ public class EditActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
+        toolbar.setSubtitle("for Restaurateurs");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
 
