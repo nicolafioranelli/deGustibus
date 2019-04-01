@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="6dp"
+        android:theme="@style/ToolbarTheme"
+        android:id="@+id/toolbar">
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/imageview"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="16dp"
+                android:src="@drawable/user_profile"
+                android:onClick="getPhoto"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_edit_fullName"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_fullname"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_fullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_email"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_email"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_desc"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_desc"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_phone"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_phone"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_location"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_availab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_availab"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_availab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_car"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_car"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_car"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
