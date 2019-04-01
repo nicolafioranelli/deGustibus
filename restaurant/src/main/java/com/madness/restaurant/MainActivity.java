@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,8 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView phone;
     private ImageView img;
     private TextView loc;
-    private TextView avail;
-    private TextView car;
+    private TextView RestAddress;
     private SharedPreferences pref;
 
     @Override
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
+        toolbar.setSubtitle("for Restaurateurs");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
 
@@ -68,20 +68,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         fullname = findViewById(R.id.tv_show_fullName);
         email = findViewById(R.id.tv_show_email);
+        RestAddress = findViewById(R.id.tv_show_RestAddress);
         desc = findViewById(R.id.tv_show_desc);
         phone = findViewById(R.id.tv_show_phone);
         img = findViewById(R.id.imageview);
         loc = findViewById(R.id.tv_show_location);
-        avail = findViewById(R.id.tv_show_availab);
-        car = findViewById(R.id.tv_show_car);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
+        RestAddress.setText(pref.getString("RestAddress",null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
         loc.setText(pref.getString("loc", null));
-        avail.setText(pref.getString("avail", null));
-        car.setText(pref.getString("car", null));
+
+
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

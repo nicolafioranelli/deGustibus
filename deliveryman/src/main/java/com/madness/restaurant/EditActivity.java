@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import android.Manifest;
 import android.app.Activity;

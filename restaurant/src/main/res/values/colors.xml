@@ -24,5 +24,8 @@
 
     <color name="colorAlert">#FF5722</color>
 
+    <color name="RestaurantToolbarColor">#F9BF3E</color>
+    <color name="RestaurantToolbarColorDark">#E99F1E</color>
+
     <color name="colorBackgroundCardContainer">#FAFAFA</color>
 </resources>

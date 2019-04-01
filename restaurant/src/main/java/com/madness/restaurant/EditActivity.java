@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import android.Manifest;
 import android.app.Activity;
@@ -35,8 +35,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText desc;
     private EditText phone;
     private EditText loc;
-    private EditText avail;
-    private EditText car;
+    private EditText RestAddress;
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
@@ -51,6 +50,7 @@ public class EditActivity extends AppCompatActivity {
         toolbar.setTitle("deGustibus");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
+
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
@@ -71,20 +71,20 @@ public class EditActivity extends AppCompatActivity {
         if (id == R.id.action_edit) {
             fullname = findViewById(R.id.et_edit_fullName);
             email = findViewById(R.id.et_edit_email);
+            RestAddress = findViewById(R.id.et_edit_RestAddress);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
             loc = findViewById(R.id.et_edit_location);
-            avail = findViewById(R.id.et_edit_availab);
-            car = findViewById(R.id.et_edit_car);
+
 
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
+            editor.putString("RestAddress", RestAddress.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
             editor.putString("loc", loc.getText().toString());
-            editor.putString("car", car.getText().toString());
-            editor.putString("avail", avail.getText().toString());
+
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -102,20 +102,18 @@ public class EditActivity extends AppCompatActivity {
     protected void onResume() {
         fullname = findViewById(R.id.et_edit_fullName);
         email = findViewById(R.id.et_edit_email);
+        RestAddress = findViewById(R.id.et_edit_RestAddress);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         img = findViewById(R.id.imageview);
         loc = findViewById(R.id.et_edit_location);
-        avail = findViewById(R.id.et_edit_availab);
-        car = findViewById(R.id.et_edit_car);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
+        RestAddress.setText(pref.getString("RestAddress",null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
         loc.setText(pref.getString("loc", null));
-        avail.setText(pref.getString("avail", null));
-        car.setText(pref.getString("car", null));
         /* check if a photo is set */
         if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {

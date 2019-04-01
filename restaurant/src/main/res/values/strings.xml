@@ -7,8 +7,7 @@
     <string name="default_desc">Description</string>
     <string name="default_phone">Phone</string>
     <string name="default_location">Zones</string>
-    <string name="default_availab">Availability</string>
-    <string name="default_car">Vehicle</string>
+    <string name="default_RestAddress">Restaurant Address</string>
 
     <string name="camera">Capture photo from camera</string>
     <string name="gallery">Select photo from gallery</string>

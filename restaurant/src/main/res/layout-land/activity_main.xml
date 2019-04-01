@@ -8,7 +8,7 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
         android:elevation="6dp"
         android:id="@+id/toolbar">
@@ -63,6 +63,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primaryText"/>
+                <TextView
+                    android:id="@+id/tv_showD_RestAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_RestAddress"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_RestAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_desc"
@@ -100,29 +111,7 @@
                     android:layout_height="wrap_content"
                     android:theme="@style/TextViewShow"/>
 
-                <TextView
-                    android:id="@+id/tv_showD_availab"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_availab"
-                    android:theme="@style/TextView"/>
-                <TextView
-                    android:id="@+id/tv_show_availab"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/TextViewShow"/>
 
-                <TextView
-                    android:id="@+id/tv_showD_car"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_car"
-                    android:theme="@style/TextView"/>
-                <TextView
-                    android:id="@+id/tv_show_car"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/TextViewShow"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

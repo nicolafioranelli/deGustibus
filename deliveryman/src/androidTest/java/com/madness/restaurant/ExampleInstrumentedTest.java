@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:elevation="8dp"
+        app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
         android:theme="@style/ToolbarTheme"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
@@ -57,6 +58,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow"/>
+            <TextView
+                android:id="@+id/tv_showD_RestAddress"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="@string/default_RestAddress"
+                android:theme="@style/TextView"/>
+            <TextView
+                android:id="@+id/tv_show_RestAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/TextViewShow"/>
 
             <TextView
                 android:id="@+id/tv_showD_desc"
@@ -90,30 +102,6 @@
                 android:theme="@style/TextView"/>
             <TextView
                 android:id="@+id/tv_show_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
-
-            <TextView
-                android:id="@+id/tv_showD_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_availab"
-                android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
-
-            <TextView
-                android:id="@+id/tv_showD_car"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_car"
-                android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_car"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow"/>

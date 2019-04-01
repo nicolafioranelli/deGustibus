@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import org.junit.Test;
 

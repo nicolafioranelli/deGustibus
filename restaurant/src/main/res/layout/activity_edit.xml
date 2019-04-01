@@ -8,7 +8,7 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/RestaurantToolbarColor"
         android:elevation="8dp"
         android:theme="@style/ToolbarTheme"
         android:id="@+id/toolbar">
@@ -58,7 +58,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"/>
-
+            <TextView
+                android:id="@+id/tv_edit_RestAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/default_RestAddress"
+                android:theme="@style/TextView"/>
+            <EditText
+                android:id="@+id/et_edit_RestAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"/>
             <TextView
                 android:id="@+id/tv_edit_desc"
                 android:layout_height="match_parent"
@@ -95,29 +105,6 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"/>
 
-            <TextView
-                android:id="@+id/tv_edit_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_availab"
-                android:theme="@style/TextView"/>
-            <EditText
-                android:id="@+id/et_edit_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"/>
-
-            <TextView
-                android:id="@+id/tv_edit_car"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_car"
-                android:theme="@style/TextView"/>
-            <EditText
-                android:id="@+id/et_edit_car"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
