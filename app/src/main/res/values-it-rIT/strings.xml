@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">deGustibus</string>
+    <string name="gallery">Seleziona dalla galleria</string>
+    <string name="saved">Salvato!</string>
+    <string name="camera">Scatta una foto</string>
+    <string name="default_phone">Telefono</string>
+    <string name="default_email">Email</string>
+    <string name="default_desc">Descrizione</string>
+    <string name="default_fullname">Nome</string>
+</resources>

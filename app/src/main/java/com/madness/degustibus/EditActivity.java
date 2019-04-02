@@ -41,8 +41,6 @@ public class EditActivity extends AppCompatActivity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    int a = 4;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +48,7 @@ public class EditActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.lightGrey));
         setSupportActionBar(toolbar);
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
@@ -186,8 +184,13 @@ public class EditActivity extends AppCompatActivity {
             }
         } else if(resultCode == Activity.RESULT_CANCELED) {
             Log.d("MAD", "onActivityResult: CANCELED");
+            try{
+                File photoToCancel = new File(getPrefPhoto());
+                photoToCancel.delete();
+            } catch (Exception e) {
+                Log.e("MAD", "onActivityResult: ", e);
+            }
             delPrefPhoto();
-            //img.setImageURI(null);
         }
     }
 
