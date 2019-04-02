@@ -196,8 +196,13 @@ public class EditActivity extends AppCompatActivity {
             }
         } else if(resultCode == Activity.RESULT_CANCELED) {
             Log.d("MAD", "onActivityResult: CANCELED");
+            try{
+                File photoToCancel = new File(getPrefPhoto());
+                photoToCancel.delete();
+            } catch (Exception e) {
+                Log.e("MAD", "onActivityResult: ", e);
+            }
             delPrefPhoto();
-            //img.setImageURI(null);
         }
     }
 

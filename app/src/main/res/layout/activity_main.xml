@@ -32,6 +32,7 @@
                 android:layout_height="250dp"
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:src="@drawable/user_profile"/>
 
             <TextView
@@ -68,7 +69,8 @@
                 android:id="@+id/tv_show_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:theme="@style/TextViewShow"
+                android:maxLines="4"/>
 
             <TextView
                 android:id="@+id/tv_showD_phone"

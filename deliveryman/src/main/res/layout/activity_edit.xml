@@ -34,7 +34,8 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="16dp"
                 android:src="@drawable/user_profile"
-                android:onClick="getPhoto"/>
+                android:onClick="getPhoto"
+                android:paddingBottom="16dp"/>
 
             <TextView
                 android:id="@+id/tv_edit_fullName"

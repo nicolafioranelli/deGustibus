@@ -8,7 +8,6 @@
     <string name="default_phone">Phone</string>
 
     <string name="camera">Capture photo from camera</string>
-    <string name="gallery">Select photo from gallery</string>
     <string name="saved">Saved!</string>
-
+    <string name="gallery">Select from gallery</string>
 </resources>
