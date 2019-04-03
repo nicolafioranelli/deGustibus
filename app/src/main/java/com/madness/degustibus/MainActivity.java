@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView email;
     private TextView desc;
     private TextView phone;
+    private TextView adress;
     private ImageView img;
     private SharedPreferences pref;
 
@@ -69,12 +70,14 @@ public class MainActivity extends AppCompatActivity {
         email = findViewById(R.id.tv_show_email);
         desc = findViewById(R.id.tv_show_desc);
         phone = findViewById(R.id.tv_show_phone);
+        adress = findViewById(R.id.tv_show_adress);
         img = findViewById(R.id.imageview);
 
         fullname.setText(pref.getString("name", "Mario"));
         email.setText(pref.getString("email", "mario@polito.it"));
         desc.setText(pref.getString("desc", "Love eating."));
         phone.setText(pref.getString("phone", "011"));
+        adress.setText(pref.getString("adress", "Adress"));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

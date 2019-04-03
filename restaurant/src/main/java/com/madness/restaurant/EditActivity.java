@@ -36,6 +36,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText email;
     private EditText desc;
     private EditText phone;
+    private EditText address;
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
@@ -73,12 +74,14 @@ public class EditActivity extends AppCompatActivity {
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
+            address = findViewById(R.id.et_edit_address);
 
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
+            editor.putString("address", address.getText().toString());
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -98,12 +101,14 @@ public class EditActivity extends AppCompatActivity {
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
         img = findViewById(R.id.imageview);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
+        address.setText(pref.getString("address", null));
         /* check if a photo is set */
         if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {

@@ -88,6 +88,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primaryText"/>
+
+                <TextView
+                android:id="@+id/tv_showD_adress"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="@string/default_adress"
+                android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primaryText"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
