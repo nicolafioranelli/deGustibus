@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         email.setText(pref.getString("email", "mario@polito.it"));
         desc.setText(pref.getString("desc", "Love eating."));
         phone.setText(pref.getString("phone", "011"));
-        address.setText(pref.getString("address", "Address"));
+        address.setText(pref.getString("address", "XYZ, 0"));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
