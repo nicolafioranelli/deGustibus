@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.deliveryman;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.madness.restaurant", appContext.getPackageName());
+        assertEquals("com.madness.deliveryman", appContext.getPackageName());
     }
 }

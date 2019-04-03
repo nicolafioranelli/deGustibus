@@ -1,18 +1,16 @@
-package com.madness.restaurant;
+package com.madness.deliveryman;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView desc;
     private TextView phone;
     private ImageView img;
+    private TextView loc;
+    private TextView avail;
+    private TextView car;
     private SharedPreferences pref;
 
     @Override
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
+        toolbar.setSubtitle("Riders");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
 
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        
         if (id == R.id.action_edit) {
             //Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(getApplicationContext(), EditActivity.class);
@@ -70,11 +72,17 @@ public class MainActivity extends AppCompatActivity {
         desc = findViewById(R.id.tv_show_desc);
         phone = findViewById(R.id.tv_show_phone);
         img = findViewById(R.id.imageview);
+        loc = findViewById(R.id.tv_show_location);
+        avail = findViewById(R.id.tv_show_availab);
+        car = findViewById(R.id.tv_show_car);
 
-        fullname.setText(pref.getString("name", "Mario"));
-        email.setText(pref.getString("email", "mario@polito.it"));
-        desc.setText(pref.getString("desc", "Love eating."));
-        phone.setText(pref.getString("phone", "011"));
+        fullname.setText(pref.getString("name", null));
+        email.setText(pref.getString("email", null));
+        desc.setText(pref.getString("desc", null));
+        phone.setText(pref.getString("phone", null));
+        loc.setText(pref.getString("loc", null));
+        avail.setText(pref.getString("avail", null));
+        car.setText(pref.getString("car", null));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

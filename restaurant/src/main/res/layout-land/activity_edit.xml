@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
         android:elevation="6dp"
         android:theme="@style/ToolbarTheme"
         android:id="@+id/toolbar">
@@ -65,17 +64,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"/>
-                <TextView
-                    android:id="@+id/tv_edit_RestAddress"
-                    android:layout_height="match_parent"
-                    android:layout_width="wrap_content"
-                    android:text="@string/default_RestAddress"
-                    android:theme="@style/TextView"/>
-                <EditText
-                    android:id="@+id/et_edit_RestAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"/>
 
                 <TextView
                     android:id="@+id/tv_edit_desc"
@@ -87,7 +75,9 @@
                     android:id="@+id/et_edit_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"/>
+                    android:inputType="textMultiLine"
+                    android:maxLines="4"
+                    android:scrollbars="vertical"/>
 
                 <TextView
                     android:id="@+id/tv_edit_phone"
@@ -100,18 +90,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"/>
-
-                <TextView
-                    android:id="@+id/tv_edit_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_location"
-                    android:theme="@style/TextView"/>
-                <EditText
-                    android:id="@+id/et_edit_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
