@@ -85,40 +85,39 @@
                 android:theme="@style/TextViewShow"/>
 
             <TextView
-                android:id="@+id/tv_showD_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_location"
-                android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
-
-            <TextView
-                android:id="@+id/tv_showD_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_availab"
-                android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_availab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
-
-            <TextView
                 android:id="@+id/tv_showD_car"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/default_car"
                 android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_car"
+
+            <RadioGroup
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/bike" />
+
+                <RadioButton
+                    android:id="@+id/radioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/car" />
+
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/motorbike" />
+            </RadioGroup>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

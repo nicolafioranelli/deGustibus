@@ -72,17 +72,17 @@ public class MainActivity extends AppCompatActivity {
         desc = findViewById(R.id.tv_show_desc);
         phone = findViewById(R.id.tv_show_phone);
         img = findViewById(R.id.imageview);
-        loc = findViewById(R.id.tv_show_location);
-        avail = findViewById(R.id.tv_show_availab);
-        car = findViewById(R.id.tv_show_car);
+        //loc = findViewById(R.id.tv_show_location);
+        //avail = findViewById(R.id.tv_show_availab);
+        //car = findViewById(R.id.tv_show_car);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
-        loc.setText(pref.getString("loc", null));
-        avail.setText(pref.getString("avail", null));
-        car.setText(pref.getString("car", null));
+        //loc.setText(pref.getString("loc", null));
+        //avail.setText(pref.getString("avail", null));
+        //car.setText(pref.getString("car", null));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

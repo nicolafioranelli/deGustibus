@@ -74,18 +74,18 @@ public class EditActivity extends AppCompatActivity {
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
-            loc = findViewById(R.id.et_edit_location);
-            avail = findViewById(R.id.et_edit_availab);
-            car = findViewById(R.id.et_edit_car);
+            //loc = findViewById(R.id.et_edit_location);
+            //avail = findViewById(R.id.et_edit_availab);
+            //car = findViewById(R.id.et_edit_car);
 
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
-            editor.putString("loc", loc.getText().toString());
-            editor.putString("car", car.getText().toString());
-            editor.putString("avail", avail.getText().toString());
+            //editor.putString("loc", loc.getText().toString());
+            //editor.putString("car", car.getText().toString());
+            //editor.putString("avail", avail.getText().toString());
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -106,17 +106,17 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         img = findViewById(R.id.imageview);
-        loc = findViewById(R.id.et_edit_location);
-        avail = findViewById(R.id.et_edit_availab);
-        car = findViewById(R.id.et_edit_car);
+        //loc = findViewById(R.id.et_edit_location);
+        //avail = findViewById(R.id.et_edit_availab);
+        //car = findViewById(R.id.et_edit_car);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
-        loc.setText(pref.getString("loc", null));
-        avail.setText(pref.getString("avail", null));
-        car.setText(pref.getString("car", null));
+        //loc.setText(pref.getString("loc", null));
+        //avail.setText(pref.getString("avail", null));
+        //car.setText(pref.getString("car", null));
         /* check if a photo is set */
         if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {
