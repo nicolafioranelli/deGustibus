@@ -97,27 +97,28 @@
                     android:theme="@style/TextView"/>
 
                 <RadioGroup
+                    android:id="@+id/rg_vehicle"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/radioButton6"
+                        android:id="@+id/rb_bike"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/bike" />
 
                     <RadioButton
-                        android:id="@+id/radioButton5"
+                        android:id="@+id/rb_car"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/car" />
 
                     <RadioButton
-                        android:id="@+id/radioButton4"
+                        android:id="@+id/rb_motorbike"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

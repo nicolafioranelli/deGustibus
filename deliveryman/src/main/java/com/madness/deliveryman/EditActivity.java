@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public class EditActivity extends AppCompatActivity {
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+    private String vehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +125,19 @@ public class EditActivity extends AppCompatActivity {
                 img.setImageURI(Uri.parse(pref.getString("photo", null)));
             }
         }
+
+        this.vehicle = pref.getString("vehicle", null);
+        switch (this.vehicle){
+            case "bike":{
+                break;
+            }
+            case "car":{
+                break;
+            }
+            case
+
+        }
+
         super.onResume();
     }
 
@@ -247,6 +262,28 @@ public class EditActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         } else {
             Log.d("MAD", "onCreate: permission granted" );
+        }
+    }
+
+    // handle the click of radio buttons
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.rb_edit_bike:
+                if (checked)
+                    this.vehicle = "bike";
+                    break;
+            case R.id.rb_edit_car:
+                if (checked)
+                    this.vehicle = "car";
+                    break;
+            case R.id.rb_edit_motorbike:
+                if (checked)
+                    this.vehicle = "motorbike";
+                    break;
         }
     }
 }
