@@ -29,4 +29,8 @@
         <item name="android:textColor">@color/primaryText</item>
     </style>
 
+    <style name="ToolbarSubtitleAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">10dp</item>
+        <item name="android:textColor">@color/titleColor</item>
+    </style>
 </resources>
