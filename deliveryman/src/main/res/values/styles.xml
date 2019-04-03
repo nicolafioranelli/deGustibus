@@ -31,6 +31,6 @@
 
     <style name="ToolbarSubtitleAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textSize">10dp</item>
-    </style>
+    </style> <!-- nicola-->
 
 </resources>
