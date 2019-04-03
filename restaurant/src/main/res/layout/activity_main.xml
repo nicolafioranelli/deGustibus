@@ -26,14 +26,21 @@
             android:paddingRight="16dp"
             android:paddingBottom="16dp">
 
-            <ImageView
-                android:id="@+id/imageview"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center_horizontal"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:src="@drawable/user_profile"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:showDividers="end"
+                android:orientation="vertical"
+                android:divider="@drawable/divider_drawable">
+                <ImageView
+                    android:id="@+id/imageview"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:src="@drawable/user_profile"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_showD_fullName"
@@ -43,18 +50,6 @@
                 android:theme="@style/TextView"/>
             <TextView
                 android:id="@+id/tv_show_fullName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
-
-            <TextView
-                android:id="@+id/tv_showD_email"
-                android:layout_height="match_parent"
-                android:layout_width="wrap_content"
-                android:text="@string/default_email"
-                android:theme="@style/TextView"/>
-            <TextView
-                android:id="@+id/tv_show_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow"/>
@@ -73,6 +68,18 @@
                 android:maxLines="4"/>
 
             <TextView
+                android:id="@+id/tv_showD_email"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="@string/default_email"
+                android:theme="@style/TextView"/>
+            <TextView
+                android:id="@+id/tv_show_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/TextViewShow"/>
+
+            <TextView
                 android:id="@+id/tv_showD_phone"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
@@ -80,6 +87,20 @@
                 android:theme="@style/TextView"/>
             <TextView
                 android:id="@+id/tv_show_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/TextViewShow"/>
+
+
+
+            <TextView
+                android:id="@+id/tv_showD_address"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="@string/default_address"
+                android:theme="@style/TextView"/>
+            <TextView
+                android:id="@+id/tv_show_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow"/>
