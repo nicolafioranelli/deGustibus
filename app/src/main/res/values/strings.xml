@@ -6,6 +6,7 @@
     <string name="default_email">Email</string>
     <string name="default_desc">Description</string>
     <string name="default_phone">Phone</string>
+    <string name="default_address">Address</string>
 
     <string name="camera">Capture photo from camera</string>
     <string name="saved">Saved!</string>

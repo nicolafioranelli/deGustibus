@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -80,6 +81,18 @@
                 android:theme="@style/TextView"/>
             <TextView
                 android:id="@+id/tv_show_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/TextViewShow"/>
+
+            <TextView
+            android:id="@+id/tv_showD_address"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/default_address"
+            android:theme="@style/TextView"/>
+            <TextView
+                android:id="@+id/tv_show_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow"/>

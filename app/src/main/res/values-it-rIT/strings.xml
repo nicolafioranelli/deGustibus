@@ -8,4 +8,5 @@
     <string name="default_email">Email</string>
     <string name="default_desc">Descrizione</string>
     <string name="default_fullname">Nome</string>
+    <string name="default_address">Indirizzo</string>
 </resources>

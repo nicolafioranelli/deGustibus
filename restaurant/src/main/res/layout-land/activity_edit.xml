@@ -23,7 +23,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp">
 
             <ImageView
                 android:id="@+id/imageview"
@@ -91,16 +93,16 @@
                     android:inputType="phone"/>
 
                 <TextView
-                    android:id="@+id/tv_showD_address"
+                    android:id="@+id/tv_edit_address"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
                     android:text="@string/default_address"
                     android:theme="@style/TextView"/>
                 <EditText
-                    android:id="@+id/et_show_address"
+                    android:id="@+id/et_edit_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textAutoCorrect"/>
+                    android:inputType="textPostalAddress"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

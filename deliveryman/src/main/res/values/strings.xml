@@ -13,7 +13,7 @@
     <string name="gallery">Select photo from gallery</string>
     <string name="saved">Saved!</string>
     <string name="default_fullname">Name and Surname</string>
-    <string name="bike">bike</string>
-    <string name="car">car</string>
-    <string name="motorbike">motorbike</string>
+    <string name="bike">Bike</string>
+    <string name="car">Car</string>
+    <string name="motorbike">Motorbike</string>
 </resources>

@@ -23,26 +23,28 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.File;
 
 public class EditActivity extends AppCompatActivity {
 
-    /* Views */
+
     private Toolbar toolbar;
     private EditText fullname;
     private EditText email;
     private EditText desc;
     private EditText phone;
-    private EditText loc;
-    private EditText avail;
-    private EditText car;
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private String vehicle;
+    private RadioGroup vehicles;
+    private RadioButton button;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,79 @@ public class EditActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+
+        /* store the status of the radio button */
+        vehicles = (RadioGroup) findViewById(R.id.rg_edit_vehicle);
+        vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                button = (RadioButton) findViewById(checkedId);
+                switch (button.getId()) {
+                    case R.id.rb_edit_bike:{
+                        vehicle = "bike";
+                    }
+                    break;
+                    case R.id.rb_edit_car:{
+                        vehicle = "car";
+                    }
+                    break;
+                    case R.id.rb_edit_motorbike:{
+                        vehicle = "motorbike";
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    protected void onSaveInstanceState(Bundle outState) {
+        // Save away the original text, so we still have it if the activity
+        // needs to be killed while paused.
+        super.onSaveInstanceState(outState);
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        outState.putString("name", fullname.getText().toString());
+        outState.putString("email", email.getText().toString());
+        outState.putString("desc", desc.getText().toString());
+        outState.putString("phone", phone.getText().toString());
+        outState.putString("vehicle",this.vehicle); // the current value of the radio group
+        Log.d("MAD", "vehicle: "  + this.vehicle);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restore saved values
+
+        fullname.setText(savedInstanceState.getString("name"));
+        email.setText(savedInstanceState.getString("email"));
+        desc.setText(savedInstanceState.getString("desc"));
+        phone.setText(savedInstanceState.getString("phone"));
+        String tmp = savedInstanceState.getString("vehicle");
+
+        switch (tmp) {
+            case "bike":{
+                RadioButton button = findViewById(R.id.rb_edit_bike);
+                button.toggle();
+            }
+            break;
+            case "car":{
+                RadioButton button = findViewById(R.id.rb_edit_car);
+                button.toggle();
+            }
+            break;
+            case "motorbike":{
+                RadioButton button = findViewById(R.id.rb_edit_motorbike);
+                button.toggle();
+            }
+            break;
+        }
+
+
+
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
@@ -76,18 +151,14 @@ public class EditActivity extends AppCompatActivity {
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
-            //loc = findViewById(R.id.et_edit_location);
-            //avail = findViewById(R.id.et_edit_availab);
-            //car = findViewById(R.id.et_edit_car);
 
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
-            //editor.putString("loc", loc.getText().toString());
-            //editor.putString("car", car.getText().toString());
-            //editor.putString("avail", avail.getText().toString());
+            editor.putString("vehicle", this.vehicle);
+
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -108,9 +179,6 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         img = findViewById(R.id.imageview);
-        //loc = findViewById(R.id.et_edit_location);
-        //avail = findViewById(R.id.et_edit_availab);
-        //car = findViewById(R.id.et_edit_car);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
@@ -126,16 +194,24 @@ public class EditActivity extends AppCompatActivity {
             }
         }
 
-        this.vehicle = pref.getString("vehicle", null);
-        switch (this.vehicle){
+        String tmp = pref.getString("vehicle","bike");
+        Log.d("MAD", "onResume: ------------->" + tmp);
+        switch (tmp) {
             case "bike":{
-                break;
+                RadioButton button = findViewById(R.id.rb_edit_bike);
+                button.toggle();
             }
+            break;
             case "car":{
-                break;
+                RadioButton button = findViewById(R.id.rb_edit_car);
+                button.toggle();
             }
-            case
-
+            break;
+            case "motorbike":{
+                RadioButton button = findViewById(R.id.rb_edit_motorbike);
+                button.toggle();
+            }
+            break;
         }
 
         super.onResume();
@@ -269,7 +345,6 @@ public class EditActivity extends AppCompatActivity {
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
-
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.rb_edit_bike:

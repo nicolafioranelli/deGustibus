@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -70,7 +71,8 @@
                 android:id="@+id/tv_show_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:theme="@style/TextViewShow"
+                android:maxLines="4"/>
 
             <TextView
                 android:id="@+id/tv_showD_phone"
@@ -85,43 +87,18 @@
                 android:theme="@style/TextViewShow"/>
 
             <TextView
-                android:id="@+id/tv_showD_car"
+                android:id="@+id/tv_showD_vehicle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/default_car"
                 android:theme="@style/TextView"/>
 
-            <RadioGroup
-                android:id="@+id/rg_vehicle"
-                android:layout_marginTop="10dp"
+            <TextView
+                android:id="@+id/tv_show_vehicle"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:theme="@style/TextViewShow"/>
 
-                <RadioButton
-                    android:id="@+id/rb_bike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/bike"
-                    android:onClick="onRadioButtonClicked"/>
-
-                <RadioButton
-                    android:id="@+id/rb_car"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/car"
-                    android:onClick="onRadioButtonClicked"/>
-
-                <RadioButton
-                    android:id="@+id/rb_motorbike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/motorbike"
-                    android:onClick="onRadioButtonClicked"/>
-            </RadioGroup>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

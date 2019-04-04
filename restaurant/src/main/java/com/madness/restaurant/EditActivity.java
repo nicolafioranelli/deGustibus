@@ -36,6 +36,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText email;
     private EditText desc;
     private EditText phone;
+    private EditText address;
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
@@ -62,7 +63,32 @@ public class EditActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
         return true;
     }
+    /*
+        protected void onSaveInstanceState(Bundle outState) {
+            // Save away the original text, so we still have it if the activity
+            // needs to be killed while paused.
+            super.onSaveInstanceState(outState);
+            fullname = findViewById(R.id.et_edit_fullName);
+            email = findViewById(R.id.et_edit_email);
+            desc = findViewById(R.id.et_edit_desc);
+            phone = findViewById(R.id.et_edit_phone);
+            outState.putString("name", fullname.getText().toString());
+            outState.putString("email", email.getText().toString());
+            outState.putString("desc", desc.getText().toString());
+            outState.putString("phone", phone.getText().toString());
+        }
 
+        @Override
+        protected void onRestoreInstanceState(Bundle savedInstanceState) {
+            super.onRestoreInstanceState(savedInstanceState);
+            // restore saved values
+            fullname.setText = savedInstanceState.getString("name");
+            email.setText = savedInstanceState.getString("email");
+            desc.setText = savedInstanceState.getString("desc");
+            phone.setText = savedInstanceState.getString("phone");
+
+        }
+        */
     /* Click listener to correctly handle actions related to toolbar items */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -73,12 +99,14 @@ public class EditActivity extends AppCompatActivity {
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
+            address = findViewById(R.id.et_edit_address);
 
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
+            editor.putString("address", address.getText().toString());
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -98,12 +126,14 @@ public class EditActivity extends AppCompatActivity {
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
         img = findViewById(R.id.imageview);
 
         fullname.setText(pref.getString("name", null));
         email.setText(pref.getString("email", null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
+        address.setText(pref.getString("address", null));
         /* check if a photo is set */
         if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {

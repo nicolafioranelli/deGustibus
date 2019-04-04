@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,8 +11,8 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
-        android:elevation="6dp"
         app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
+        android:elevation="6dp"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
 
@@ -25,22 +26,22 @@
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:layout_gravity="center">
+            android:paddingTop="16dp">
 
             <ImageView
                 android:id="@+id/imageview"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
-                android:padding="16dp"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="16dp"
                 android:src="@drawable/user_profile"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_gravity="center">
+                android:paddingLeft="16dp"
+                android:layout_gravity="center_vertical">
                 <TextView
                     android:id="@+id/tv_showD_fullName"
                     android:layout_height="match_parent"

@@ -90,40 +90,18 @@
                     android:textColor="@color/primaryText"/>
 
                 <TextView
-                    android:id="@+id/tv_showD_car"
+                    android:id="@+id/tv_showD_vehicle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/default_car"
                     android:theme="@style/TextView"/>
 
-                <RadioGroup
-                    android:id="@+id/rg_vehicle"
-                    android:layout_marginTop="10dp"
+                <TextView
+                    android:id="@+id/tv_show_vehicle"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primaryText"/>
 
-                    <RadioButton
-                        android:id="@+id/rb_bike"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/bike" />
-
-                    <RadioButton
-                        android:id="@+id/rb_car"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/car" />
-
-                    <RadioButton
-                        android:id="@+id/rb_motorbike"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/motorbike" />
-                </RadioGroup>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

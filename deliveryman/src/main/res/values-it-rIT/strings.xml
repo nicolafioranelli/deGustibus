@@ -11,7 +11,7 @@
     <string name="camera">Scatta con la fotocamera</string>
     <string name="gallery">Seleziona dalla galleria</string>
     <string name="saved">Salvata!</string>
-    <string name="bike">bicicletta</string>
-    <string name="car">automobile</string>
-    <string name="motorbike">motocicletta</string>
+    <string name="bike">Bicicletta</string>
+    <string name="car">Automobile</string>
+    <string name="motorbike">Motocicletta</string>
 </resources>
