@@ -20,10 +20,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView email;
     private TextView desc;
     private TextView phone;
+    private TextView car;
     private ImageView img;
     private TextView loc;
     private TextView avail;
-    private TextView car;
     private SharedPreferences pref;
 
     @Override
@@ -71,15 +71,17 @@ public class MainActivity extends AppCompatActivity {
         email = findViewById(R.id.tv_show_email);
         desc = findViewById(R.id.tv_show_desc);
         phone = findViewById(R.id.tv_show_phone);
+        car = findViewById(R.id.tv_show_car);
         img = findViewById(R.id.imageview);
         //loc = findViewById(R.id.tv_show_location);
         //avail = findViewById(R.id.tv_show_availab);
         //car = findViewById(R.id.tv_show_car);
 
-        fullname.setText(pref.getString("name", null));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
+        fullname.setText(pref.getString("name", "Mario"));
+        email.setText(pref.getString("email", "mario@polito.it"));
+        desc.setText(pref.getString("desc", "Love delivering."));
+        phone.setText(pref.getString("phone", "011"));
+        car.setText(pref.getString("car", null));
         //loc.setText(pref.getString("loc", null));
         //avail.setText(pref.getString("avail", null));
         //car.setText(pref.getString("car", null));

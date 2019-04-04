@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,13 +36,18 @@ public class EditActivity extends AppCompatActivity {
     private EditText email;
     private EditText desc;
     private EditText phone;
+    private EditText car;
     private EditText loc;
     private EditText avail;
-    private EditText car;
     private ImageView img;
+    private RadioButton Bike;
+    private RadioButton Car;
+    private RadioButton MB;
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+    private RadioGroup vehicles;
+    private RadioButton vehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +62,55 @@ public class EditActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+
+        vehicles= (RadioGroup) findViewById(R.id.radioGroupID);
+        vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                vehicle = (RadioButton) findViewById(checkedId);
+                switch (vehicle.getId()) {
+                    case R.id.radioButtonBike:{
+                        editor.putString("car", getString(R.string.bike));
+                    }
+                    break;
+                    case R.id.radioButtonCar:{
+                        editor.putString("car", getString(R.string.car));
+                    }
+                    break;
+                    case R.id.radioButtonMB:{
+                        editor.putString("car", getString(R.string.motorbike));
+                    }
+                    break;
+                }
+            }
+        });
+    }
+    /*
+    protected void onSaveInstanceState(Bundle outState) {
+        // Save away the original text, so we still have it if the activity
+        // needs to be killed while paused.
+        super.onSaveInstanceState(outState);
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        outState.putString("name", fullname.getText().toString());
+        outState.putString("email", email.getText().toString());
+        outState.putString("desc", desc.getText().toString());
+        outState.putString("phone", phone.getText().toString());
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restore saved values
+        fullname.setText = savedInstanceState.getString("name");
+        email.setText = savedInstanceState.getString("email");
+        desc.setText = savedInstanceState.getString("desc");
+        phone.setText = savedInstanceState.getString("phone");
+
+    }
+    */
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,6 +128,7 @@ public class EditActivity extends AppCompatActivity {
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
             phone = findViewById(R.id.et_edit_phone);
+
             //loc = findViewById(R.id.et_edit_location);
             //avail = findViewById(R.id.et_edit_availab);
             //car = findViewById(R.id.et_edit_car);
@@ -83,6 +138,8 @@ public class EditActivity extends AppCompatActivity {
             editor.putString("email", email.getText().toString());
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
+
+
             //editor.putString("loc", loc.getText().toString());
             //editor.putString("car", car.getText().toString());
             //editor.putString("avail", avail.getText().toString());
@@ -106,6 +163,29 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         img = findViewById(R.id.imageview);
+
+
+        vehicles= (RadioGroup) findViewById(R.id.radioGroupID);
+        vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                vehicle = (RadioButton) findViewById(checkedId);
+                switch (vehicle.getId()) {
+                    case R.id.radioButtonBike:{
+                        editor.putString("car",getString(R.string.bike));
+                    }
+                    break;
+                    case R.id.radioButtonCar:{
+                        editor.putString("car", getString(R.string.car));
+                    }
+                    break;
+                    case R.id.radioButtonMB:{
+                        editor.putString("car",getString(R.string.motorbike));
+                    }
+                    break;
+                }
+            }
+        });
         //loc = findViewById(R.id.et_edit_location);
         //avail = findViewById(R.id.et_edit_availab);
         //car = findViewById(R.id.et_edit_car);

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         fullname.setText(pref.getString("name", "Mario"));
         email.setText(pref.getString("email", "mario@polito.it"));
-        desc.setText(pref.getString("desc", "Love eating."));
+        desc.setText(pref.getString("desc", "Love cooking."));
         phone.setText(pref.getString("phone", "011"));
         address.setText(pref.getString("address", "XYZ, 0"));
         if(pref.getString("photo", null) != null) {

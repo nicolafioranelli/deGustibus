@@ -17,6 +17,7 @@
 
         </activity>
         <activity android:name="com.madness.deliveryman.MainActivity">
+            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->  >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

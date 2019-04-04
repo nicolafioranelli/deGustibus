@@ -55,7 +55,34 @@ public class EditActivity extends AppCompatActivity {
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
     }
+    /*
+        protected void onSaveInstanceState(Bundle outState) {
+            // Save away the original text, so we still have it if the activity
+            // needs to be killed while paused.
+            super.onSaveInstanceState(outState);
+            fullname = findViewById(R.id.et_edit_fullName);
+            email = findViewById(R.id.et_edit_email);
+            desc = findViewById(R.id.et_edit_desc);
+            phone = findViewById(R.id.et_edit_phone);
+            address = findViewById(R.id.et_edit_address);
+            outState.putString("name", fullname.getText().toString());
+            outState.putString("email", email.getText().toString());
+            outState.putString("desc", desc.getText().toString());
+            outState.putString("phone", phone.getText().toString());
+            outState.putString("address", address.getText().toString());
+        }
 
+        @Override
+        protected void onRestoreInstanceState(Bundle savedInstanceState) {
+            super.onRestoreInstanceState(savedInstanceState);
+            // restore saved values
+            fullname.setText = savedInstanceState.getString("name");
+            email.setText = savedInstanceState.getString("email");
+            desc.setText = savedInstanceState.getString("desc");
+            phone.setText = savedInstanceState.getString("phone");
+
+        }
+        */
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
