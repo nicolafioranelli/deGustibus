@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
+        android:elevation="8dp"
         app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>

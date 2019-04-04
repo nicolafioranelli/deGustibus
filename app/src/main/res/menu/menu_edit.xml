@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/action_edit"
+        android:id="@+id/action_save"
         android:orderInCategory="300"
         android:title="User"
         android:icon="@drawable/ic_save"

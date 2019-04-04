@@ -12,7 +12,7 @@
         android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
         app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
-        android:elevation="6dp"
+        android:elevation="8dp"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
 

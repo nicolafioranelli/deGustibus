@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
-        android:elevation="6dp"
+        android:elevation="8dp"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
 
@@ -51,19 +51,7 @@
                     android:id="@+id/tv_show_fullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
-
-                <TextView
-                    android:id="@+id/tv_showD_email"
-                    android:layout_height="match_parent"
-                    android:layout_width="wrap_content"
-                    android:text="@string/default_email"
-                    android:theme="@style/TextView"/>
-                <TextView
-                    android:id="@+id/tv_show_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_desc"
@@ -75,8 +63,20 @@
                     android:id="@+id/tv_show_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"
+                    android:theme="@style/TextViewShow"
                     android:maxLines="4"/>
+
+                <TextView
+                    android:id="@+id/tv_showD_email"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_email"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_phone"
@@ -88,19 +88,19 @@
                     android:id="@+id/tv_show_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
-                android:id="@+id/tv_showD_address"
-                android:layout_height="match_parent"
-                android:layout_width="wrap_content"
-                android:text="@string/default_address"
-                android:theme="@style/TextView"/>
+                    android:id="@+id/tv_showD_address"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_address"
+                    android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
