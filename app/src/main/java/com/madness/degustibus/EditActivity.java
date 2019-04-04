@@ -97,7 +97,7 @@ public class EditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_edit) {
+        if (id == R.id.action_save) {
             fullname = findViewById(R.id.et_edit_fullName);
             email = findViewById(R.id.et_edit_email);
             desc = findViewById(R.id.et_edit_desc);
