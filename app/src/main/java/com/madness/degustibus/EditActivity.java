@@ -289,6 +289,8 @@ public class EditActivity extends AppCompatActivity {
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
         address.setText(bundle.getString("address"));
-        img.setImageURI(Uri.parse(bundle.getString("photo")));
+        if (bundle.getString("photo")!=null) {
+            img.setImageURI(Uri.parse(bundle.getString("photo")));
+        }
     }
 }
