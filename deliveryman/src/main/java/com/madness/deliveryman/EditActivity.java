@@ -32,7 +32,6 @@ import java.io.File;
 
 public class EditActivity extends AppCompatActivity {
 
-
     private Toolbar toolbar;
     private EditText fullname;
     private EditText email;
@@ -45,8 +44,6 @@ public class EditActivity extends AppCompatActivity {
     private String vehicle;
     private RadioGroup vehicles;
     private RadioButton button;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +82,6 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
-
-
         //restore the content
         if(savedInstanceState != null){
             loadBundle(savedInstanceState);
@@ -112,7 +107,9 @@ public class EditActivity extends AppCompatActivity {
         outState.putString("phone", phone.getText().toString());
         outState.putString("vehicle",this.vehicle);
         if(getPrefPhoto()==null) {
+
             outState.putString("photo", pref.getString("photo", null));
+            Log.d("MAD", "onSaveInstanceState: " + outState.getString("photo"));
         } else {
             outState.putString("photo", getPrefPhoto());
         }
@@ -142,7 +139,6 @@ public class EditActivity extends AppCompatActivity {
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
             editor.putString("vehicle", this.vehicle);
-
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
@@ -158,7 +154,6 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-       // loadSharedPrefs();
         super.onResume();
     }
 
@@ -224,7 +219,7 @@ public class EditActivity extends AppCompatActivity {
                     Uri photo = Uri.parse(getPrefPhoto());
                     img = findViewById(R.id.imageview);
                     img.setImageURI(photo);
-
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -320,11 +315,9 @@ public class EditActivity extends AppCompatActivity {
         phone.setText(pref.getString("phone", null));
 
         /* check if a photo is set */
-        //if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {
                 img.setImageURI(Uri.parse(pref.getString("photo", null)));
             }
-        //}
 
         String tmp = pref.getString("vehicle","bike");
         switch (tmp) {
@@ -347,17 +340,19 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void loadBundle(Bundle bundle){
-
         fullname = findViewById(R.id.et_edit_fullName);
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
+        img = findViewById(R.id.imageview);
 
         fullname.setText(bundle.getString("name"));
         email.setText(bundle.getString("email"));
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
-        img.setImageURI(Uri.parse(bundle.getString("photo")));
+        if(bundle.getString("photo")!=null) {
+            img.setImageURI(Uri.parse(bundle.getString("photo")));
+        }
         String selector = bundle.getString("vehicle");
 
         switch (selector) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,7 +12,7 @@
         android:background="@color/colorPrimary"
         android:theme="@style/ToolbarTheme"
         app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
-        android:elevation="6dp"
+        android:elevation="8dp"
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
 
@@ -51,7 +52,7 @@
                     android:id="@+id/tv_show_fullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_email"
@@ -63,7 +64,7 @@
                     android:id="@+id/tv_show_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_desc"
@@ -75,7 +76,7 @@
                     android:id="@+id/tv_show_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_phone"
@@ -87,7 +88,7 @@
                     android:id="@+id/tv_show_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_vehicle"
@@ -100,7 +101,7 @@
                     android:id="@+id/tv_show_vehicle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryText"/>
+                    android:theme="@style/TextViewShow"/>
 
             </LinearLayout>
         </LinearLayout>
