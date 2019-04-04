@@ -40,7 +40,8 @@
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:src="@drawable/user_profile"/>
+                    android:src="@drawable/user_profile"
+                    android:onClick="getPhoto"/>
             </LinearLayout>
 
             <TextView
