@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
         desc.setText(pref.getString("desc", "Love delivering."));
         phone.setText(pref.getString("phone", "011"));
 
-        switch (pref.getString("vehicle","bike")) {
+        String selector = pref.getString("vehicle","bike");
+
+        switch (selector) {
             case "bike":{
                 String v  = this.getString(R.string.bike);
                 vehicle.setText(v);

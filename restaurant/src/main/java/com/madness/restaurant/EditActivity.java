@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -55,6 +56,33 @@ public class EditActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+
+        //restore the content
+        if(savedInstanceState != null){
+            loadBundle(savedInstanceState);
+        }else{
+            loadSharedPrefs();
+        }
+    }
+
+    protected void onSaveInstanceState(Bundle outState) {
+        // Save away the original text, so we still have it if the activity
+        // needs to be killed while paused.
+        super.onSaveInstanceState(outState);
+
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
+
+        outState.putString("name",fullname.getText().toString());
+        outState.putString("email",email.getText().toString());
+        outState.putString("desc",desc.getText().toString());
+        outState.putString("phone",phone.getText().toString());
+        outState.putString("address",address.getText().toString());
+
+
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
@@ -63,32 +91,7 @@ public class EditActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
         return true;
     }
-    /*
-        protected void onSaveInstanceState(Bundle outState) {
-            // Save away the original text, so we still have it if the activity
-            // needs to be killed while paused.
-            super.onSaveInstanceState(outState);
-            fullname = findViewById(R.id.et_edit_fullName);
-            email = findViewById(R.id.et_edit_email);
-            desc = findViewById(R.id.et_edit_desc);
-            phone = findViewById(R.id.et_edit_phone);
-            outState.putString("name", fullname.getText().toString());
-            outState.putString("email", email.getText().toString());
-            outState.putString("desc", desc.getText().toString());
-            outState.putString("phone", phone.getText().toString());
-        }
 
-        @Override
-        protected void onRestoreInstanceState(Bundle savedInstanceState) {
-            super.onRestoreInstanceState(savedInstanceState);
-            // restore saved values
-            fullname.setText = savedInstanceState.getString("name");
-            email.setText = savedInstanceState.getString("email");
-            desc.setText = savedInstanceState.getString("desc");
-            phone.setText = savedInstanceState.getString("phone");
-
-        }
-        */
     /* Click listener to correctly handle actions related to toolbar items */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -122,24 +125,6 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        fullname = findViewById(R.id.et_edit_fullName);
-        email = findViewById(R.id.et_edit_email);
-        desc = findViewById(R.id.et_edit_desc);
-        phone = findViewById(R.id.et_edit_phone);
-        address = findViewById(R.id.et_edit_address);
-        img = findViewById(R.id.imageview);
-
-        fullname.setText(pref.getString("name", null));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
-        address.setText(pref.getString("address", null));
-        /* check if a photo is set */
-        if(getPrefPhoto() == null) {
-            if (pref.getString("photo", null) != null) {
-                img.setImageURI(Uri.parse(pref.getString("photo", null)));
-            }
-        }
         super.onResume();
     }
 
@@ -265,5 +250,43 @@ public class EditActivity extends AppCompatActivity {
         } else {
             Log.d("MAD", "onCreate: permission granted" );
         }
+    }
+
+    private void loadSharedPrefs(){
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
+        img = findViewById(R.id.imageview);
+
+        fullname.setText(pref.getString("name", null));
+        email.setText(pref.getString("email", null));
+        desc.setText(pref.getString("desc", null));
+        phone.setText(pref.getString("phone", null));
+        address.setText(pref.getString("address", null));
+        /* check if a photo is set */
+        if(getPrefPhoto() == null) {
+            if (pref.getString("photo", null) != null) {
+                img.setImageURI(Uri.parse(pref.getString("photo", null)));
+            }
+        }
+    }
+
+    private void loadBundle(Bundle bundle){
+
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
+        img = findViewById(R.id.imageview);
+
+        fullname.setText(bundle.getString("name"));
+        email.setText(bundle.getString("email"));
+        desc.setText(bundle.getString("desc"));
+        phone.setText(bundle.getString("phone"));
+        address.setText(bundle.getString("address"));
+
     }
 }
