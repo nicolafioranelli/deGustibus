@@ -54,6 +54,18 @@
                     android:theme="@style/TextViewShow"/>
 
                 <TextView
+                    android:id="@+id/tv_showD_email"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_email"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextViewShow"/>
+
+                <TextView
                     android:id="@+id/tv_showD_desc"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
@@ -65,18 +77,6 @@
                     android:layout_height="wrap_content"
                     android:theme="@style/TextViewShow"
                     android:maxLines="4"/>
-
-                <TextView
-                    android:id="@+id/tv_showD_email"
-                    android:layout_height="match_parent"
-                    android:layout_width="wrap_content"
-                    android:text="@string/default_email"
-                    android:theme="@style/TextView"/>
-                <TextView
-                    android:id="@+id/tv_show_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/TextViewShow"/>
 
                 <TextView
                     android:id="@+id/tv_showD_phone"

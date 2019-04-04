@@ -74,13 +74,13 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         address = findViewById(R.id.et_edit_address);
-        img = findViewById(R.id.imageview);
 
         outState.putString("name",fullname.getText().toString());
         outState.putString("email",email.getText().toString());
         outState.putString("desc",desc.getText().toString());
         outState.putString("phone",phone.getText().toString());
         outState.putString("address",address.getText().toString());
+        outState.putString("photo", getPrefPhoto());
     }
 
 
@@ -190,7 +190,7 @@ public class EditActivity extends AppCompatActivity {
                     Uri photo = Uri.parse(getPrefPhoto());
                     img = findViewById(R.id.imageview);
                     img.setImageURI(photo);
-
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -266,11 +266,11 @@ public class EditActivity extends AppCompatActivity {
         phone.setText(pref.getString("phone", null));
         address.setText(pref.getString("address", null));
         /* check if a photo is set */
-        if(getPrefPhoto() == null) {
+        //if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {
                 img.setImageURI(Uri.parse(pref.getString("photo", null)));
             }
-        }
+        //}
     }
 
     private void loadBundle(Bundle bundle){
@@ -287,6 +287,6 @@ public class EditActivity extends AppCompatActivity {
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
         address.setText(bundle.getString("address"));
-
+        img.setImageURI(Uri.parse(bundle.getString("photo")));
     }
 }
