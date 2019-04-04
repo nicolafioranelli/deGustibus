@@ -55,18 +55,6 @@
                     android:inputType="textPersonName"/>
 
                 <TextView
-                    android:id="@+id/tv_edit_email"
-                    android:layout_height="match_parent"
-                    android:layout_width="wrap_content"
-                    android:text="@string/default_email"
-                    android:theme="@style/TextView"/>
-                <EditText
-                    android:id="@+id/et_edit_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
-
-                <TextView
                     android:id="@+id/tv_edit_desc"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
@@ -79,6 +67,18 @@
                     android:inputType="textMultiLine"
                     android:maxLines="4"
                     android:scrollbars="vertical"/>
+
+                <TextView
+                    android:id="@+id/tv_edit_email"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="@string/default_email"
+                    android:theme="@style/TextView"/>
+                <EditText
+                    android:id="@+id/et_edit_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"/>
 
                 <TextView
                     android:id="@+id/tv_edit_phone"

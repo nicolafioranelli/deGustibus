@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
         address = findViewById(R.id.tv_show_address);
         img = findViewById(R.id.imageview);
 
-        fullname.setText(pref.getString("name", "Mario"));
-        email.setText(pref.getString("email", "mario@polito.it"));
-        desc.setText(pref.getString("desc", "Love cooking."));
-        phone.setText(pref.getString("phone", "011"));
-        address.setText(pref.getString("address", "XYZ, 0"));
+        fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
+        email.setText(pref.getString("email", getResources().getString(R.string.email)));
+        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
+        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
+        address.setText(pref.getString("address", getResources().getString(R.string.address)));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

@@ -75,6 +75,7 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         address = findViewById(R.id.et_edit_address);
+        img = findViewById(R.id.imageview);
 
         outState.putString("name",fullname.getText().toString());
         outState.putString("email",email.getText().toString());
@@ -193,7 +194,7 @@ public class EditActivity extends AppCompatActivity {
                     Uri photo = Uri.parse(getPrefPhoto());
                     img = findViewById(R.id.imageview);
                     img.setImageURI(photo);
-
+                    setPrefPhoto(img.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -263,21 +264,18 @@ public class EditActivity extends AppCompatActivity {
         address = findViewById(R.id.et_edit_address);
         img = findViewById(R.id.imageview);
 
-        fullname.setText(pref.getString("name", null));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
-        address.setText(pref.getString("address", null));
+        fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
+        email.setText(pref.getString("email", getResources().getString(R.string.email)));
+        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
+        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
+        address.setText(pref.getString("address", getResources().getString(R.string.address)));
         /* check if a photo is set */
-        //if(getPrefPhoto() == null) {
-            if (pref.getString("photo", null) != null) {
-                img.setImageURI(Uri.parse(pref.getString("photo", null)));
-            }
-        //}
+        if (pref.getString("photo", null) != null) {
+            img.setImageURI(Uri.parse(pref.getString("photo", null)));
+        }
     }
 
     private void loadBundle(Bundle bundle){
-
         fullname = findViewById(R.id.et_edit_fullName);
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
@@ -290,6 +288,6 @@ public class EditActivity extends AppCompatActivity {
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
         address.setText(bundle.getString("address"));
-
+        img.setImageURI(Uri.parse(bundle.getString("photo")));
     }
 }

@@ -357,6 +357,7 @@ public class EditActivity extends AppCompatActivity {
         email.setText(bundle.getString("email"));
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
+        img.setImageURI(Uri.parse(bundle.getString("photo")));
         String selector = bundle.getString("vehicle");
 
         switch (selector) {

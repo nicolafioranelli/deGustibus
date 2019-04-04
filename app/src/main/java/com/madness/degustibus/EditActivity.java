@@ -88,8 +88,6 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-
-
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,7 +116,6 @@ public class EditActivity extends AppCompatActivity {
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
-            //delPrefPhoto();
             editor.apply();
             delPrefPhoto();
 
@@ -266,7 +263,7 @@ public class EditActivity extends AppCompatActivity {
         address = findViewById(R.id.et_edit_address);
         img = findViewById(R.id.imageview);
 
-        fullname.setText(pref.getString("name", null));
+        fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
         email.setText(pref.getString("email", null));
         desc.setText(pref.getString("desc", null));
         phone.setText(pref.getString("phone", null));
