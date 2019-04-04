@@ -47,6 +47,12 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        address = findViewById(R.id.et_edit_address);
+
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("deGustibus");
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
@@ -54,35 +60,31 @@ public class EditActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+
+        Log.d("MAD", "onCreate: ");
     }
-    /*
-        protected void onSaveInstanceState(Bundle outState) {
-            // Save away the original text, so we still have it if the activity
-            // needs to be killed while paused.
-            super.onSaveInstanceState(outState);
-            fullname = findViewById(R.id.et_edit_fullName);
-            email = findViewById(R.id.et_edit_email);
-            desc = findViewById(R.id.et_edit_desc);
-            phone = findViewById(R.id.et_edit_phone);
-            address = findViewById(R.id.et_edit_address);
-            outState.putString("name", fullname.getText().toString());
-            outState.putString("email", email.getText().toString());
-            outState.putString("desc", desc.getText().toString());
-            outState.putString("phone", phone.getText().toString());
-            outState.putString("address", address.getText().toString());
-        }
 
-        @Override
-        protected void onRestoreInstanceState(Bundle savedInstanceState) {
-            super.onRestoreInstanceState(savedInstanceState);
-            // restore saved values
-            fullname.setText = savedInstanceState.getString("name");
-            email.setText = savedInstanceState.getString("email");
-            desc.setText = savedInstanceState.getString("desc");
-            phone.setText = savedInstanceState.getString("phone");
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("name", fullname.getText().toString());
+        outState.putString("email", email.getText().toString());
+        outState.putString("desc", desc.getText().toString());
+        outState.putString("phone", phone.getText().toString());
+        outState.putString("address", address.getText().toString());
+    }
 
-        }
-        */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        fullname.setText(savedInstanceState.getString("name"));
+        email.setText(savedInstanceState.getString("email"));
+        desc.setText(savedInstanceState.getString("desc"));
+        phone.setText(savedInstanceState.getString("phone"));
+        address.setText(savedInstanceState.getString("address"));
+    }
+
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -95,13 +97,7 @@ public class EditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_edit) {
-            fullname = findViewById(R.id.et_edit_fullName);
-            email = findViewById(R.id.et_edit_email);
-            desc = findViewById(R.id.et_edit_desc);
-            phone = findViewById(R.id.et_edit_phone);
-            address = findViewById(R.id.et_edit_address);
-
+        if (id == R.id.action_save) {
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
@@ -123,18 +119,15 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        fullname = findViewById(R.id.et_edit_fullName);
-        email = findViewById(R.id.et_edit_email);
-        desc = findViewById(R.id.et_edit_desc);
-        phone = findViewById(R.id.et_edit_phone);
-        address = findViewById(R.id.et_edit_address);
-        img = findViewById(R.id.imageview);
+        if(fullname.getText().toString()==null) {
+            Log.d("MAD", "onResume: fullname set");
+            fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
+            email.setText(pref.getString("email", getResources().getString(R.string.email)));
+            desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
+            phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
+            address.setText(pref.getString("address", getResources().getString(R.string.address)));
+        }
 
-        fullname.setText(pref.getString("name", null));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
-        address.setText(pref.getString("address", null));
         /* check if a photo is set */
         if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {

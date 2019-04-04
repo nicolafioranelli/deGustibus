@@ -11,4 +11,9 @@
     <string name="camera">Capture photo from camera</string>
     <string name="saved">Saved!</string>
     <string name="gallery">Select from gallery</string>
+    <string name="fullname" translatable="false">Mario Rossi</string>
+    <string name="email" translatable="false">mario.rossi@polito.it</string>
+    <string name="desc">Love pizza and pasta.</string>
+    <string name="phone" translatable="false">011 5685222</string>
+    <string name="address" translatable="false">Corso Duca degli Abruzzi, 24</string>
 </resources>
