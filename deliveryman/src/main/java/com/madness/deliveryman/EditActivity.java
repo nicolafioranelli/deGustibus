@@ -84,56 +84,32 @@ public class EditActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+        //restore the content
+        if(savedInstanceState != null){
+            loadBundle(savedInstanceState);
+        }else{
+            loadSharedPrefs();
+        }
     }
 
     protected void onSaveInstanceState(Bundle outState) {
         // Save away the original text, so we still have it if the activity
         // needs to be killed while paused.
         super.onSaveInstanceState(outState);
+
         fullname = findViewById(R.id.et_edit_fullName);
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
+
         outState.putString("name", fullname.getText().toString());
         outState.putString("email", email.getText().toString());
         outState.putString("desc", desc.getText().toString());
         outState.putString("phone", phone.getText().toString());
-        outState.putString("vehicle",this.vehicle); // the current value of the radio group
-        Log.d("MAD", "vehicle: "  + this.vehicle);
-
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // restore saved values
-
-        fullname.setText(savedInstanceState.getString("name"));
-        email.setText(savedInstanceState.getString("email"));
-        desc.setText(savedInstanceState.getString("desc"));
-        phone.setText(savedInstanceState.getString("phone"));
-        String tmp = savedInstanceState.getString("vehicle");
-
-        switch (tmp) {
-            case "bike":{
-                RadioButton button = findViewById(R.id.rb_edit_bike);
-                button.toggle();
-            }
-            break;
-            case "car":{
-                RadioButton button = findViewById(R.id.rb_edit_car);
-                button.toggle();
-            }
-            break;
-            case "motorbike":{
-                RadioButton button = findViewById(R.id.rb_edit_motorbike);
-                button.toggle();
-            }
-            break;
-        }
-
-
-
+        outState.putString("vehicle",this.vehicle);
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
@@ -176,46 +152,7 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        fullname = findViewById(R.id.et_edit_fullName);
-        email = findViewById(R.id.et_edit_email);
-        desc = findViewById(R.id.et_edit_desc);
-        phone = findViewById(R.id.et_edit_phone);
-        img = findViewById(R.id.imageview);
-
-        fullname.setText(pref.getString("name", null));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
-        //loc.setText(pref.getString("loc", null));
-        //avail.setText(pref.getString("avail", null));
-        //car.setText(pref.getString("car", null));
-        /* check if a photo is set */
-        if(getPrefPhoto() == null) {
-            if (pref.getString("photo", null) != null) {
-                img.setImageURI(Uri.parse(pref.getString("photo", null)));
-            }
-        }
-
-        String tmp = pref.getString("vehicle","bike");
-        Log.d("MAD", "onResume: ------------->" + tmp);
-        switch (tmp) {
-            case "bike":{
-                RadioButton button = findViewById(R.id.rb_edit_bike);
-                button.toggle();
-            }
-            break;
-            case "car":{
-                RadioButton button = findViewById(R.id.rb_edit_car);
-                button.toggle();
-            }
-            break;
-            case "motorbike":{
-                RadioButton button = findViewById(R.id.rb_edit_motorbike);
-                button.toggle();
-            }
-            break;
-        }
-
+       // loadSharedPrefs();
         super.onResume();
     }
 
@@ -361,6 +298,77 @@ public class EditActivity extends AppCompatActivity {
                 if (checked)
                     this.vehicle = "motorbike";
                     break;
+        }
+    }
+
+    private void loadSharedPrefs(){
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+        img = findViewById(R.id.imageview);
+
+        fullname.setText(pref.getString("name", null));
+        email.setText(pref.getString("email", null));
+        desc.setText(pref.getString("desc", null));
+        phone.setText(pref.getString("phone", null));
+
+        /* check if a photo is set */
+        if(getPrefPhoto() == null) {
+            if (pref.getString("photo", null) != null) {
+                img.setImageURI(Uri.parse(pref.getString("photo", null)));
+            }
+        }
+
+        String tmp = pref.getString("vehicle","bike");
+        switch (tmp) {
+            case "bike":{
+                RadioButton button = findViewById(R.id.rb_edit_bike);
+                button.toggle();
+            }
+            break;
+            case "car":{
+                RadioButton button = findViewById(R.id.rb_edit_car);
+                button.toggle();
+            }
+            break;
+            case "motorbike":{
+                RadioButton button = findViewById(R.id.rb_edit_motorbike);
+                button.toggle();
+            }
+            break;
+        }
+    }
+
+    private void loadBundle(Bundle bundle){
+
+        fullname = findViewById(R.id.et_edit_fullName);
+        email = findViewById(R.id.et_edit_email);
+        desc = findViewById(R.id.et_edit_desc);
+        phone = findViewById(R.id.et_edit_phone);
+
+        fullname.setText(bundle.getString("name"));
+        email.setText(bundle.getString("email"));
+        desc.setText(bundle.getString("desc"));
+        phone.setText(bundle.getString("phone"));
+        String selector = bundle.getString("vehicle");
+
+        switch (selector) {
+            case "bike":{
+                RadioButton button = findViewById(R.id.rb_edit_bike);
+                button.toggle();
+            }
+            break;
+            case "car":{
+                RadioButton button = findViewById(R.id.rb_edit_car);
+                button.toggle();
+            }
+            break;
+            case "motorbike":{
+                RadioButton button = findViewById(R.id.rb_edit_motorbike);
+                button.toggle();
+            }
+            break;
         }
     }
 }
