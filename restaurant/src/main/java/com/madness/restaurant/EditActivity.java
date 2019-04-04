@@ -81,8 +81,11 @@ public class EditActivity extends AppCompatActivity {
         outState.putString("desc",desc.getText().toString());
         outState.putString("phone",phone.getText().toString());
         outState.putString("address",address.getText().toString());
-
-
+        if(getPrefPhoto()==null) {
+            outState.putString("photo", pref.getString("photo", null));
+        } else {
+            outState.putString("photo", getPrefPhoto());
+        }
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
@@ -266,11 +269,11 @@ public class EditActivity extends AppCompatActivity {
         phone.setText(pref.getString("phone", null));
         address.setText(pref.getString("address", null));
         /* check if a photo is set */
-        if(getPrefPhoto() == null) {
+        //if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {
                 img.setImageURI(Uri.parse(pref.getString("photo", null)));
             }
-        }
+        //}
     }
 
     private void loadBundle(Bundle bundle){

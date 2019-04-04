@@ -74,13 +74,18 @@ public class EditActivity extends AppCompatActivity {
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
         address = findViewById(R.id.et_edit_address);
+        img = findViewById(R.id.imageview);
 
         outState.putString("name",fullname.getText().toString());
         outState.putString("email",email.getText().toString());
         outState.putString("desc",desc.getText().toString());
         outState.putString("phone",phone.getText().toString());
         outState.putString("address",address.getText().toString());
-        outState.putString("photo", getPrefPhoto());
+        if(getPrefPhoto()==null) {
+            outState.putString("photo", pref.getString("photo", null));
+        } else {
+            outState.putString("photo", getPrefPhoto());
+        }
     }
 
 
@@ -113,6 +118,7 @@ public class EditActivity extends AppCompatActivity {
             if (getPrefPhoto()!=null) {
                 editor.putString("photo", getPrefPhoto());
             }
+            //delPrefPhoto();
             editor.apply();
             delPrefPhoto();
 
@@ -274,7 +280,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void loadBundle(Bundle bundle){
-
         fullname = findViewById(R.id.et_edit_fullName);
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);

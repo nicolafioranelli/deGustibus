@@ -104,12 +104,18 @@ public class EditActivity extends AppCompatActivity {
         email = findViewById(R.id.et_edit_email);
         desc = findViewById(R.id.et_edit_desc);
         phone = findViewById(R.id.et_edit_phone);
+        img = findViewById(R.id.imageview);
 
         outState.putString("name", fullname.getText().toString());
         outState.putString("email", email.getText().toString());
         outState.putString("desc", desc.getText().toString());
         outState.putString("phone", phone.getText().toString());
         outState.putString("vehicle",this.vehicle);
+        if(getPrefPhoto()==null) {
+            outState.putString("photo", pref.getString("photo", null));
+        } else {
+            outState.putString("photo", getPrefPhoto());
+        }
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
@@ -314,11 +320,11 @@ public class EditActivity extends AppCompatActivity {
         phone.setText(pref.getString("phone", null));
 
         /* check if a photo is set */
-        if(getPrefPhoto() == null) {
+        //if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {
                 img.setImageURI(Uri.parse(pref.getString("photo", null)));
             }
-        }
+        //}
 
         String tmp = pref.getString("vehicle","bike");
         switch (tmp) {
