@@ -132,10 +132,8 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void getPhoto(View view){
-        checkCameraPermissions();
-        checkGalleryPermissions();
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
-        pictureDialog.setTitle("Select Action");
+        pictureDialog.setTitle(this.getString(R.string.select_action));
         String[] pictureDialogItems = {
                 getResources().getText(R.string.camera).toString(), getResources().getText(R.string.gallery).toString()};
         pictureDialog.setItems(pictureDialogItems,
@@ -144,6 +142,7 @@ public class EditActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
+                                checkCameraPermissions();
                                 /* Define image file where the camera will put the taken picture */
                                 File image;
                                 /* Get the directory to store image */

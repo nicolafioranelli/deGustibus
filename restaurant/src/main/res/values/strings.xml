@@ -16,4 +16,5 @@
     <string name="desc">Over 30 different types of pizzas directly at your home!</string>
     <string name="phone" translatable="false">011 5638897</string>
     <string name="address" translatable="false">Corso Vittorio Emanuele II, 4</string>
+    <string name="select_action">Select action</string>
 </resources>

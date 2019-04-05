@@ -16,4 +16,5 @@
     <string name="bike">Bike</string>
     <string name="car">Car</string>
     <string name="motorbike">Motorbike</string>
+    <string name="select_action">Select action</string>
 </resources>
