@@ -17,4 +17,8 @@
     <string name="car">Car</string>
     <string name="motorbike">Motorbike</string>
     <string name="select_action">Select action</string>
+    <string name="name" translatable="false">Mario Rossi</string>
+    <string name="email" translatable="false">mario@delivering.it</string>
+    <string name="desc">Love delivering.</string>
+    <string name="phone" translatable="false">011 2537598</string>
 </resources>

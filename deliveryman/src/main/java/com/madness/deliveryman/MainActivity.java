@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
         img = findViewById(R.id.imageview);
 
 
-        fullname.setText(pref.getString("name", "Mario"));
-        email.setText(pref.getString("email", "mario@polito.it"));
-        desc.setText(pref.getString("desc", "Love delivering."));
-        phone.setText(pref.getString("phone", "011"));
+        fullname.setText(pref.getString("name", getResources().getString(R.string.name)));
+        email.setText(pref.getString("email", getResources().getString(R.string.email)));
+        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
+        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
 
         String selector = pref.getString("vehicle","bike");
 

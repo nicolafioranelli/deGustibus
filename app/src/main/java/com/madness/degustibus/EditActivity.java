@@ -263,10 +263,10 @@ public class EditActivity extends AppCompatActivity {
         img = findViewById(R.id.imageview);
 
         fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
-        email.setText(pref.getString("email", null));
-        desc.setText(pref.getString("desc", null));
-        phone.setText(pref.getString("phone", null));
-        address.setText(pref.getString("address", null));
+        email.setText(pref.getString("email", getResources().getString(R.string.email)));
+        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
+        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
+        address.setText(pref.getString("address", getResources().getString(R.string.address)));
         /* check if a photo is set */
         //if(getPrefPhoto() == null) {
             if (pref.getString("photo", null) != null) {

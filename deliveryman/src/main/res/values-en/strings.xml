@@ -17,4 +17,5 @@
     <string name="car">Car</string>
     <string name="motorbike">Motorbike</string>
     <string name="select_action">Select acrion</string>
+    <string name="desc">Love delivering.</string>
 </resources>
