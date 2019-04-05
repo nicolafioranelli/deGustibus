@@ -17,4 +17,16 @@
     <string name="phone" translatable="false">011 5638897</string>
     <string name="address" translatable="false">Corso Vittorio Emanuele II, 4</string>
     <string name="select_action">Select action</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_daily">Daily offer</string>
+    <string name="menu_reservations">Reservations</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_restaurant">Restaurant</string>
+    <string name="title_activity_home">deGustibus</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 </resources>
