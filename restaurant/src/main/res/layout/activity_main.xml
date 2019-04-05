@@ -16,6 +16,8 @@
         android:id="@+id/toolbar">
     </android.support.v7.widget.Toolbar>
 
+    <!-- TODO: REMOVE -->
+
     <ScrollView
         android:layout_height="match_parent"
         android:layout_width="match_parent">
