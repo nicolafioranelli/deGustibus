@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment {
     private TextView mondayOpen;
     private TextView mondayClose;
     private TextView tuesdayOpen;
-    private TextView tuesdayClose;/*
+    private TextView tuesdayClose;
     private TextView wednesdayOpen;
     private TextView wednesdayClose;
     private TextView thursdayOpen;
@@ -54,7 +54,7 @@ public class ProfileFragment extends Fragment {
     private TextView saturdayOpen;
     private TextView saturdayClose;
     private TextView sundayOpen;
-    private TextView sundayClose;*/
+    private TextView sundayClose;
     private ImageView img;
     private SharedPreferences pref;
     public ProfileFragment() {
@@ -109,6 +109,16 @@ public class ProfileFragment extends Fragment {
         mondayClose = getView().findViewById(R.id.tv_show_mondayClose);
         tuesdayOpen = getView().findViewById(R.id.tv_show_tuesdayOpen);
         tuesdayClose = getView().findViewById(R.id.tv_show_tuesdayClose);
+        wednesdayOpen = getView().findViewById(R.id.tv_show_wednesdayOpen);
+        wednesdayClose = getView().findViewById(R.id.tv_show_wednesdayClose);
+        thursdayOpen = getView().findViewById(R.id.tv_show_thursdayOpen);
+        thursdayClose = getView().findViewById(R.id.tv_show_thursdayClose);
+        fridayOpen = getView().findViewById(R.id.tv_show_fridayOpen);
+        fridayClose = getView().findViewById(R.id.tv_show_fridayClose);
+        saturdayOpen = getView().findViewById(R.id.tv_show_saturdayOpen);
+        saturdayClose = getView().findViewById(R.id.tv_show_saturdayClose);
+        sundayOpen = getView().findViewById(R.id.tv_show_sundayOpen);
+        sundayClose = getView().findViewById(R.id.tv_show_sundayClose);
         img = getView().findViewById(R.id.imageview);
 
         fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
@@ -120,6 +130,16 @@ public class ProfileFragment extends Fragment {
         mondayClose.setText(pref.getString("mondayClose", getResources().getString(R.string.Closing)));
         tuesdayOpen.setText(pref.getString("tuesdayOpen", getResources().getString(R.string.Opening)));
         tuesdayClose.setText(pref.getString("tuesdayClose", getResources().getString(R.string.Closing)));
+        wednesdayOpen.setText(pref.getString("wednesdayOpen", getResources().getString(R.string.Opening)));
+        wednesdayClose.setText(pref.getString("wednesdayClose", getResources().getString(R.string.Closing)));
+        thursdayOpen.setText(pref.getString("thursdayOpen", getResources().getString(R.string.Opening)));
+        thursdayClose.setText(pref.getString("thursdayClose", getResources().getString(R.string.Closing)));
+        fridayOpen.setText(pref.getString("fridayOpen", getResources().getString(R.string.Opening)));
+        fridayClose.setText(pref.getString("fridayClose", getResources().getString(R.string.Closing)));
+        saturdayOpen.setText(pref.getString("saturdayOpen", getResources().getString(R.string.Opening)));
+        saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.Closing)));
+        sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.Opening)));
+        sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.Closing)));
         if(pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }

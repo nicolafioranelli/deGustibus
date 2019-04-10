@@ -16,93 +16,445 @@
     </android.support.v7.widget.Toolbar>
 
     <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp">
+            android:paddingTop="16dp"
+            android:paddingRight="16dp">
 
             <ImageView
                 android:id="@+id/imageview"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:layout_gravity="center"
+                android:onClick="getPhoto"
                 android:padding="16dp"
-                android:src="@drawable/user_profile"
-                android:onClick="getPhoto"/>
+                android:src="@drawable/user_profile" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:layout_gravity="center">
+                android:paddingLeft="16dp">
+
                 <TextView
                     android:id="@+id/tv_edit_fullName"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@string/default_fullname"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <EditText
                     android:id="@+id/et_edit_fullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"/>
+                    android:inputType="textPersonName" />
 
                 <TextView
                     android:id="@+id/tv_edit_desc"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@string/default_desc"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <EditText
                     android:id="@+id/et_edit_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:maxLines="4"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical" />
 
                 <TextView
                     android:id="@+id/tv_edit_email"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@string/default_email"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <EditText
                     android:id="@+id/et_edit_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
+                    android:inputType="textEmailAddress" />
 
                 <TextView
                     android:id="@+id/tv_edit_phone"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@string/default_phone"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <EditText
                     android:id="@+id/et_edit_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="phone" />
 
                 <TextView
                     android:id="@+id/tv_edit_address"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@string/default_address"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <EditText
                     android:id="@+id/et_edit_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress"/>
+                    android:inputType="textPostalAddress" />
+
+                <TextView
+                        android:id="@+id/tv_edit_defDay"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="@string/default_day"
+                        android:theme="@style/TextView"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_vertical">
+                        <Button
+                            android:id="@+id/defaultOpenButton"
+                            android:layout_width="150dp"
+                            android:layout_height="60dp"
+                            android:text="@string/setOpeningTime" />
+                        <Button
+                            android:id="@+id/defaultCloseButton"
+                            android:layout_width="150dp"
+                            android:layout_height="60dp"
+                            android:text="@string/setClosingTime" />
+                    </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                    android:id="@+id/tv_edit_monday"
+                    android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                    android:text="@string/monday"
+                    android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_mondayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator1"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_mondayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/mondayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/mondayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_vertical">
+                        <TextView
+                        android:id="@+id/tv_edit_tuesday"
+                        android:layout_height="match_parent"
+                            android:layout_width="100dp"
+                        android:text="@string/tuesday"
+                        android:theme="@style/TextView"/>
+                        <TextView
+                            android:id="@+id/et_edit_tuesdayOpen"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"
+                            android:theme="@style/TextView"/>
+                        <TextView
+                            android:id="@+id/Separator2"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"
+                            android:text="-"
+                            android:theme="@style/TextView"/>
+                        <TextView
+                            android:id="@+id/et_edit_tuesdayClose"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:theme="@style/TextView"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_vertical">
+                        <Button
+                            android:id="@+id/tuesayOpenButton"
+                            android:layout_width="150dp"
+                            android:layout_height="60dp"
+                            android:text="@string/setOpeningTime" />
+                        <Button
+                            android:id="@+id/tuesdayCloseButton"
+                            android:layout_width="150dp"
+                            android:layout_height="60dp"
+                            android:text="@string/setClosingTime" />
+                    </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/tv_edit_wednesday"
+                        android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                        android:text="@string/wednesday"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_wednesdayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator3"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_wednesdayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/wednesdayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/wednesdayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/tv_edit_thursday"
+                        android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                        android:text="@string/thursday"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_thursdayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator4"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_thursdayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/thursdayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/thursdayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/tv_edit_friday"
+                        android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                        android:text="@string/friday"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_fridayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator5"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_fridayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/fridayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/fridayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/tv_edit_saturday"
+                        android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                        android:text="@string/saturday"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_saturdayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator6"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_saturdayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/saturdayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/saturdayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/tv_edit_sunday"
+                        android:layout_height="match_parent"
+                        android:layout_width="100dp"
+                        android:text="@string/sunday"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_sundayOpen"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/Separator7"
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:text="-"
+                        android:theme="@style/TextView"/>
+                    <TextView
+                        android:id="@+id/et_edit_sundayClose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/TextView"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+                    <Button
+                        android:id="@+id/sundayOpenButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setOpeningTime" />
+                    <Button
+                        android:id="@+id/sundayCloseButton"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:text="@string/setClosingTime" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

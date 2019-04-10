@@ -16,5 +16,37 @@
     <string name="desc">Over 30 different types of pizzas directly at your home!</string>
     <string name="phone" translatable="false">011 5638897</string>
     <string name="address" translatable="false">Corso Vittorio Emanuele II, 4</string>
+    <string name="setOpeningTime">Set Opening Time</string>
+    <string name="setClosingTime">Set Closing Time</string>
+    <string name="setOpeningTime2">Set Opening Time (2)</string>
+    <string name="setClosingTime2">Set Closing Time (2)</string>
+    <string name="default_day">Default working hours</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="Opening" translatable="false">08:00</string>
+    <string name="Closing" translatable="false">20:00</string>
     <string name="select_action">Select action</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_daily">Daily offer</string>
+    <string name="menu_reservations">Reservations</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_restaurant">Restaurant</string>
+    <string name="title_activity_home">deGustibus</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="frHome_title">Welcome back, Jack!</string>
+
+
 </resources>

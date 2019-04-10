@@ -9,6 +9,19 @@
     <string name="default_desc">Descrizione</string>
     <string name="default_fullname">Nome Ristorante</string>
     <string name="default_address">Indirizzo</string>
+    <string name="default_day">Orario lavorativo di base</string>
+    <string name="setOpeningTime">Imposta orario di apertura</string>
+    <string name="setClosingTime">Imposta orario di chiusura</string>
+    <string name="setOpeningTime2">Imposta orario di apertura (2)</string>
+    <string name="setClosingTime2">Imposta orario di chiusura (2)</string>
+    <string name="monday">Lunedì</string>
+    <string name="tuesday">Martedì</string>
+    <string name="wednesday">Mercoledì</string>
+    <string name="thursday">Giovedì</string>
+    <string name="friday">Venerdì</string>
+    <string name="saturday">Sabato</string>
+    <string name="sunday">Domenica</string>
     <string name="desc">Oltre 30 tipi di pizza diversi direttamente a casa tua!</string>
     <string name="select_action">Seleziona un\'azione</string>
+    <string name="frHome_title">Bentornato, Giacomo!</string>
 </resources>

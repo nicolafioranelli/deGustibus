@@ -106,7 +106,7 @@
                 <TextView
                     android:id="@+id/tv_showD_monday"
                     android:layout_height="match_parent"
-                    android:layout_width="200dp"
+                    android:layout_width="100dp"
                     android:text="@string/monday"
                     android:theme="@style/TextView"/>
                 <TextView
@@ -118,7 +118,7 @@
                     android:id="@+id/Separator1"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="  -  "
+                    android:text="-"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_mondayClose"
@@ -134,7 +134,7 @@
                 <TextView
                     android:id="@+id/tv_showD_tuesday"
                     android:layout_height="match_parent"
-                    android:layout_width="200dp"
+                    android:layout_width="100dp"
                     android:text="@string/tuesday"
                     android:theme="@style/TextView"/>
                 <TextView
@@ -146,10 +146,146 @@
                     android:id="@+id/Separator2"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="  -  "
+                    android:text="-"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_tuesdayClose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_showD_wednesday"
+                    android:layout_height="match_parent"
+                    android:layout_width="100dp"
+                    android:text="@string/wednesday"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_wednesdayOpen"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="-"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_wednesdayClose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_showD_thursday"
+                    android:layout_height="match_parent"
+                    android:layout_width="100dp"
+                    android:text="@string/thursday"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_thursdayOpen"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="-"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_thursdayClose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_showD_friday"
+                    android:layout_height="match_parent"
+                    android:layout_width="100dp"
+                    android:text="@string/friday"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_fridayOpen"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="-"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_fridayClose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_showD_saturday"
+                    android:layout_height="match_parent"
+                    android:layout_width="100dp"
+                    android:text="@string/saturday"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_saturdayOpen"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/Separator6"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="-"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_saturdayClose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/TextView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tv_showD_sunday"
+                    android:layout_height="match_parent"
+                    android:layout_width="100dp"
+                    android:text="@string/sunday"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_sundayOpen"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:text="-"
+                    android:theme="@style/TextView"/>
+                <TextView
+                    android:id="@+id/tv_show_sundayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/TextView"/>
