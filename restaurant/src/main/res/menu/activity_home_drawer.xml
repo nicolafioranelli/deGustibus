@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:title="@string/menu_home"
+            android:icon="@drawable/ic_menu_home"/>
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_menu_user"
+            android:title="@string/menu_profile"
+            />
+        <item
+            android:id="@+id/nav_daily"
+            android:icon="@drawable/ic_menu_daily"
+            android:title="@string/menu_daily"/>
+        <item
+            android:id="@+id/nav_reservations"
+            android:icon="@drawable/ic_menu_reservations"
+            android:title="@string/menu_reservations"/>
+    </group>
+</menu>
