@@ -158,18 +158,24 @@ class SwipeController extends Callback {
         float buttonWidthWithoutPadding = buttonWidth - 20;
         float corners = 16;
 
+        Paint backgroundColor = new Paint();
+        Paint editColor = new Paint();
+        Paint deleteColor = new Paint();
+
+        backgroundColor.setColor(Color.TRANSPARENT);
+        editColor.setColor(Color.BLUE);
+        deleteColor.setColor(Color.RED);
+
+
         View itemView = viewHolder.itemView;
-        Paint p = new Paint();
 
         RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-        p.setColor(Color.BLUE);
-        c.drawRoundRect(leftButton, corners, corners, p);
-        drawText("EDIT", c, leftButton, p);
+        c.drawRoundRect(leftButton, corners, corners, backgroundColor);
+        drawText("Edit", c, leftButton,  editColor);
 
         RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        p.setColor(Color.RED);
-        c.drawRoundRect(rightButton, corners, corners, p);
-        drawText("DELETE", c, rightButton, p);
+        c.drawRoundRect(rightButton, corners, corners, backgroundColor);
+        drawText("Delete", c, rightButton,  deleteColor);
 
         buttonInstance = null;
         if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
@@ -182,7 +188,7 @@ class SwipeController extends Callback {
 
     private void drawText(String text, Canvas c, RectF button, Paint p) {
         float textSize = 60;
-        p.setColor(Color.WHITE);
+        //p.setColor(Color.WHITE);
         p.setAntiAlias(true);
         p.setTextSize(textSize);
 
