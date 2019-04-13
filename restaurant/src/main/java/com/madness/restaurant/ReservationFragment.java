@@ -53,8 +53,8 @@ public class ReservationFragment extends Fragment {
 
 
         // add a separator
-        DividerItemDecoration decoration = new DividerItemDecoration(getContext(), manager.getOrientation());
-        recyclerView.addItemDecoration(decoration);
+        //DividerItemDecoration decoration = new DividerItemDecoration(getContext(), manager.getOrientation());
+        //recyclerView.addItemDecoration(decoration);
 
 
         // set swipe controller
