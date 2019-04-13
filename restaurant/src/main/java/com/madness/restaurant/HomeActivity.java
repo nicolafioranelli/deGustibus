@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -68,6 +69,26 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    public void onItemClicked() {
+        if (fragment != null ) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = EditProfile.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                Log.e("MAD", "onItemClicked: ", e);
+            }
+
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.flContent, fragment);
+            ft.addToBackStack("PROFILE");
+            ft.commit();
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -86,16 +107,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        /*
-        if (id == R.id.action_settings) {
-            return true;
-        }*/
-
+        //int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 
@@ -106,29 +118,52 @@ public class HomeActivity extends AppCompatActivity
         fragment = null;
         Class fragmentClass;
 
+        /* The switch now contains also the string helpful to identify the fragment in the fragment stack */
         switch(item.getItemId()) {
             case R.id.nav_profile:
-                fragmentClass = ProfileFragment.class;
+                try{
+                    fragmentClass = ProfileFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    // Insert the fragment by replacing any existing fragment
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "PROFILE").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.nav_reservations:
-                fragmentClass = ReservationFragment.class;
+                try{
+                    fragmentClass = ReservationFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    // Insert the fragment by replacing any existing fragment
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.nav_daily:
-                fragmentClass = DailyFragment.class;
+                try{
+                    fragmentClass = DailyFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    // Insert the fragment by replacing any existing fragment
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
-                fragmentClass = HomeFragment.class;
+                try{
+                    fragmentClass = HomeFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    // Insert the fragment by replacing any existing fragment
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
         }
-
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Insert the fragment by replacing any existing fragment
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);

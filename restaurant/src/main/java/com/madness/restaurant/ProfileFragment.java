@@ -1,14 +1,17 @@
 package com.madness.restaurant;
 
-
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,12 +32,10 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ProfileFragment extends Fragment {
-
 
     private TextView fullname;
     private TextView email;
@@ -57,8 +58,25 @@ public class ProfileFragment extends Fragment {
     private TextView sundayClose;
     private ImageView img;
     private SharedPreferences pref;
+
+    private ProfileListener listener;
+
+    public interface ProfileListener {
+        public void onItemClicked();
+    }
+
     public ProfileFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof ProfileListener) {
+            listener = (ProfileListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement ProfileListner");
+        }
     }
 
     @Override
@@ -76,19 +94,17 @@ public class ProfileFragment extends Fragment {
     /* Click listener to correctly handle actions related to toolbar items */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            //Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getActivity(), EditActivity.class);
-            startActivity(intent);
+            onClick();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onClick(){
+        listener.onItemClicked();
     }
 
     @Override
