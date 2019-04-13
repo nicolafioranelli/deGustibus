@@ -451,11 +451,6 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     public void getPhoto(View view){
 
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
