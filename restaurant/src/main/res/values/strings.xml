@@ -16,11 +16,11 @@
     <string name="desc">Over 30 different types of pizzas directly at your home!</string>
     <string name="phone" translatable="false">011 5638897</string>
     <string name="address" translatable="false">Corso Vittorio Emanuele II, 4</string>
-    <string name="setOpeningTime">Set Opening Time</string>
-    <string name="setClosingTime">Set Closing Time</string>
+    <string name="setOpeningTime">Opening Time</string>
+    <string name="setClosingTime">Closing Time</string>
     <string name="setOpeningTime2">Set Opening Time (2)</string>
     <string name="setClosingTime2">Set Closing Time (2)</string>
-    <string name="default_day">Default working hours</string>
+    <string name="default_day">Set standard working hours</string>
     <string name="monday">Monday</string>
     <string name="tuesday">Tuesday</string>
     <string name="wednesday">Wednesday</string>

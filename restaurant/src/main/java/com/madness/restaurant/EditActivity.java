@@ -23,10 +23,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.sql.Time;
 
 public class EditActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
-
-    /* Views */
+    /*
+        /* Views */
     private Toolbar toolbar;
     private EditText fullname;
     private EditText email;
@@ -79,7 +79,7 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
         pref = getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
 
-        takeTimeButtons();
+        takeTimeTextViews();
         //restore the content
         if(savedInstanceState != null){
             loadBundle(savedInstanceState);
@@ -88,9 +88,9 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
         }
     }
 
-    private void takeTimeButtons(){
-        Button button1= (Button) findViewById(R.id.defaultOpenButton);
-        button1.setOnClickListener(new View.OnClickListener() {
+    private void takeTimeTextViews(){/*
+        TextView textView1= (TextView) findViewById(R.id.defaultOpenTextView);
+        textView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=0;
@@ -99,8 +99,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button2= (Button) findViewById(R.id.defaultCloseButton);
-        button2.setOnClickListener(new View.OnClickListener() {
+        TextView textView2= (TextView) findViewById(R.id.defaultCloseTextView);
+        textView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=0;
@@ -109,8 +109,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button3= (Button) findViewById(R.id.mondayOpenButton);
-        button3.setOnClickListener(new View.OnClickListener() {
+        TextView textView3= (TextView) findViewById(R.id.mondayOpenTextView);
+        textView3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=1;
@@ -119,8 +119,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button4= (Button) findViewById(R.id.mondayCloseButton);
-        button4.setOnClickListener(new View.OnClickListener() {
+        TextView textView4= (TextView) findViewById(R.id.mondayCloseTextView);
+        textView4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=1;
@@ -129,8 +129,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button5= (Button) findViewById(R.id.tuesayOpenButton);
-        button5.setOnClickListener(new View.OnClickListener() {
+        TextView textView5= (TextView) findViewById(R.id.tuesdayOpenTextView);
+        textView5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=2;
@@ -139,8 +139,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button6= (Button) findViewById(R.id.tuesdayCloseButton);
-        button6.setOnClickListener(new View.OnClickListener() {
+        TextView textView6= (TextView) findViewById(R.id.tuesdayCloseTextView);
+        textView6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=2;
@@ -149,8 +149,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button7= (Button) findViewById(R.id.wednesdayOpenButton);
-        button7.setOnClickListener(new View.OnClickListener() {
+        TextView textView7= (TextView) findViewById(R.id.wednesdayOpenTextView);
+        textView7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=3;
@@ -159,8 +159,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button8= (Button) findViewById(R.id.wednesdayCloseButton);
-        button8.setOnClickListener(new View.OnClickListener() {
+        TextView textView8= (TextView) findViewById(R.id.wednesdayCloseTextView);
+        textView8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=3;
@@ -169,8 +169,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button9= (Button) findViewById(R.id.thursdayOpenButton);
-        button9.setOnClickListener(new View.OnClickListener() {
+        TextView textView9= (TextView) findViewById(R.id.thursdayOpenTextView);
+        textView9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=4;
@@ -179,8 +179,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button10= (Button) findViewById(R.id.thursdayCloseButton);
-        button10.setOnClickListener(new View.OnClickListener() {
+        TextView textView10= (TextView) findViewById(R.id.thursdayCloseTextView);
+        textView10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=4;
@@ -189,8 +189,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button11= (Button) findViewById(R.id.fridayOpenButton);
-        button11.setOnClickListener(new View.OnClickListener() {
+        TextView textView11= (TextView) findViewById(R.id.fridayOpenTextView);
+        textView11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=5;
@@ -199,8 +199,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button12= (Button) findViewById(R.id.fridayCloseButton);
-        button12.setOnClickListener(new View.OnClickListener() {
+        TextView textView12= (TextView) findViewById(R.id.fridayCloseTextView);
+        textView12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=5;
@@ -209,8 +209,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button13= (Button) findViewById(R.id.saturdayOpenButton);
-        button13.setOnClickListener(new View.OnClickListener() {
+        TextView textView13= (TextView) findViewById(R.id.saturdayOpenTextView);
+        textView13.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=6;
@@ -219,8 +219,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button14= (Button) findViewById(R.id.saturdayCloseButton);
-        button14.setOnClickListener(new View.OnClickListener() {
+        TextView textView14= (TextView) findViewById(R.id.saturdayCloseTextView);
+        textView14.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=6;
@@ -229,8 +229,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button15= (Button) findViewById(R.id.sundayOpenButton);
-        button15.setOnClickListener(new View.OnClickListener() {
+        TextView textView15= (TextView) findViewById(R.id.sundayOpenTextView);
+        textView15.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=7;
@@ -239,8 +239,8 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
         });
-        Button button16= (Button) findViewById(R.id.sundayCloseButton);
-        button16.setOnClickListener(new View.OnClickListener() {
+        TextView textView16= (TextView) findViewById(R.id.sundayCloseTextView);
+        textView16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 weekDay=7;
@@ -248,7 +248,7 @@ public class EditActivity extends AppCompatActivity implements TimePickerDialog.
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getSupportFragmentManager(), "time picker");
             };
-        });
+        });*/
     }
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
