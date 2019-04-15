@@ -9,18 +9,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,9 +34,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,8 +63,6 @@ public class EditProfile extends Fragment {
     private TextView sundayClose;
     private int weekDay;
     private int moment;
-    private int hour;
-    private int minute;
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
@@ -77,8 +70,23 @@ public class EditProfile extends Fragment {
 
 
 
+    private EditPListener listener;
+
+    public interface EditPListener {
+        public void setEditPBarTitle(String title);
+    }
     public EditProfile() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof EditPListener) {
+            listener = (EditPListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement EditPListner");
+        }
     }
 
     @Override
@@ -92,6 +100,7 @@ public class EditProfile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        listener.setEditPBarTitle( getResources().getString(R.string.menu_editP));
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.activity_edit, container, false);
     }
@@ -125,7 +134,6 @@ public class EditProfile extends Fragment {
             loadBundle(savedInstanceState);
         }else{
             loadSharedPrefs();
-
         }
     }
 
@@ -233,7 +241,6 @@ public class EditProfile extends Fragment {
         saturdayClose.setText(bundle.getString("saturdayClose"));
         sundayOpen.setText(bundle.getString("sundayOpen"));
         sundayClose.setText(bundle.getString("sundayClose"));
-        hour= bundle.getInt("hour");
         if(bundle.getString("photo")!=null) {
             img.setImageURI(Uri.parse(bundle.getString("photo")));
         }
@@ -464,8 +471,6 @@ public class EditProfile extends Fragment {
     }
 
     public void setHourAndMinute(int hour, int minute) {
-        this.hour=hour;
-        this.minute=minute;
         mondayOpen = getActivity().findViewById(R.id.et_edit_mondayOpen);
         mondayClose = getActivity().findViewById(R.id.et_edit_mondayClose);
         tuesdayOpen = getActivity().findViewById(R.id.et_edit_tuesdayOpen);
@@ -621,9 +626,8 @@ public class EditProfile extends Fragment {
             switch (requestCode) {
                 case 0:
                     Uri photo = Uri.parse(getPrefPhoto());
-                    img = getActivity().findViewById(R.id.imageview);
                     img.setImageURI(photo);
-                    setPrefPhoto(img.toString());
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -641,23 +645,25 @@ public class EditProfile extends Fragment {
             }
             delPrefPhoto();
         }
-    }private void setPrefPhoto(String cameraFilePath) {
-            SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("photo", cameraFilePath);
-            editor.commit();
-        }
+    }
+    /* Methods (getters, setters and delete) to retrieve temporary photo uri. */
+    private void setPrefPhoto(String cameraFilePath) {
+        SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("photo", cameraFilePath);
+        editor.apply();
+    }
 
-        private String getPrefPhoto() {
-            SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            return pref.getString("photo", null);
-        }
+    private String getPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        return pref.getString("photo", null);
+    }
 
-        private void delPrefPhoto() {
-            SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.remove("photo");
-            editor.apply();
-        }
+    private void delPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove("photo");
+        editor.apply();
+    }
 }

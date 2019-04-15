@@ -2,7 +2,9 @@ package com.madness.restaurant;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -18,7 +20,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener, TimePickerDialog.OnTimeSetListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.HomeListener, ProfileFragment.ProfileListener, EditProfile.EditPListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener, TimePickerDialog.OnTimeSetListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -30,7 +32,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -86,8 +88,44 @@ public class HomeActivity extends AppCompatActivity
             ft.addToBackStack("PROFILE");
             ft.commit();
         }
+        else{
+            try {
+                Class fragmentClass;
+                fragmentClass = EditProfile.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                Log.e("MAD", "onItemClicked: ", e);
+            }
+
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.flContent, fragment, "Edit");
+            ft.addToBackStack("PROFILE");
+            ft.commit();
+        }
     }
 
+    @Override
+    public void setHomeBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+    @Override
+    public void setProfileBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+    @Override
+    public void setEditPBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+    @Override
+    public void setDailyBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public void setReservationBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
     @Override
     public void onBackPressed() {
         EditProfile editFrag = (EditProfile)
@@ -107,11 +145,6 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -214,9 +247,5 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
 
-        super.onSaveInstanceState(outState);
-    }
 }

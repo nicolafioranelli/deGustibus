@@ -32,11 +32,12 @@
     <string name="Closing" translatable="false">20:00</string>
     <string name="select_action">Select action</string>
     <string name="menu_profile">Profile</string>
+    <string name="menu_editP">Profile Editing</string>
     <string name="menu_daily">Daily offer</string>
     <string name="menu_reservations">Reservations</string>
-    <string name="menu_home">Home</string>
+    <string name="menu_home" translatable="false">deGustibus</string>
     <string name="menu_restaurant">Restaurant</string>
-    <string name="title_activity_home">deGustibus</string>
+    <string name="title_activity_home" translatable="false">deGustibus</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>

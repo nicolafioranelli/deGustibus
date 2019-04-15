@@ -33,6 +33,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +66,7 @@ public class ProfileFragment extends Fragment {
 
     public interface ProfileListener {
         public void onItemClicked();
+        public void setProfileBarTitle(String title);
     }
 
     public ProfileFragment() {
@@ -89,7 +91,7 @@ public class ProfileFragment extends Fragment {
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_main, menu);;
         super.onCreateOptionsMenu(menu,inflater);
     }
 
@@ -112,7 +114,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        listener.setProfileBarTitle( getResources().getString(R.string.menu_profile));
+        // Inflate the layout for this fragment(
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -159,8 +162,10 @@ public class ProfileFragment extends Fragment {
         sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.Opening)));
         sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.Closing)));
         if(pref.getString("photo", null) != null) {
+            Toast.makeText(getContext(),pref.getString("photo", null), Toast.LENGTH_LONG).show();
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
         super.onResume();
     }
+
 }

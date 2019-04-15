@@ -1,6 +1,7 @@
 package com.madness.restaurant;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -30,8 +31,22 @@ public class ReservationFragment extends Fragment {
     private ArrayList<String> time = new ArrayList<>();
 
 
+    private ReservationListener listener;
+
+    public interface ReservationListener {
+        public void setReservationBarTitle(String title);
+    }
     public ReservationFragment() {
         // Required empty public constructor
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof ReservationListener) {
+            listener = (ReservationListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement DailyListner");
+        }
     }
 
 
@@ -39,6 +54,7 @@ public class ReservationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        listener.setReservationBarTitle( getResources().getString(R.string.menu_reservations));
         // inflate the fragment layout
         View rootView =  inflater.inflate(R.layout.fragment_reservation, container, false);
         // initialize the fake content

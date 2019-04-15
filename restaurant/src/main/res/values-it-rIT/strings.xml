@@ -4,6 +4,11 @@
     <string name="gallery">Seleziona dalla galleria</string>
     <string name="saved">Salvato!</string>
     <string name="camera">Scatta una foto</string>
+    <string name="menu_editP">Modifica Profilo</string>
+    <string name="menu_profile">Profilo</string>
+    <string name="menu_daily">Offerta del giorno</string>
+    <string name="menu_reservations">Prenotazioni</string>
+    <string name="menu_restaurant">Ristorante</string>
     <string name="default_phone">Telefono</string>
     <string name="default_email">Email</string>
     <string name="default_desc">Descrizione</string>
