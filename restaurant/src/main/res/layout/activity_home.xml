@@ -17,8 +17,7 @@
         <include
             layout="@layout/app_bar_home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="50dp"/>
+            android:layout_height="wrap_content" />
 
         <!-- The main content view where fragments are loaded -->
         <FrameLayout

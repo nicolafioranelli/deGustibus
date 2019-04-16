@@ -1,19 +1,20 @@
-package com.madness.restaurant;
+package com.madness.restaurant.reservations;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.madness.restaurant.R;
+
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private static final String TAG = "RecyclerViewAdapter";
+public class ReservationsRecyclerViewAdapter extends RecyclerView.Adapter<ReservationsRecyclerViewAdapter.ViewHolder> {
+    private static final String TAG = "ReservationsRecyclerViewAdapter";
     private Context mContext;
 
     private ArrayList<String> _names;
@@ -23,7 +24,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> _time;
 
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<String> _names, ArrayList<String> _identifiers, ArrayList<String> _seats, ArrayList<String> _dates, ArrayList<String> _time) {
+    public ReservationsRecyclerViewAdapter(Context mContext, ArrayList<String> _names, ArrayList<String> _identifiers, ArrayList<String> _seats, ArrayList<String> _dates, ArrayList<String> _time) {
         this.mContext = mContext;
         this._names = _names;
         this._identifiers = _identifiers;
@@ -36,7 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.__reservation_listitem, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.reservation_listitem, viewGroup, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }

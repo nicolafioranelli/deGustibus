@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.profile;
 
 import android.Manifest;
 import android.app.Activity;
@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -32,6 +31,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.madness.restaurant.BuildConfig;
+import com.madness.restaurant.R;
+import com.madness.restaurant.TimePickerFragment;
 
 import java.io.File;
 
@@ -68,25 +71,8 @@ public class EditProfile extends Fragment {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-
-
-    private EditPListener listener;
-
-    public interface EditPListener {
-        public void setEditPBarTitle(String title);
-    }
     public EditProfile() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if(context instanceof EditPListener) {
-            listener = (EditPListener) context;
-        } else {
-            throw new ClassCastException(context.toString() + "must implement EditPListner");
-        }
     }
 
     @Override
@@ -100,9 +86,10 @@ public class EditProfile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        listener.setEditPBarTitle( getResources().getString(R.string.menu_editP));
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_edit, container, false);
+        // Inflate the layout for this fragment and add the title
+        View rootView = inflater.inflate(R.layout.activity_edit, container, false);
+        getActivity().setTitle(getResources().getString(R.string.title_Profile));
+        return rootView;
     }
 
     @Override
@@ -135,9 +122,11 @@ public class EditProfile extends Fragment {
         }else{
             loadSharedPrefs();
         }
+        takeTimeTextViews();
+        getPhoto();
     }
 
-    /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml */
+    /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml) */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit, menu);
@@ -150,7 +139,6 @@ public class EditProfile extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            Log.d("MAD", "onOptionsItemSelected: PRESSED");
             /* Define shared preferences and insert values */
             editor.putString("name", fullname.getText().toString());
             editor.putString("email", email.getText().toString());
@@ -179,17 +167,16 @@ public class EditProfile extends Fragment {
             editor.apply();
             delPrefPhoto();
 
+            /* Handle save option and go back */
+            Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
+    /* Method to load shared preferences */
     private void loadSharedPrefs(){
         fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
         email.setText(pref.getString("email", getResources().getString(R.string.email)));
@@ -249,29 +236,6 @@ public class EditProfile extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        fullname = getActivity().findViewById(R.id.et_edit_fullName);
-        email = getActivity().findViewById(R.id.et_edit_email);
-        desc = getActivity().findViewById(R.id.et_edit_desc);
-        phone = getActivity().findViewById(R.id.et_edit_phone);
-        address = getActivity().findViewById(R.id.et_edit_address);
-        defaultOpen = getView().findViewById(R.id.et_edit_defaultOpen);
-        defaultClose = getView().findViewById(R.id.et_edit_defaultClose);
-        mondayOpen = getView().findViewById(R.id.et_edit_mondayOpen);
-        mondayClose = getView().findViewById(R.id.et_edit_mondayClose);
-        tuesdayOpen = getView().findViewById(R.id.et_edit_tuesdayOpen);
-        tuesdayClose = getView().findViewById(R.id.et_edit_tuesdayClose);
-        wednesdayOpen = getView().findViewById(R.id.et_edit_wednesdayOpen);
-        wednesdayClose = getView().findViewById(R.id.et_edit_wednesdayClose);
-        thursdayOpen = getView().findViewById(R.id.et_edit_thursdayOpen);
-        thursdayClose = getView().findViewById(R.id.et_edit_thursdayClose);
-        fridayOpen = getView().findViewById(R.id.et_edit_fridayOpen);
-        fridayClose = getView().findViewById(R.id.et_edit_fridayClose);
-        saturdayOpen = getView().findViewById(R.id.et_edit_saturdayOpen);
-        saturdayClose = getView().findViewById(R.id.et_edit_saturdayClose);
-        sundayOpen = getView().findViewById(R.id.et_edit_sundayOpen);
-        sundayClose = getView().findViewById(R.id.et_edit_sundayClose);
-        img = getActivity().findViewById(R.id.imageview);
-
         outState.putString("name",fullname.getText().toString());
         outState.putString("email",email.getText().toString());
         outState.putString("desc",desc.getText().toString());
@@ -302,8 +266,6 @@ public class EditProfile extends Fragment {
 
     @Override
     public void onResume(){
-        takeTimeTextViews();
-        getPhoto();;
         super.onResume();
     }
 
@@ -471,20 +433,6 @@ public class EditProfile extends Fragment {
     }
 
     public void setHourAndMinute(int hour, int minute) {
-        mondayOpen = getActivity().findViewById(R.id.et_edit_mondayOpen);
-        mondayClose = getActivity().findViewById(R.id.et_edit_mondayClose);
-        tuesdayOpen = getActivity().findViewById(R.id.et_edit_tuesdayOpen);
-        tuesdayClose = getActivity().findViewById(R.id.et_edit_tuesdayClose);
-        wednesdayOpen = getActivity().findViewById(R.id.et_edit_wednesdayOpen);
-        wednesdayClose = getActivity().findViewById(R.id.et_edit_wednesdayClose);
-        thursdayOpen = getActivity().findViewById(R.id.et_edit_thursdayOpen);
-        thursdayClose = getActivity().findViewById(R.id.et_edit_thursdayClose);
-        fridayOpen = getActivity().findViewById(R.id.et_edit_fridayOpen);
-        fridayClose = getActivity().findViewById(R.id.et_edit_fridayClose);
-        saturdayOpen = getActivity().findViewById(R.id.et_edit_saturdayOpen);
-        saturdayClose = getActivity().findViewById(R.id.et_edit_saturdayClose);
-        sundayOpen = getActivity().findViewById(R.id.et_edit_sundayOpen);
-        sundayClose = getActivity().findViewById(R.id.et_edit_sundayClose);
         switch (this.weekDay){
             case 0:
                 if(this.moment==0) {
@@ -552,7 +500,9 @@ public class EditProfile extends Fragment {
                 break;
         }
 
-    }public void getPhoto() {
+    }
+
+    public void getPhoto() {
         ImageView layout1 = (ImageView) getActivity().findViewById(R.id.imageview);
         layout1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -610,6 +560,7 @@ public class EditProfile extends Fragment {
             };
         });
     }
+
     private void checkCameraPermissions() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -619,6 +570,7 @@ public class EditProfile extends Fragment {
             Log.d("MAD", "onCreate: permission granted" );
         }
     }
+
     @Override
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
@@ -646,6 +598,7 @@ public class EditProfile extends Fragment {
             delPrefPhoto();
         }
     }
+
     /* Methods (getters, setters and delete) to retrieve temporary photo uri. */
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);

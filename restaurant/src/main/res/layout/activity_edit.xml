@@ -120,7 +120,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -141,7 +141,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -176,7 +176,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -197,7 +197,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -231,7 +231,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -252,7 +252,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -286,7 +286,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -307,7 +307,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -341,7 +341,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -362,7 +362,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -396,7 +396,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -417,7 +417,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -451,7 +451,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -472,7 +472,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -505,7 +505,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setOpeningTime"
+                        android:text="@string/SetOpening"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -526,7 +526,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setClosingTime"
+                        android:text="@string/SetClosing"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView

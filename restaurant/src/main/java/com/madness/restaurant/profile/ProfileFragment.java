@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.profile;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -35,6 +35,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.madness.restaurant.R;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -66,20 +68,22 @@ public class ProfileFragment extends Fragment {
 
     public interface ProfileListener {
         public void onItemClicked();
-        public void setProfileBarTitle(String title);
     }
 
     public ProfileFragment() {
         // Required empty public constructor
     }
 
+    /*
+     * Define the listener here to manage clicks on the toolbar edit button
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if(context instanceof ProfileListener) {
             listener = (ProfileListener) context;
         } else {
-            throw new ClassCastException(context.toString() + "must implement ProfileListner");
+            throw new ClassCastException(context.toString() + "must implement ProfileListener");
         }
     }
 
@@ -89,6 +93,7 @@ public class ProfileFragment extends Fragment {
         setHasOptionsMenu(true);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);;
@@ -114,9 +119,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        listener.setProfileBarTitle( getResources().getString(R.string.menu_profile));
-        // Inflate the layout for this fragment(
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        // Inflate the layout for this fragment and add the title
+        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        getActivity().setTitle(getResources().getString(R.string.title_Profile));
+        return rootView;
     }
 
     @Override

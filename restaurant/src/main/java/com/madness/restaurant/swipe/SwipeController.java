@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.swipe;
 
 
 import android.graphics.Canvas;
@@ -10,8 +10,6 @@ import android.support.v7.widget.helper.ItemTouchHelper.Callback;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.madness.restaurant.SwipeControllerActions;
-
 import static android.support.v7.widget.helper.ItemTouchHelper.*;
 
 enum ButtonsState {
@@ -20,7 +18,7 @@ enum ButtonsState {
     RIGHT_VISIBLE
 }
 
-class SwipeController extends Callback {
+public class SwipeController extends Callback {
 
     private boolean swipeBack = false;
 

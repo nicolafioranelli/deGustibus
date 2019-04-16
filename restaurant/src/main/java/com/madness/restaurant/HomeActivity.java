@@ -1,10 +1,9 @@
 package com.madness.restaurant;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -16,11 +15,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
+import com.madness.restaurant.daily.DailyFragment;
+import com.madness.restaurant.daily.NewDailyOffert;
+import com.madness.restaurant.home.HomeFragment;
+import com.madness.restaurant.profile.EditProfile;
+import com.madness.restaurant.profile.ProfileFragment;
+import com.madness.restaurant.reservations.NewReservationFragment;
+import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.HomeListener, ProfileFragment.ProfileListener, EditProfile.EditPListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener, TimePickerDialog.OnTimeSetListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
+NewReservationFragment.NewReservationListener{
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -35,15 +44,6 @@ public class HomeActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -53,6 +53,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /* Instantiate home fragment */
         if(savedInstanceState == null) {
             try {
                 fragment = null;
@@ -72,7 +73,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onItemClicked() {
-        if (fragment != null ) {
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -84,14 +84,17 @@ public class HomeActivity extends AppCompatActivity
 
             fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.flContent, fragment, "Edit");
+            ft.replace(R.id.flContent, fragment, "EditP");
             ft.addToBackStack("PROFILE");
             ft.commit();
-        }
-        else{
+    }
+
+    @Override
+    public void addReservation() {
             try {
+                fragment = null;
                 Class fragmentClass;
-                fragmentClass = EditProfile.class;
+                fragmentClass = NewReservationFragment.class;
                 fragment = (Fragment) fragmentClass.newInstance();
             } catch (Exception e) {
                 Log.e("MAD", "onItemClicked: ", e);
@@ -99,37 +102,33 @@ public class HomeActivity extends AppCompatActivity
 
             fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.flContent, fragment, "Edit");
-            ft.addToBackStack("PROFILE");
+            ft.replace(R.id.flContent, fragment, "AddReservation");
+            ft.addToBackStack("RESERVATION");
             ft.commit();
+    }
+
+    @Override
+    public void addDailyOffer() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = NewDailyOffert.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "onItemClicked: ", e);
         }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "AddOffer");
+        ft.addToBackStack("DAILY");
+        ft.commit();
     }
 
-    @Override
-    public void setHomeBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-    @Override
-    public void setProfileBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-    @Override
-    public void setEditPBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-    @Override
-    public void setDailyBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public void setReservationBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
     @Override
     public void onBackPressed() {
         EditProfile editFrag = (EditProfile)
-            getSupportFragmentManager().findFragmentByTag("Edit");
+            getSupportFragmentManager().findFragmentByTag("EditP");
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -138,13 +137,20 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    /* Inflate the menu: this adds items to the action bar */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
+    /* Handle clicks on action toolbar */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -154,7 +160,7 @@ public class HomeActivity extends AppCompatActivity
         Class fragmentClass;
         // if EditProfile fragment is changed onNavigationItemSelected start a popBackStack
         EditProfile editFrag = (EditProfile)
-                getSupportFragmentManager().findFragmentByTag("Edit");
+                getSupportFragmentManager().findFragmentByTag("EditP");
 
         /* The switch now contains also the string helpful to identify the fragment in the fragment stack */
         switch(item.getItemId()) {
@@ -187,7 +193,7 @@ public class HomeActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_daily:
-                try{
+                try {
 
                     if (editFrag != null) {
                         getSupportFragmentManager().popBackStack();
@@ -215,12 +221,12 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-        }
+        } // end switch
 
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);
         // Set action bar title
-        setTitle(item.getTitle());
+        //setTitle(item.getTitle());
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -229,23 +235,49 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        {
-            EditProfile editFrag = (EditProfile)
-                    getSupportFragmentManager().findFragmentByTag("Edit");
-            if (editFrag != null) {
-                editFrag.setHourAndMinute(hourOfDay,minute);
-            } else {
-                EditProfile newFragment = new EditProfile();
-                Bundle args = new Bundle();
-                args.putInt("hour", hourOfDay);
-                args.putInt("minute", minute);
-                newFragment.setArguments(args);
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.flContent, fragment, "Edit");
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
+
+        EditProfile editFrag = (EditProfile)
+                getSupportFragmentManager().findFragmentByTag("EditP");
+        NewReservationFragment editRes = (NewReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("AddReservation");
+        if (editFrag != null) {
+            editFrag.setHourAndMinute(hourOfDay,minute);
+        }
+        else if(editRes != null) {
+            editRes.setHourAndMinute(hourOfDay,minute);
+        }
+
+
+            /*
+            EditProfile newFragment = new EditProfile();
+            Bundle args = new Bundle();
+            args.putInt("hour", hourOfDay);
+            args.putInt("minute", minute);
+            newFragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.flContent, fragment, "EditP");
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }*/
+
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        NewReservationFragment editRes = (NewReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("AddReservation");
+         if(editRes != null) {
+            editRes.setDate(year, month, dayOfMonth);
         }
     }
 
+    @Override
+    public void onSubmit() {
+        ReservationFragment reservationFragment = (ReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("RESERVATION");
+        if(reservationFragment != null) {
+            reservationFragment.addOnReservation();
+        }
+    }
 }

@@ -5,6 +5,7 @@
     <color name="colorPrimaryLight">#FFECB3</color>
     <color name="colorAccent">#FFC107</color>
     <color name="colorBackground">#F8995F</color>
+    <color name="colorBackgroundLight">#8c0000</color>
     <color name="titleColor">#FFF</color>
 
     <color name="primaryText">#212121</color>

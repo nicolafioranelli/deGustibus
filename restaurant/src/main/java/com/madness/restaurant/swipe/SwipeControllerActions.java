@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.swipe;
 
 public abstract class SwipeControllerActions {
 
