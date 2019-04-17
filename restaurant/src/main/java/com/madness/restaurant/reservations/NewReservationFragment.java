@@ -89,15 +89,8 @@ public class NewReservationFragment extends Fragment {
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);/*
-        setContentView(R.layout.activity_add_new_daily_offer);
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("deGustibus");
-        toolbar.setSubtitle("Restaurant");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
-        setSupportActionBar(toolbar);*/
+        super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
 
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
@@ -119,45 +112,45 @@ public class NewReservationFragment extends Fragment {
         orderDishes = getActivity().findViewById(R.id.et_edit_dishesOrdered);
         day = getActivity().findViewById(R.id.et_edit_lunchday);
         time = getActivity().findViewById(R.id.et_edit_lunchtime);
-        submit = getActivity().findViewById(R.id.button);
         if(savedInstanceState != null){
             loadBundle(savedInstanceState);
-        }else{
+           }else{
             loadSharedPrefs();
         }
-        getDayAndTime();
-        getSubmit();
     }
 
-    private void getSubmit() {
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editor.putString("reservationName", name.getText().toString());
-                editor.putString("reservationDesc", desc.getText().toString());
-                editor.putString("reservationSeats",seats.getText().toString());
-                editor.putString("reservationOrderedDishes",orderDishes.getText().toString());
-                editor.putString("reservationTime", time.getText().toString());
-                editor.putString("reservationDay", day.getText().toString());
-                editor.putString("reservationDay", day.getText().toString());
-                editor.apply();
-
-                /* Handle save option and go back */
-                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-                listener.onSubmit();
-
-                //FragmentManager fragmentManager = getFragmentManager();
-                //fragmentManager.popBackStackImmediate("RESERVATION", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-        });
-    }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml) */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_edit, menu);
         super.onCreateOptionsMenu(menu,inflater);
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_edit) {
+            editor.putString("reservationName", name.getText().toString());
+            editor.putString("reservationDesc", desc.getText().toString());
+            editor.putString("reservationSeats",seats.getText().toString());
+            editor.putString("reservationOrderedDishes",orderDishes.getText().toString());
+            editor.putString("reservationTime", time.getText().toString());
+            editor.putString("reservationDay", day.getText().toString());
+            editor.apply();
+
+            /* Handle save option and go back */
+            Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+            listener.onSubmit();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.popBackStackImmediate("RESERVATION", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void onSaveInstanceState(Bundle outState) {
         // Save away the original text, so we still have it if the activity
@@ -170,13 +163,14 @@ public class NewReservationFragment extends Fragment {
         outState.putString("reservationOrderedDishes",orderDishes.getText().toString());
         outState.putString("reservationTime",time.getText().toString());
         outState.putString("reservationDay", day.getText().toString());
+        Toast.makeText(getActivity(), pref.getString("reservationName", getResources().getString(R.string.reservation_customerName)), Toast.LENGTH_SHORT).show();
     }
 
     private void loadSharedPrefs(){
-        name.setText(pref.getString("reservationName", getResources().getString(R.string.reservation_customerName)));
-        desc.setText(pref.getString("reservationDesc", null));
+        name.setText(pref.getString("reservationName", getResources().getString(R.string.reservation_customerNameEdit)));
+        desc.setText(pref.getString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit)));
         seats.setText(pref.getString("reservationSeats", "0"));
-        orderDishes.setText(pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrdered)));
+        orderDishes.setText(pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit)));
         time.setText(pref.getString("reservationTime", "13:00"));
         day.setText(pref.getString("reservationDay","01/01/2019"));
     }
@@ -194,7 +188,7 @@ public class NewReservationFragment extends Fragment {
         lunchday =getActivity().findViewById(R.id.lunchDayLinearLayout);
         lunchday.setOnClickListener(new View.OnClickListener() {
             @Override
-             public void onClick(View v) {
+            public void onClick(View v) {
                 DialogFragment datePicker= new DayPickerFragment();
                 datePicker.show(getFragmentManager(), "date picker");
             }
@@ -212,6 +206,12 @@ public class NewReservationFragment extends Fragment {
         time.setText(String.format("%02d:%02d", hour, minute));
     }
     public  void  setDate(int year, int month, int day){
-        this.day.setText(String.format("%4d/%2d/%2d", year,month,day));
+        this.day.setText(String.format("%2d/%2d/%4d",day,month, year));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getDayAndTime();
     }
 }

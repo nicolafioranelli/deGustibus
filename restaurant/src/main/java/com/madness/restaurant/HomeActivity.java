@@ -17,9 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.madness.restaurant.daily.DailyFragment;
-import com.madness.restaurant.daily.NewDailyOffert;
+import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
@@ -29,7 +30,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
         ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
-NewReservationFragment.NewReservationListener{
+NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -112,7 +113,7 @@ NewReservationFragment.NewReservationListener{
         try {
             fragment = null;
             Class fragmentClass;
-            fragmentClass = NewDailyOffert.class;
+            fragmentClass = NewDailyOffer.class;
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
@@ -127,8 +128,6 @@ NewReservationFragment.NewReservationListener{
 
     @Override
     public void onBackPressed() {
-        EditProfile editFrag = (EditProfile)
-            getSupportFragmentManager().findFragmentByTag("EditP");
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -161,12 +160,22 @@ NewReservationFragment.NewReservationListener{
         // if EditProfile fragment is changed onNavigationItemSelected start a popBackStack
         EditProfile editFrag = (EditProfile)
                 getSupportFragmentManager().findFragmentByTag("EditP");
+        NewDailyOffer newDailyOffer = (NewDailyOffer)
+                getSupportFragmentManager().findFragmentByTag("AddOffer");
+        NewReservationFragment newReservationFragment = (NewReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("AddReservation");
 
         /* The switch now contains also the string helpful to identify the fragment in the fragment stack */
         switch(item.getItemId()) {
             case R.id.nav_profile:
                 try{
                     if (editFrag != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newDailyOffer != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newReservationFragment != null) {
                         getSupportFragmentManager().popBackStack();
                     }
                     fragmentClass = ProfileFragment.class;
@@ -183,19 +192,31 @@ NewReservationFragment.NewReservationListener{
                     if (editFrag != null) {
                         getSupportFragmentManager().popBackStack();
                     }
-                    fragmentClass = ReservationFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    // Insert the fragment by replacing any existing fragment
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").commit();
+                    if (newDailyOffer != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newReservationFragment != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                        fragmentClass = ReservationFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        // Insert the fragment by replacing any existing fragment
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").commit();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case R.id.nav_daily:
                 try {
-
                     if (editFrag != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newDailyOffer != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newReservationFragment != null) {
                         getSupportFragmentManager().popBackStack();
                     }
                     fragmentClass = DailyFragment.class;
@@ -209,8 +230,13 @@ NewReservationFragment.NewReservationListener{
                 break;
             default:
                 try{
-
                     if (editFrag != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newDailyOffer != null) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                    if (newReservationFragment != null) {
                         getSupportFragmentManager().popBackStack();
                     }
                     fragmentClass = HomeFragment.class;
@@ -246,20 +272,6 @@ NewReservationFragment.NewReservationListener{
         else if(editRes != null) {
             editRes.setHourAndMinute(hourOfDay,minute);
         }
-
-
-            /*
-            EditProfile newFragment = new EditProfile();
-            Bundle args = new Bundle();
-            args.putInt("hour", hourOfDay);
-            args.putInt("minute", minute);
-            newFragment.setArguments(args);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.flContent, fragment, "EditP");
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }*/
-
     }
 
     @Override
@@ -280,4 +292,20 @@ NewReservationFragment.NewReservationListener{
             reservationFragment.addOnReservation();
         }
     }
+    @Override
+    public void onSubmitDish() {
+        DailyFragment dailyFragment = (DailyFragment)
+                getSupportFragmentManager().findFragmentByTag("DAILY");
+        if(dailyFragment != null) {
+            dailyFragment.addOnDaily();
+        }
+    }/*
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ReservationFragment reservationFragment = (ReservationFragment)getSupportFragmentManager().findFragmentByTag("RESERVATION");
+        if(reservationFragment != null) {
+            getSupportFragmentManager().putFragment(outState,"RESERVATION", reservationFragment);
+        }
+    }*/
 }

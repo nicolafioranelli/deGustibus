@@ -9,24 +9,26 @@ import android.widget.TextView;
 import com.madness.restaurant.R;
 import com.madness.restaurant.reservations.ReservationClass;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapter.ReservationViewHolder> {
-    private List<ReservationClass> reservations;
+    private ArrayList<ReservationClass> reservations;
 
     public class ReservationViewHolder extends RecyclerView.ViewHolder {
-        private TextView name, identifier, seats, date_time, age;
+        private TextView name, identifier, seats, date, time;
 
         public ReservationViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.reservation_fullname);
             identifier = (TextView) view.findViewById(R.id.reservation_identifier);
             seats = (TextView) view.findViewById(R.id.reservation_seats);
-            date_time = (TextView) view.findViewById(R.id.reservation_date_time);
+            date = (TextView) view.findViewById(R.id.reservation_date);
+            time = (TextView) view.findViewById(R.id.reservation_time);
         }
     }
 
-    public ReservationsDataAdapter(List<ReservationClass> reservations) {
+    public ReservationsDataAdapter(ArrayList<ReservationClass> reservations) {
         this.reservations = reservations;
     }
 
@@ -44,7 +46,8 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
         holder.name.setText(reservation.getName());
         holder.identifier.setText(String.valueOf(reservation.getIdentifier()));
         holder.seats.setText(reservation.getSeats());
-        holder.date_time.setText(reservation.getDate_time());
+        holder.date.setText(reservation.getDate());
+        holder.time.setText(reservation.getTime());
     }
 
     @Override
@@ -56,8 +59,14 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
         reservations.remove(position);
         notifyItemRemoved(position);
     }
+    public ReservationClass getReservation(int position) {
+        return reservations.get(position);
+    }
     public void add (int position, ReservationClass reservationClass) {
         reservations.add(position, reservationClass);
         notifyItemInserted(position);
+    }
+    public ArrayList<ReservationClass> getList () {
+        return reservations;
     }
 }

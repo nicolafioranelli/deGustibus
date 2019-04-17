@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import java.util.Calendar;
+
 public class DayPickerFragment extends DialogFragment  {
-    int year;
-    int month;
-    int dayOfMonth;
+    Calendar c = Calendar.getInstance();
+    int year=c.get(Calendar.YEAR);
+    int month=c.get(Calendar.MONTH);
+    int dayOfMonth=c.get(Calendar.DAY_OF_MONTH);
 
     @NonNull
     @Override

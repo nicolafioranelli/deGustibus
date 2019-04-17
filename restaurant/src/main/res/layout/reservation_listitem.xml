@@ -59,14 +59,26 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/reservation_date_time"
+            android:id="@+id/reservation_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="8dp"
+            android:padding="5dp"
+            android:text="01/01/2019"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/reservation_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
             android:padding="5dp"
-            android:text="21/10/2019 20:30"
+            android:text="20:30"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

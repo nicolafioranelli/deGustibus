@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -36,30 +38,21 @@ public class ReservationFragment extends Fragment {
 
 
     // fake content for list
-    List<ReservationClass> reservationList = new ArrayList<>();
+    ArrayList<ReservationClass> reservationList = new ArrayList<>();
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private RecyclerView recyclerView;
     private ReservationsDataAdapter mAdapter;
     private SwipeController swipeController;
-    private int position=0;
+    private int replaced=0;
+    private int addedposition=0;
+    private  boolean added=true;
 
     private void setReservationsDataAdapter() {
 
         mAdapter = new ReservationsDataAdapter(reservationList);
     }
     private ReservationListener listener;
-
-    public void addOnReservation() {
-        ReservationClass reservationClass = new ReservationClass();
-        reservationClass.setName(pref.getString("reservationName", getResources().getString(R.string.reservation_customerName)));
-        reservationClass.setSeats(pref.getString("reservationSeats", "0"));
-        reservationClass.setIdentifier(position);
-        reservationClass.setDate_time(pref.getString("reservationTime", "13:00"));
-        reservationClass.setDesc(pref.getString("reservationDesc", null));
-        reservationClass.setOrderDishes(pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrdered)));
-        mAdapter.add(position,reservationClass);
-    }
 
     public interface ReservationListener {
         public void addReservation();
@@ -84,6 +77,33 @@ public class ReservationFragment extends Fragment {
         editor = pref.edit();
         setReservationsDataAdapter();
     }
+
+    public void addOnReservation() {
+        ReservationClass reservationClass = new ReservationClass(
+                pref.getString("reservationName", getResources().getString(R.string.reservation_customerNameEdit)),
+                pref.getInt("reservationIdentifier",0),
+                pref.getString("reservationSeats", "0"),
+                pref.getString("reservationDay", "01/01/2019"),
+                pref.getString("reservationTime", "13:00"),
+                pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit)),
+                pref.getString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit))
+                );
+        //Toast.makeText(getActivity(),pref.getString("reservationName", "5"),Toast.LENGTH_SHORT).show();
+        /*reservationClass.setName(pref.getString("reservationName", getResources().getString(R.string.reservation_customerName)));
+        reservationClass.setSeats(pref.getString("reservationSeats", "0"));
+        reservationClass.setIdentifier(position);
+        reservationClass.setDate_time(pref.getString("reservationTime", "13:00"));
+        reservationClass.setDesc(pref.getString("reservationDesc", null));
+        reservationClass.setOrderDishes(pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrdered)));*/
+        if(added)
+            mAdapter.add(addedposition,reservationClass);
+        if(!added){
+            mAdapter.add(replaced,reservationClass);
+            mAdapter.remove(replaced-1);
+            mAdapter.notifyItemRemoved(replaced-1);
+            mAdapter.notifyItemRangeChanged(replaced-1, mAdapter.getItemCount());
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,12 +111,16 @@ public class ReservationFragment extends Fragment {
         resFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.putString("reservationName", getResources().getString(R.string.reservation_customerName));
+                added=true;
+                addedposition=mAdapter.getItemCount();
+                editor.putString("reservationName", getResources().getString(R.string.reservation_customerNameEdit));
                 editor.putString("reservationSeats", "0");
-                editor.putInt("reservaationIdentifier", position+1);
+                editor.putInt("reservationIdentifier",mAdapter.getItemCount());
                 editor.putString("reservationTime", "13:00");
-                editor.putString("reservationDesc", null);
-                editor.putString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrdered));
+                editor.putString("reservationDay", "01/01/2019");
+                editor.putString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit));
+                editor.putString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit));
+                editor.apply();
                 listener.addReservation();
             }
         });
@@ -111,7 +135,7 @@ public class ReservationFragment extends Fragment {
         // initialize the fake content
         //initElements();
 
-         recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new ReservationsDataAdapter(reservationList);
         recyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
@@ -131,7 +155,17 @@ public class ReservationFragment extends Fragment {
         swipeController=new SwipeController((new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
-                Toast.makeText(getActivity(), "position = ", Toast.LENGTH_SHORT).show();
+                added=false;
+                replaced=position+1;
+                editor.putString("reservationName", mAdapter.getReservation(position).getName());
+                editor.putString("reservationSeats", mAdapter.getReservation(position).getSeats());
+                editor.putInt("reservationIdentifier", mAdapter.getReservation(position).getIdentifier());
+                editor.putString("reservationTime", mAdapter.getReservation(position).getTime());
+                editor.putString("reservationDay", mAdapter.getReservation(position).getDate());
+                editor.putString("reservationDesc", mAdapter.getReservation(position).getDesc());
+                editor.putString("reservationOrderedDishes", mAdapter.getReservation(position).getOrderDishes());
+                editor.apply();
+                listener.addReservation();
 
                 Log.d("MAD", "onLeftClicked: left");
                 super.onLeftClicked(position);
@@ -150,7 +184,44 @@ public class ReservationFragment extends Fragment {
         itemTouchhelper.attachToRecyclerView(recyclerView);
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("Reservations", new ArrayList<>(mAdapter.getList()));
+    }
+    /* Method to load shared preferences */
+    private void loadSharedPrefs(){
+
     }/*
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            reservationList = bundle.getParcelableArrayList("Reservations");
+        }
+    }*/
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            reservationList = savedInstanceState.getParcelableArrayList("Reservations");
+            setReservationsDataAdapter();
+            recyclerView.setAdapter(mAdapter);
+        }
+    }/*
+    @Override
+    public void onResume() {
+        recyclerView = getView().findViewById(R.id.recyclerView);
+        LinearLayoutManager manager  = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(manager);
+        mAdapter =new ReservationsDataAdapter(reservationList);
+        recyclerView.setAdapter(mAdapter);
+        super.onResume();
+    }*/
+
+    /*
     private void setupRecyclerView() {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

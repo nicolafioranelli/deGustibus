@@ -47,7 +47,8 @@ public class ReservationsRecyclerViewAdapter extends RecyclerView.Adapter<Reserv
         viewHolder.fullname.setText(_names.get(i));
         viewHolder.identifier.setText("reservation #"+_identifiers.get(i));
         viewHolder.seats.setText(_seats.get(i) + " seats");
-        viewHolder.date_time.setText(_dates.get(i) + " " + _time.get(i));
+        viewHolder.date.setText(_dates.get(i));
+        viewHolder.time.setText(_time.get(i));
     }
 
     @Override
@@ -62,7 +63,8 @@ public class ReservationsRecyclerViewAdapter extends RecyclerView.Adapter<Reserv
         TextView fullname;
         TextView identifier;
         TextView seats;
-        TextView date_time;
+        TextView date;
+        TextView time;
 
         LinearLayout itemLayout;
 
@@ -71,7 +73,8 @@ public class ReservationsRecyclerViewAdapter extends RecyclerView.Adapter<Reserv
             fullname = itemView.findViewById(R.id.reservation_fullname);
             identifier = itemView.findViewById(R.id.reservation_identifier);
             seats = itemView.findViewById(R.id.reservation_seats);
-            date_time = itemView.findViewById(R.id.reservation_date_time);
+            date = itemView.findViewById(R.id.reservation_date);
+            time = itemView.findViewById(R.id.reservation_time);
 
         }
     }

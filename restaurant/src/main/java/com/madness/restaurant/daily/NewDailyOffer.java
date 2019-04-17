@@ -35,7 +35,7 @@ import com.madness.restaurant.R;
 
 import java.io.File;
 
-public class NewDailyOffert extends Fragment {
+public class NewDailyOffer extends Fragment {
 
     /* Views */
     private EditText dishname;
@@ -49,19 +49,27 @@ public class NewDailyOffert extends Fragment {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    public NewDailyOffert() {
-        // Required empty public constructor
+    private NewDailyOfferListener listener;
+
+    public interface NewDailyOfferListener {
+        public void onSubmitDish();
     }
 
+    public NewDailyOffer() {
+        // Required empty public constructor
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof NewDailyOfferListener) {
+            listener = (NewDailyOfferListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement NewDailyOfferListener");
+        }
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);/*
-        setContentView(R.layout.activity_add_new_daily_offer);
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("deGustibus");
-        toolbar.setSubtitle("Restaurant");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
-        setSupportActionBar(toolbar);*/
+        super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
 
@@ -180,6 +188,40 @@ public class NewDailyOffert extends Fragment {
             };
         });
     }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+    public void onActivityResult(int requestCode,int resultCode,Intent data){
+        // Result code is RESULT_OK only if the user captures an Image
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 0:
+                    Uri photo = Uri.parse(getPrefPhoto());
+                    //img = getView().findViewById(R.id.imageviewfordish);
+                    img.setImageURI(photo);
+                    setPrefPhoto(img.toString());
+                    break;
+                case 1:
+                    Uri selectedImage = data.getData();
+                    img.setImageURI(selectedImage);
+                    setPrefPhoto(selectedImage.toString());
+                    break;
+            }
+        } else if(resultCode == Activity.RESULT_CANCELED) {
+            Log.d("MAD", "onActivityResult: CANCELED");
+            try{
+                File photoToCancel = new File(getPrefPhoto());
+                photoToCancel.delete();
+            } catch (Exception e) {
+                Log.e("MAD", "onActivityResult: ", e);
+            }
+            delPrefPhoto();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
     {
@@ -234,34 +276,6 @@ public class NewDailyOffert extends Fragment {
                 break;
         }
     }
-    public void onActivityResult(int requestCode,int resultCode,Intent data){
-        // Result code is RESULT_OK only if the user captures an Image
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
-                    //img = getView().findViewById(R.id.imageviewfordish);
-                    img.setImageURI(photo);
-                    setPrefPhoto(img.toString());
-                    break;
-                case 1:
-                    Uri selectedImage = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
-                    break;
-            }
-        } else if(resultCode == Activity.RESULT_CANCELED) {
-            Log.d("MAD", "onActivityResult: CANCELED");
-            try{
-                File photoToCancel = new File(getPrefPhoto());
-                photoToCancel.delete();
-            } catch (Exception e) {
-                Log.e("MAD", "onActivityResult: ", e);
-            }
-            delPrefPhoto();
-        }
-    }
-
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -287,7 +301,8 @@ public class NewDailyOffert extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-        } else {
+        }
+       else {
             /* Define image file where the camera will put the taken picture */
             File image;
             /* Get the directory to store image */
@@ -318,7 +333,9 @@ public class NewDailyOffert extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) checkGalleryPermissions ();
+        } else{
             //Create an Intent with action as ACTION_PICK
             Intent intent=new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
@@ -349,7 +366,8 @@ public class NewDailyOffert extends Fragment {
             editor.apply();
             delPrefPhoto();
 
-            /* Handle save option and go back */
+            listener.onSubmitDish();
+
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("DAILY", FragmentManager.POP_BACK_STACK_INCLUSIVE);

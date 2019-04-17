@@ -32,8 +32,8 @@
     <string name="select_action">Select action</string>
     <string name="menu_profile">Profile</string>
     <string name="reservation_customerName">Customer name</string>
-    <string name="reservation_customerNameEdit">Jhon Snow</string>
-    <string name="reservation_seats">Seats</string>
+    <string name="reservation_customerNameEdit">John Snow</string>
+    <string name="reservation_portions">Portions</string>
     <string name="reservation_date">Date</string>
     <string name="reservation_time">Time</string>
     <string name="menu_editP">Profile Editing</string>
@@ -45,8 +45,6 @@
     <string name="title_activity_home" translatable="false">deGustibus</string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -57,11 +55,15 @@
     <string name="default_dish_name">Dish name</string>
     <string name="price">Price</string>
     <string name="availability">Availability</string>
-    <string name="dish_name">Pizza</string>
+    <string name="dish_name" translatable="false">Pizza</string>
     <string name="desc_dish">Sausage Pizza, gluten free, no lactose</string>
     <string name="title_Profile">Profile</string>
     <string name="title_Daily">Daily Offer</string>
     <string name="title_Reservations">Reservations</string>
+    <string name="defaultdish">"Pizza Margherita"</string>
+    <string name="defaultdishdesc"> "Pizza with tomato sauce"</string>
+    <string name="reservation_dishesOrderededit">Dish names</string>
+    <string name="reservation_reservationDescedit">Notes</string>
     <string name="reservation_dishesOrdered">Dishes Ordered</string>
     <string name="reservation_reservationDesc">Description</string>
 

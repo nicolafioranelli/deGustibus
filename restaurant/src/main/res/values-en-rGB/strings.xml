@@ -19,7 +19,7 @@
     <string name="frHome_title">Welcome back, Jhon!</string>
     <string name="reservation_customerNameEdit">Jhon Snow</string>
     <string name="reservation_customerName">Customer name</string>
-    <string name="reservation_seats">Seats</string>
+    <string name="reservation_portions">Portions</string>
     <string name="reservation_date">Date</string>
     <string name="reservation_time">Time</string>
     <string name="menu_restaurant">Restaurant</string>
@@ -43,4 +43,6 @@
     <string name="title_Profile">Profile</string>
     <string name="title_Daily">Daily Offer</string>
     <string name="title_Reservations">Reservations</string>
+    <string name="defaultdish">"Pizza Margherita"</string>
+    <string name="defaultdishdesc"> "Pizza with tomato sauce"</string>
 </resources>
