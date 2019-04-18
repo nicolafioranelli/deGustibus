@@ -1,6 +1,5 @@
 package com.madness.restaurant.daily;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -27,15 +26,15 @@ import com.madness.restaurant.swipe.SwipeControllerActions;
 
 import java.util.ArrayList;
 
-
 /**
- * A simple {@link Fragment} subclass.
+ * The DailyFragment class is in charge of presenting a ListItem View where will be displayed
+ * the different dishes that the Restaurateur will prepare. This is obtained by means of the
+ * DailyDataAdapter. The saving functionality is not implemented since will be enlarged with the
+ * usage of Firebase.
  */
 public class DailyFragment extends Fragment {
 
     private DailyListener listener;
-
-    // fake content for list
     ArrayList<DailyClass> dailyList = new ArrayList<>();
     private RecyclerView recyclerView;
     private SharedPreferences pref;
@@ -45,31 +44,36 @@ public class DailyFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int replaced=0;
     private int addedposition=0;
-    private  boolean added=true;
+    private boolean added=true;
     private int mColumnCount = 1;
 
     public DailyFragment() {
         fakeContent();
     }
 
+    /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "pizza margherita senza mozzarella","10","20",null);
+        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20",null);
         this.dailyList.add(daily);
 
-        DailyClass daily1 = new DailyClass("Spaghetti", "pasta al sugo e ragù","10","15",null);
+        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15",null);
         this.dailyList.add(daily1);
 
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "seppie del mar adriatico e piselli bio","10","20",null);
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20",null);
         this.dailyList.add(daily2);
     }
 
+    /* Here is defined the interface for the HomeActivity in order to manage the click */
     public interface DailyListener {
-        public void addDailyOffer();
+        void addDailyOffer();
     }
-    private void setDailyDataAdapter() {
 
+    /* Here is set the Adapter */
+    private void setDailyDataAdapter() {
         mAdapter = new DailyDataAdapter(dailyList);
     }
+
+    /* The onAttach method registers the listener */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -78,22 +82,70 @@ public class DailyFragment extends Fragment {
         } else {
             throw new ClassCastException(context.toString() + "must implement DailyListner");
         }
-
     }
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);/*
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }*/
+        super.onCreate(savedInstanceState);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
         setDailyDataAdapter();
     }
+
+    /* During the creation of the view the title is set and layout is generated */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView =  inflater.inflate(R.layout.fragment_dailyoffers, container, false);
+        getActivity().setTitle(getResources().getString(R.string.title_Daily));
+
+        recyclerView = rootView.findViewById(R.id.dishes);
+        mAdapter = new DailyDataAdapter(dailyList);
+        recyclerView.setAdapter(mAdapter);
+
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
+
+        // set swipe controller
+        swipeController=new SwipeController((new SwipeControllerActions() {
+            @Override
+            public void onLeftClicked(int position) {
+                added=false;
+                replaced=position+1;
+                editor.putString("dish", mAdapter.getDailyClass(position).getDish());
+                editor.putString("descDish", mAdapter.getDailyClass(position).getType());
+                editor.putString("avail", mAdapter.getDailyClass(position).getAvail());
+                editor.putString("price", mAdapter.getDailyClass(position).getPrice());
+                editor.putString("photoDish", mAdapter.getDailyClass(position).getPic());
+                editor.apply();
+                listener.addDailyOffer();
+                //Log.d("MAD", "onLeftClicked: left");
+                super.onLeftClicked(position);
+            }
+
+            @Override
+            public void onRightClicked(int position) {
+                mAdapter.remove(position);
+                mAdapter.notifyItemRemoved(position);
+                mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
+                //Log.d("MAD", "onLeftClicked: right");
+                super.onRightClicked(position);
+            }
+        }));
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
+        return rootView;
+    }
+
+    /* Here is set the click listener on the floating button */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -114,87 +166,6 @@ public class DailyFragment extends Fragment {
         });
     }
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        // inflate the fragment layout
-        View rootView =  inflater.inflate(R.layout.fragment_dailyoffers, container, false);
-        getActivity().setTitle(getResources().getString(R.string.title_Daily));
-        // initialize the fake content
-        //initElements();
-
-        recyclerView = rootView.findViewById(R.id.dishes);
-        mAdapter = new DailyDataAdapter(dailyList);
-        recyclerView.setAdapter(mAdapter);
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(manager);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-
-        // add a separator
-        //DividerItemDecoration decoration = new DividerItemDecoration(getContext(), manager.getOrientation());
-        //recyclerView.addItemDecoration(decoration);
-
-        // set swipe controller
-        swipeController=new SwipeController((new SwipeControllerActions() {
-            @Override
-            public void onLeftClicked(int position) {
-                added=false;
-                replaced=position+1;
-                editor.putString("dish", mAdapter.getDailyClass(position).getDish());
-                editor.putString("descDish", mAdapter.getDailyClass(position).getType());
-                editor.putString("avail", mAdapter.getDailyClass(position).getAvail());
-                editor.putString("price", mAdapter.getDailyClass(position).getPrice());
-                editor.putString("photoDish", mAdapter.getDailyClass(position).getPic());
-                editor.apply();
-                listener.addDailyOffer();
-
-                Log.d("MAD", "onLeftClicked: left");
-                super.onLeftClicked(position);
-            }
-
-            @Override
-            public void onRightClicked(int position) {
-                mAdapter.remove(position);
-                mAdapter.notifyItemRemoved(position);
-                mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
-                Log.d("MAD", "onLeftClicked: right");
-                super.onRightClicked(position);
-            }
-        }));
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(recyclerView);
-
-        return rootView;
-    }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("Dailies", new ArrayList<>(mAdapter.getList()));
-    }
-    /* Method to load shared preferences */
-    private void loadSharedPrefs(){
-
-    }/*
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            Bundle bundle = (Bundle) state;
-            reservationList = bundle.getParcelableArrayList("Reservations");
-        }
-    }*/
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -203,6 +174,12 @@ public class DailyFragment extends Fragment {
             setDailyDataAdapter();
             recyclerView.setAdapter(mAdapter);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("Dailies", new ArrayList<>(mAdapter.getList()));
     }
 
     public void addOnDaily() {
@@ -221,82 +198,5 @@ public class DailyFragment extends Fragment {
             mAdapter.notifyItemRemoved(replaced-1);
             mAdapter.notifyItemRangeChanged(replaced-1, mAdapter.getItemCount());
         }
-    }/*
-    private void initElements(){
-
-        dishNames.add("Pizza Margherita");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(4));
-        types.add("primo");
-        prices.add("3.50$");
-
-        dishNames.add("Pasta Carbonara");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(3));
-        types.add("primo");
-        prices.add("2.50$");
-
-        dishNames.add("Pezza Invinada");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(1));
-        types.add("secondo");
-        prices.add("3.50$");
-
-        dishNames.add("Pizza Margherita");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(4));
-        types.add("primo");
-        prices.add("3.50$");
-
-        dishNames.add("Pasta Carbonara");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(3));
-        types.add("primo");
-        prices.add("2.50$");
-
-        dishNames.add("Pezza Invinada");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(1));
-        types.add("secondo");
-        prices.add("3.50$");
-
-        dishNames.add("Pizza Margherita");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(4));
-        types.add("primo");
-        prices.add("3.50$");
-
-        dishNames.add("Pasta Carbonara");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(3));
-        types.add("primo");
-        prices.add("2.50$");
-
-        dishNames.add("Pezza Invinada");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(1));
-        types.add("secondo");
-        prices.add("3.50$");
-
-        dishNames.add("Pizza Margherita");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(4));
-        types.add("primo");
-        prices.add("3.50$");
-
-        dishNames.add("Pasta Carbonara");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(3));
-        types.add("primo");
-        prices.add("2.50$");
-
-        dishNames.add("Pezza Invinada");
-        dishPics.add(getResources().getDrawable(R.drawable.dish_icon));
-        quantities.add(String.valueOf(1));
-        types.add("secondo");
-        prices.add("3.50$");
-
-
-    }*/
-
+    }
 }
