@@ -541,10 +541,10 @@ public class EditProfile extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case 0:
-                                        checkCameraPermissions();
+                                        checkPermissionsAndStartCamera();
                                         break;
                                     case 1:
-                                        checkGalleryPermissions();
+                                        checkPermissionsAndStartGallery();
                                         break;
                                 }
                             }
@@ -585,8 +585,6 @@ public class EditProfile extends Fragment {
         }
     }
 
-
-
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -607,17 +605,40 @@ public class EditProfile extends Fragment {
         editor.apply();
     }
 
-    /* Check permissions and start camera */
-    private void checkCameraPermissions() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
+    /* -- Methods for permissions --
+     * These methods are invoked by the getPhoto() method and first check if there are requested permissions:
+     * in case positive do their operations otherwise ask for permission. The result of such request will be
+     * caught by the method onRequestPermissionsResult() that in case everything is ok will perform the requested
+     * operations, otherwise will do nothing.
+     */
+    private void checkPermissionsAndStartGallery(){
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
+        } else {
+            Log.d("MAD", "onCreate: permission granted" );
+            //Create an Intent with action as ACTION_PICK
+            Intent intent=new Intent(Intent.ACTION_PICK);
+            // Sets the type as image/*. This ensures only components of type image are selected
+            intent.setType("image/*");
+            //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+            String[] mimeTypes = {"image/jpeg", "image/png"};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+            // Launching the Intent
+            startActivityForResult(intent, 1);
         }
-        else {
+    }
+
+    private void checkPermissionsAndStartCamera() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            /* Check permissions, if not ask for them, the result will be catched in the method on RequestPermissionsResult */
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 20);
+        } else {
+            // If permissions are granted then start the camera
             /* Define image file where the camera will put the taken picture */
             File image;
             /* Get the directory to store image */
-            File storageDir = getActivity().getApplicationContext().getFilesDir();
+            File storageDir = getContext().getFilesDir();
             try {
                 image = File.createTempFile(
                         "img",
@@ -631,34 +652,63 @@ public class EditProfile extends Fragment {
 
                 /* Start Intent for camera */
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getActivity().getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", image));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", image));
                 startActivityForResult(intent, 0);
             } catch (Exception e) {
                 Log.e("MAD", "getPhoto: ", e);
             }
-            Log.d("MAD", "onCreate: permission granted" );
         }
     }
 
-    /* Chech permissions and start activity to pick image */
-    private void checkGalleryPermissions(){
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 20: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    /* Permission was granted! Start the camera and take the picture */
+                    /* Define image file where the camera will put the taken picture */
+                    File image;
+                    /* Get the directory to store image */
+                    File storageDir = getContext().getFilesDir();
+                    try {
+                        image = File.createTempFile(
+                                "img",
+                                ".jpg",
+                                storageDir
+                        );
+                        cameraFilePath = "file://" + image.getAbsolutePath();
 
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) checkGalleryPermissions ();
-        } else{
-            //Create an Intent with action as ACTION_PICK
-            Intent intent=new Intent(Intent.ACTION_PICK);
-            // Sets the type as image/*. This ensures only components of type image are selected
-            intent.setType("image/*");
-            //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
-            String[] mimeTypes = {"image/jpeg", "image/png"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
-            // Launching the Intent
-            startActivityForResult(intent, 1);
-            Log.d("MAD", "onCreate: permission granted" );
+                        /* Set the Uri here before starting camera */
+                        setPrefPhoto(cameraFilePath);
+
+                        /* Start Intent for camera */
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", image));
+                        startActivityForResult(intent, 0);
+                    } catch (Exception e) {
+                        Log.e("MAD", "getPhoto: ", e);
+                    }
+                } else {
+                    /* Permission denied! Disable the functionality that depends on this permission. */
+                }
+                break;
+            }
+            case 21: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Create an Intent with action as ACTION_PICK
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    // Sets the type as image/*. This ensures only components of type image are selected
+                    intent.setType("image/*");
+                    //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+                    String[] mimeTypes = {"image/jpeg", "image/png"};
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                    // Launching the Intent
+                    startActivityForResult(intent, 1);
+                } else {
+                    /* Permission denied! Disable the functionality that depends on this permission. */
+                }
+            }
+            break;
         }
     }
 }
