@@ -614,7 +614,7 @@ public class EditProfile extends Fragment {
     private void checkPermissionsAndStartGallery(){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
             Log.d("MAD", "onCreate: permission granted" );
             //Create an Intent with action as ACTION_PICK
@@ -632,7 +632,7 @@ public class EditProfile extends Fragment {
     private void checkPermissionsAndStartCamera() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             /* Check permissions, if not ask for them, the result will be catched in the method on RequestPermissionsResult */
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 20);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 20);
         } else {
             // If permissions are granted then start the camera
             /* Define image file where the camera will put the taken picture */
@@ -662,6 +662,7 @@ public class EditProfile extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.d("MAD", "onRequestPermissionsResult: HERE");
         switch (requestCode) {
             case 20: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -690,6 +691,7 @@ public class EditProfile extends Fragment {
                     }
                 } else {
                     /* Permission denied! Disable the functionality that depends on this permission. */
+                    Toast.makeText(getContext(), getResources().getString(R.string.permission_denied), Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -706,6 +708,7 @@ public class EditProfile extends Fragment {
                     startActivityForResult(intent, 1);
                 } else {
                     /* Permission denied! Disable the functionality that depends on this permission. */
+                    Toast.makeText(getContext(), getResources().getString(R.string.permission_denied), Toast.LENGTH_SHORT).show();
                 }
             }
             break;

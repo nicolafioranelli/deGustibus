@@ -67,5 +67,6 @@
     <string name="reservation_dishesOrdered">Dishes Ordered</string>
     <string name="reservation_reservationDesc">Description</string>
     <string name="title_Edit">Edit</string>
+    <string name="permission_denied">Please, enable the requested permissions to access this functionality!</string>
 
 </resources>
