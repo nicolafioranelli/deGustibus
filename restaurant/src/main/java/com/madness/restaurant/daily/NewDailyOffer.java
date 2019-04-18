@@ -203,7 +203,7 @@ public class NewDailyOffer extends Fragment {
                     Uri photo = Uri.parse(getPrefPhoto());
                     //img = getView().findViewById(R.id.imageviewfordish);
                     img.setImageURI(photo);
-                    setPrefPhoto(img.toString());
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
