@@ -48,6 +48,21 @@ public class DailyFragment extends Fragment {
     private  boolean added=true;
     private int mColumnCount = 1;
 
+    public DailyFragment() {
+        fakeContent();
+    }
+
+    private void fakeContent() {
+        DailyClass daily = new DailyClass("Pizza", "pizza margherita senza mozzarella","10","20",null);
+        this.dailyList.add(daily);
+
+        DailyClass daily1 = new DailyClass("Spaghetti", "pasta al sugo e ragù","10","15",null);
+        this.dailyList.add(daily1);
+
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "seppie del mar adriatico e piselli bio","10","20",null);
+        this.dailyList.add(daily2);
+    }
+
     public interface DailyListener {
         public void addDailyOffer();
     }

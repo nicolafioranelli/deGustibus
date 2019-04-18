@@ -47,10 +47,15 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
     public void onBindViewHolder(@NonNull DailyViewHolder holder, int i) {
         DailyClass daily = dailies.get(i);
         holder.dish.setText(daily.getDish());
-        holder.pic.setImageURI(Uri.parse(daily.getPic()));
         holder.type.setText(daily.getType());
         holder.avail.setText(daily.getAvail());
         holder.price.setText(daily.getPrice());
+        if(daily.getPic() == null){
+            //default pic
+            holder.pic.setImageResource(R.drawable.dish_image);
+        }else{
+            holder.pic.setImageURI(Uri.parse(daily.getPic()));
+        }
     }
 
     @Override

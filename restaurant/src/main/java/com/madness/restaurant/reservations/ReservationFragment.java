@@ -49,7 +49,6 @@ public class ReservationFragment extends Fragment {
     private  boolean added=true;
 
     private void setReservationsDataAdapter() {
-
         mAdapter = new ReservationsDataAdapter(reservationList);
     }
     private ReservationListener listener;
@@ -59,7 +58,26 @@ public class ReservationFragment extends Fragment {
     }
     public ReservationFragment() {
         // Required empty public constructor
+        fakeContent();
     }
+
+    private void fakeContent() {
+        ReservationClass reservation = new ReservationClass(
+                "Nicola Sabino",1,"3","18/04/2019",
+                "21:00","pizza margherita","");
+        this.reservationList.add(reservation);
+
+        ReservationClass reservation2 = new ReservationClass(
+                "Luca Rossi",2,"3","18/04/2019",
+                "21:00","pasta al sugo","");
+        this.reservationList.add(reservation2);
+
+        ReservationClass reservation3 = new ReservationClass(
+                "Jacopo Iezzi",3,"3","18/04/2019",
+                "21:00","pizza margherita","");
+        this.reservationList.add(reservation3);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -88,13 +106,7 @@ public class ReservationFragment extends Fragment {
                 pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit)),
                 pref.getString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit))
                 );
-        //Toast.makeText(getActivity(),pref.getString("reservationName", "5"),Toast.LENGTH_SHORT).show();
-        /*reservationClass.setName(pref.getString("reservationName", getResources().getString(R.string.reservation_customerName)));
-        reservationClass.setSeats(pref.getString("reservationSeats", "0"));
-        reservationClass.setIdentifier(position);
-        reservationClass.setDate_time(pref.getString("reservationTime", "13:00"));
-        reservationClass.setDesc(pref.getString("reservationDesc", null));
-        reservationClass.setOrderDishes(pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrdered)));*/
+
         if(added)
             mAdapter.add(addedposition,reservationClass);
         if(!added){
