@@ -519,8 +519,6 @@ public class EditProfile extends Fragment {
                                 switch (which) {
                                     case 0:
                                         checkCameraPermissions();
-
-
                                         break;
                                     case 1:
                                         checkGalleryPermissions();
@@ -532,6 +530,7 @@ public class EditProfile extends Fragment {
             };
         });
     }
+
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
@@ -540,7 +539,7 @@ public class EditProfile extends Fragment {
                     Uri photo = Uri.parse(getPrefPhoto());
                     //img = getView().findViewById(R.id.imageviewfordish);
                     img.setImageURI(photo);
-                    setPrefPhoto(img.toString());
+                    setPrefPhoto(photo.toString()); // TODO fix
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -615,22 +614,22 @@ public class EditProfile extends Fragment {
         }
     }
     private void setPrefPhoto(String cameraFilePath) {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("photoDish", cameraFilePath);
+        editor.putString("profilePhoto", cameraFilePath);
         editor.apply();
     }
 
     private String getPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        return pref.getString("photoDish", null);
+        return pref.getString("profilePhoto", null);
     }
 
     private void delPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.remove("photoDish");
+        editor.remove("profilePhoto");
         editor.apply();
     }
 
@@ -666,6 +665,7 @@ public class EditProfile extends Fragment {
             Log.d("MAD", "onCreate: permission granted" );
         }
     }
+
     private void checkGalleryPermissions(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
