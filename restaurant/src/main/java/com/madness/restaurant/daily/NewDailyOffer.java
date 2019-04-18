@@ -242,7 +242,7 @@ public class NewDailyOffer extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-            /* Define shared preferences and insert values */
+            /* Define shared preferences and insert values
             editor.putString("dish", dishname.getText().toString());
             editor.putString("descDish", desc.getText().toString());
             editor.putString("avail",avail.getText().toString());
@@ -255,6 +255,7 @@ public class NewDailyOffer extends Fragment {
             delPrefPhoto();
 
             listener.onSubmitDish();
+            */
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("DAILY", FragmentManager.POP_BACK_STACK_INCLUSIVE);
