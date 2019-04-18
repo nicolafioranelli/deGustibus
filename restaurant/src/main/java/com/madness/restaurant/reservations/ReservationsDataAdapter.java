@@ -16,15 +16,15 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
     private ArrayList<ReservationClass> reservations;
 
     public class ReservationViewHolder extends RecyclerView.ViewHolder {
-        private TextView name, identifier, seats, date, time;
+        private TextView name, identifier, date_time, dish, portions;
 
         public ReservationViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.reservation_fullname);
             identifier = (TextView) view.findViewById(R.id.reservation_identifier);
-            seats = (TextView) view.findViewById(R.id.reservation_seats);
-            date = (TextView) view.findViewById(R.id.reservation_date);
-            time = (TextView) view.findViewById(R.id.reservation_time);
+            date_time = (TextView) view.findViewById(R.id.reservation_date_time);
+            dish = (TextView) view.findViewById(R.id.reservation_dish);
+            portions = (TextView) view.findViewById(R.id.reservation_portions);
         }
     }
 
@@ -44,10 +44,10 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
     public void onBindViewHolder(ReservationViewHolder holder, int position) {
         ReservationClass reservation = reservations.get(position);
         holder.name.setText(reservation.getName());
-        holder.identifier.setText(String.valueOf(reservation.getIdentifier()));
-        holder.seats.setText(reservation.getSeats());
-        holder.date.setText(reservation.getDate());
-        holder.time.setText(reservation.getTime());
+        holder.identifier.setText("reservation #" + String.valueOf(reservation.getIdentifier())); // TODO translation
+        holder.dish.setText(reservation.getOrderDishes());
+        holder.date_time.setText(reservation.getDate() + reservation.getTime());
+        holder.portions.setText(reservation.getSeats());
     }
 
     @Override
