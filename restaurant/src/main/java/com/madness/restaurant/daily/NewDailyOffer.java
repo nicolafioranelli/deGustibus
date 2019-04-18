@@ -187,6 +187,7 @@ public class NewDailyOffer extends Fragment {
         });
     }
 
+
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
@@ -195,7 +196,7 @@ public class NewDailyOffer extends Fragment {
                     Uri photo = Uri.parse(getPrefPhoto());
                     //img = getView().findViewById(R.id.imageviewfordish);
                     img.setImageURI(photo);
-                    setPrefPhoto(img.toString());
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -214,6 +215,7 @@ public class NewDailyOffer extends Fragment {
             delPrefPhoto();
         }
     }
+
 
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
@@ -234,6 +236,7 @@ public class NewDailyOffer extends Fragment {
         editor.remove("photoDish");
         editor.apply();
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
