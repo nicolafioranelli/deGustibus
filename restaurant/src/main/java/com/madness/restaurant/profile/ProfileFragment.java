@@ -1,44 +1,24 @@
 package com.madness.restaurant.profile;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.madness.restaurant.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Profile Fragment class is used to manage the Restaurateur profile. The methods available
+ * are used mainly to retrieve the shared preferences saved by the user. The switch to the
+ * EditProfile fragment is managed through an Interface and directly by the HomeActivity.
  */
 public class ProfileFragment extends Fragment {
 
@@ -63,9 +43,9 @@ public class ProfileFragment extends Fragment {
     private TextView sundayClose;
     private ImageView img;
     private SharedPreferences pref;
-
     private ProfileListener listener;
 
+    /* Interface for the listener */
     public interface ProfileListener {
         public void onItemClicked();
     }
@@ -74,9 +54,7 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /*
-     * Define the listener here to manage clicks on the toolbar edit button
-     */
+    /* Define the listener here to manage clicks on the toolbar edit button */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -87,6 +65,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /* Sets the menu as available */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +73,7 @@ public class ProfileFragment extends Fragment {
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
 
+    /* Populates the menu with the edit button */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);;
@@ -112,10 +92,12 @@ public class ProfileFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /* Method to trigger the listener */
     public void onClick(){
         listener.onItemClicked();
     }
 
+    /* Once the view is created, this method sets the title on the toolbar */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -125,6 +107,7 @@ public class ProfileFragment extends Fragment {
         return rootView;
     }
 
+    /* All the items contained in the fragment are here populated with the stored values */
     @Override
     public void onResume() {
         fullname = getView().findViewById(R.id.tv_show_fullName);
@@ -168,7 +151,6 @@ public class ProfileFragment extends Fragment {
         sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.Opening)));
         sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.Closing)));
         if(pref.getString("photo", null) != null) {
-            Toast.makeText(getContext(),pref.getString("photo", null), Toast.LENGTH_LONG).show();
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
         super.onResume();

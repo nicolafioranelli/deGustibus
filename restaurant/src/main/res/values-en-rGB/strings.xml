@@ -45,4 +45,5 @@
     <string name="title_Reservations">Reservations</string>
     <string name="defaultdish">"Pizza Margherita"</string>
     <string name="defaultdishdesc"> "Pizza with tomato sauce"</string>
+    <string name="title_Edit">Edit</string>
 </resources>

@@ -39,7 +39,9 @@ import com.madness.restaurant.TimePickerFragment;
 import java.io.File;
 
 /**
- * A simple {@link Fragment} subclass.
+ * EditProfile Fragment class is used to manage Restaurateur profile changes. In particular here
+ * are defined the methods to pick a picture (through the camera or gallery) and methods to store
+ * the file and the other inserted data.
  */
 public class EditProfile extends Fragment {
 
@@ -75,6 +77,7 @@ public class EditProfile extends Fragment {
         // Required empty public constructor
     }
 
+    /* The method allows to retrieve the shared preferences and to let the toolbar be available */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,15 +86,19 @@ public class EditProfile extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    /* This method simply sets the title on the toolbar */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.activity_edit, container, false);
-        getActivity().setTitle(getResources().getString(R.string.title_Profile));
+        getActivity().setTitle(getResources().getString(R.string.title_Edit));
         return rootView;
     }
 
+    /* The method retrieves all the elements in the view and populates them with the values
+     * available in the bundle or in the shared preferences.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -264,13 +271,11 @@ public class EditProfile extends Fragment {
         }
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-    }
-
+    /* The method allows to set the listeners in the corresponding items in order to get the
+     * time pickers once clicked.
+     */
     public void takeTimeTextViews(){
-        LinearLayout layout1= (LinearLayout) getActivity().findViewById(R.id.defaultOpenLinearLayout);
+        LinearLayout layout1 = getActivity().findViewById(R.id.defaultOpenLinearLayout);
         layout1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -278,9 +283,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout2= (LinearLayout) getActivity().findViewById(R.id.defaultCloseLinearLayout);
+
+        LinearLayout layout2 = getActivity().findViewById(R.id.defaultCloseLinearLayout);
         layout2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -288,9 +294,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout3= (LinearLayout) getActivity().findViewById(R.id.mondayOpenLinearLayout);
+
+        LinearLayout layout3 = getActivity().findViewById(R.id.mondayOpenLinearLayout);
         layout3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,9 +305,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout4= (LinearLayout) getActivity().findViewById(R.id.mondayCloseLinearLayout);
+
+        LinearLayout layout4 = getActivity().findViewById(R.id.mondayCloseLinearLayout);
         layout4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,9 +316,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout5= (LinearLayout) getActivity().findViewById(R.id.tuesdayOpenLinearLayout);
+
+        LinearLayout layout5 = getActivity().findViewById(R.id.tuesdayOpenLinearLayout);
         layout5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -318,9 +327,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout6= (LinearLayout) getActivity().findViewById(R.id.tuesdayCloseLinearLayout);
+
+        LinearLayout layout6 = getActivity().findViewById(R.id.tuesdayCloseLinearLayout);
         layout6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -328,9 +338,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout7= (LinearLayout) getActivity().findViewById(R.id.wednesdayOpenLinearLayout);
+
+        LinearLayout layout7 = getActivity().findViewById(R.id.wednesdayOpenLinearLayout);
         layout7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -338,9 +349,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout8= (LinearLayout) getActivity().findViewById(R.id.wednesdayCloseLinearLayout);
+
+        LinearLayout layout8 = getActivity().findViewById(R.id.wednesdayCloseLinearLayout);
         layout8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -348,9 +360,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout9= (LinearLayout) getActivity().findViewById(R.id.thursdayOpenLinearLayout);
+
+        LinearLayout layout9 = getActivity().findViewById(R.id.thursdayOpenLinearLayout);
         layout9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -358,9 +371,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout10= (LinearLayout) getActivity().findViewById(R.id.thursdayCloseLinearLayout);
+
+        LinearLayout layout10 = getActivity().findViewById(R.id.thursdayCloseLinearLayout);
         layout10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -368,9 +382,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout11= (LinearLayout) getActivity().findViewById(R.id.fridayOpenLinearLayout);
+
+        LinearLayout layout11 = getActivity().findViewById(R.id.fridayOpenLinearLayout);
         layout11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -378,9 +393,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout12= (LinearLayout) getActivity().findViewById(R.id.fridayCloseLinearLayout);
+
+        LinearLayout layout12 = getActivity().findViewById(R.id.fridayCloseLinearLayout);
         layout12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -388,9 +404,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout13= (LinearLayout) getActivity().findViewById(R.id.saturdayOpenLinearLayout);
+
+        LinearLayout layout13 = getActivity().findViewById(R.id.saturdayOpenLinearLayout);
         layout13.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -398,9 +415,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout14= (LinearLayout) getActivity().findViewById(R.id.saturdayCloseLinearLayout);
+
+        LinearLayout layout14 = getActivity().findViewById(R.id.saturdayCloseLinearLayout);
         layout14.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -408,9 +426,10 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout15= (LinearLayout) getActivity().findViewById(R.id.sundayOpenLinearLayout);
+
+        LinearLayout layout15 = getActivity().findViewById(R.id.sundayOpenLinearLayout);
         layout15.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -418,9 +437,10 @@ public class EditProfile extends Fragment {
                 moment=0;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
-        LinearLayout layout16= (LinearLayout) getActivity().findViewById(R.id.sundayCloseLinearLayout);
+
+        LinearLayout layout16 = getActivity().findViewById(R.id.sundayCloseLinearLayout);
         layout16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -428,10 +448,11 @@ public class EditProfile extends Fragment {
                 moment=1;
                 DialogFragment timePicker= new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
-            };
+            }
         });
     }
 
+    /* The method allows to set the values taken with the time pickers in the text views */
     public void setHourAndMinute(int hour, int minute) {
         switch (this.weekDay){
             case 0:
@@ -502,12 +523,14 @@ public class EditProfile extends Fragment {
 
     }
 
+    /* This method is used to retrieve the photo via camera or gallery and it is the same
+     * of the previous laboratory.
+     */
     public void getPhoto(View v){
-        ImageView imageView = (ImageView) getActivity().findViewById(R.id.imageviewedit);
+        ImageView imageView = getActivity().findViewById(R.id.imageviewedit);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
                 pictureDialog.setTitle(getActivity().getString(R.string.select_action));
                 String[] pictureDialogItems = {
@@ -527,19 +550,22 @@ public class EditProfile extends Fragment {
                             }
                         });
                 pictureDialog.show();
-            };
+            }
         });
     }
 
+    /* The onActivityResult method is used to get back the picture from the camera or from the
+     * gallery; in case the result is canceled (the user presses back before take the picture)
+     * the temporary file is canceled.
+     */
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 0:
                     Uri photo = Uri.parse(getPrefPhoto());
-                    //img = getView().findViewById(R.id.imageviewfordish);
                     img.setImageURI(photo);
-                    setPrefPhoto(photo.toString()); // TODO fix
+                    setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -559,60 +585,8 @@ public class EditProfile extends Fragment {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
-    {
-        switch (requestCode) {
-            case 0:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    /* Define image file where the camera will put the taken picture */
-                    File image;
-                    /* Get the directory to store image */
-                    File storageDir = getActivity().getApplicationContext().getFilesDir();
-                    try {
-                        image = File.createTempFile(
-                                "img",
-                                ".jpg",
-                                storageDir
-                        );
-                        cameraFilePath = "file://" + image.getAbsolutePath();
 
-                        /* Set the Uri here before starting camera */
-                        setPrefPhoto(cameraFilePath);
 
-                        /* Start Intent for camera */
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getActivity().getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", image));
-                        startActivityForResult(intent, 0);
-                    } catch (Exception e) {
-                        Log.e("MAD", "getPhoto: ", e);
-                    }
-                }
-                else {
-                    //do something like displaying a message that he didn`t allow the app to access gallery and you wont be able to let him select from gallery
-                    Toast.makeText(getActivity(),"Access to camera denied", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case 1:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Create an Intent with action as ACTION_PICK
-                    Intent intent=new Intent(Intent.ACTION_PICK);
-                    // Sets the type as image/*. This ensures only components of type image are selected
-                    intent.setType("image/*");
-                    //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
-                    String[] mimeTypes = {"image/jpeg", "image/png"};
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
-                    // Launching the Intent
-                    startActivityForResult(intent, 1);
-                } else {
-                    //do something like displaying a message that he didn`t allow the app to access gallery and you wont be able to let him select from gallery
-                    Toast.makeText(getActivity(),"Access to camera denied", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -633,10 +607,10 @@ public class EditProfile extends Fragment {
         editor.apply();
     }
 
+    /* Check permissions and start camera */
     private void checkCameraPermissions() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
         }
         else {
@@ -666,6 +640,7 @@ public class EditProfile extends Fragment {
         }
     }
 
+    /* Chech permissions and start activity to pick image */
     private void checkGalleryPermissions(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

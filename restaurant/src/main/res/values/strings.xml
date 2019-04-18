@@ -66,5 +66,6 @@
     <string name="reservation_reservationDescedit">Notes</string>
     <string name="reservation_dishesOrdered">Dishes Ordered</string>
     <string name="reservation_reservationDesc">Description</string>
+    <string name="title_Edit">Edit</string>
 
 </resources>

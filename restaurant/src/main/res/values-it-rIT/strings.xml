@@ -44,4 +44,5 @@
     <string name="defaultdish">"Pizza Margherita"</string>
     <string name="defaultdishdesc"> "Pizza con salsa di pomodoro"</string>
     <string name="title_Daily">Offerte del giorno</string>
+    <string name="title_Edit">Modifica</string>
 </resources>
