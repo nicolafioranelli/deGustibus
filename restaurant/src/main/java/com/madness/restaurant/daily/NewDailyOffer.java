@@ -194,6 +194,7 @@ public class NewDailyOffer extends Fragment {
     public void onResume(){
         super.onResume();
     }
+
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
@@ -276,6 +277,7 @@ public class NewDailyOffer extends Fragment {
                 break;
         }
     }
+
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -328,6 +330,7 @@ public class NewDailyOffer extends Fragment {
             Log.d("MAD", "onCreate: permission granted" );
         }
     }
+
     private void checkGalleryPermissions(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

@@ -1,6 +1,7 @@
 package com.madness.restaurant.daily;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,8 +14,10 @@ public class DailyClass implements Parcelable {
     String avail;
     String price;
 
+
+
     protected DailyClass(Parcel in) {
-        pic=in.readString();
+        pic =in.readString();
         dish = in.readString();
         type = in.readString();
         avail = in.readString();

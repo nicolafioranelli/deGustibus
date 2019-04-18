@@ -47,15 +47,7 @@ public class DailyFragment extends Fragment {
     private int addedposition=0;
     private  boolean added=true;
     private int mColumnCount = 1;
-/*
-    public static DailyFragment newInstance(int columnCount) {
-        // Required empty public constructor
-        DailyFragment fragment = new DailyFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }*/
+
     public interface DailyListener {
         public void addDailyOffer();
     }
