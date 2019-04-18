@@ -46,4 +46,5 @@
     <string name="defaultdish">"Pizza Margherita"</string>
     <string name="defaultdishdesc"> "Pizza with tomato sauce"</string>
     <string name="title_Edit">Edit</string>
+    <string name="permission_denied">Please, enable the requested permissions to access this functionality!</string>
 </resources>
