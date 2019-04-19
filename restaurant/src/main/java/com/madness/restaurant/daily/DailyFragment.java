@@ -59,7 +59,7 @@ public class DailyFragment extends Fragment {
         DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15 €",null);
         this.dailyList.add(daily1);
 
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10 €","20",null);
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20 €",null);
         this.dailyList.add(daily2);
     }
 
