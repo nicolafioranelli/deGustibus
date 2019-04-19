@@ -8,11 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.madness.restaurant.R;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.DailyViewHolder> {
     private ArrayList<DailyClass> dailies;
@@ -20,7 +17,8 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
     public DailyDataAdapter(ArrayList<DailyClass> dailies) {
         this.dailies = dailies;
     }
-    public class DailyViewHolder extends RecyclerView.ViewHolder{
+
+    public class DailyViewHolder extends RecyclerView.ViewHolder {
         private TextView dish, type, avail, price;
         private ImageView pic;
 
@@ -31,15 +29,14 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
             type = (TextView) view.findViewById(R.id.dish_type);
             avail = (TextView) view.findViewById(R.id.dish_quantity);
             price = (TextView) view.findViewById(R.id.dish_price);
-
         }
     }
+
     @NonNull
     @Override
     public DailyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.dailyoffer_listitem, parent, false);
-
         return new DailyViewHolder(view);
     }
 
@@ -50,10 +47,10 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
         holder.type.setText(daily.getType());
         holder.avail.setText(daily.getAvail());
         holder.price.setText(daily.getPrice());
-        if(daily.getPic() == null){
+        if(daily.getPic() == null) {
             //default pic
             holder.pic.setImageResource(R.drawable.dish_image);
-        }else{
+        } else {
             holder.pic.setImageURI(Uri.parse(daily.getPic()));
         }
     }
@@ -62,17 +59,21 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
     public int getItemCount() {
         return  dailies == null ? 0 : dailies.size();
     }
+
     public void remove(int position) {
         dailies.remove(position);
         notifyItemRemoved(position);
     }
+
     public DailyClass getDailyClass(int position) {
         return dailies.get(position);
     }
+
     public void add (int position, DailyClass daily) {
         dailies.add(position, daily);
         notifyItemInserted(position);
     }
+
     public ArrayList<DailyClass> getList () {
         return dailies;
     }
