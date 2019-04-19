@@ -14,4 +14,11 @@
     <color name="divider">#BDBDBD</color>
 
     <color name="colorBackgroundCardContainer">#FAFAFA</color>
+
+
+    <color name="theme_colorPrimary">#F63A3D</color>
+    <color name="theme_colorPrimaryDark">#9B2021</color>
+    <color name="theme_colorAccent">#FFC928</color>
+    <color name="theme_colorTertiary">#4FA588</color>
+    <color name="theme_colortTertiaryDark">#105252</color>
 </resources>
