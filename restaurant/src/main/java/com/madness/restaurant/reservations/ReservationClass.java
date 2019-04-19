@@ -84,7 +84,6 @@ public class ReservationClass implements Parcelable {
         this.identifier = identifier;
     }
 
-
     public String getSeats() {
         return seats;
     }
@@ -92,8 +91,6 @@ public class ReservationClass implements Parcelable {
     public void setSeats(String seat) {
         this.seats = seat;
     }
-
-
 
     public String getName() {
         return name;
@@ -111,7 +108,7 @@ public class ReservationClass implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(seats);
-        dest.writeString(date);;
+        dest.writeString(date);
         dest.writeString(time);
         dest.writeString(desc);
         dest.writeInt(identifier);

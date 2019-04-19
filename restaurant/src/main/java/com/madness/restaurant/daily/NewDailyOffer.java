@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +34,12 @@ import com.madness.restaurant.R;
 
 import java.io.File;
 
+/**
+ * The NewDailyOffer Fragment is in charge of managing addition and editing of a new daily plate.
+ * At the current moment the save function is disabled, since no integration with Firebase has been
+ * implemented. The functioning is similar to the EditProfile Fragment.
+ */
+
 public class NewDailyOffer extends Fragment {
 
     /* Views */
@@ -48,9 +53,9 @@ public class NewDailyOffer extends Fragment {
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-
     private NewDailyOfferListener listener;
 
+    /* Listener is temporary disabled since no integration with the database is present */
     public interface NewDailyOfferListener {
         public void onSubmitDish();
     }
@@ -59,6 +64,7 @@ public class NewDailyOffer extends Fragment {
         // Required empty public constructor
     }
 
+    /* Attach the listener to the fragment */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -69,6 +75,7 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
+    /* Retrieve data and enable the toolbar */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,15 +84,17 @@ public class NewDailyOffer extends Fragment {
         editor = pref.edit();
     }
 
+    /* Set the title and inflate view */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.activity_add_new_daily_offer, container, false);
+        View rootView =  inflater.inflate(R.layout.fragment_new_daily_offer, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
         return rootView;
     }
 
+    /* Retrieve elements and set the listeners */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -142,7 +151,6 @@ public class NewDailyOffer extends Fragment {
         super.onCreateOptionsMenu(menu,inflater);
     }
 
-
     public void onSaveInstanceState(Bundle outState) {
         // Save away the original text, so we still have it if the activity
         // needs to be killed while paused.
@@ -186,7 +194,6 @@ public class NewDailyOffer extends Fragment {
             };
         });
     }
-
 
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         // Result code is RESULT_OK only if the user captures an Image
@@ -242,20 +249,9 @@ public class NewDailyOffer extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-            /* Define shared preferences and insert values
-            editor.putString("dish", dishname.getText().toString());
-            editor.putString("descDish", desc.getText().toString());
-            editor.putString("avail",avail.getText().toString());
-            editor.putString("price",price.getText().toString());
 
-            if (getPrefPhoto()!=null) {
-                editor.putString("photoDish", getPrefPhoto());
-            }
-            editor.apply();
-            delPrefPhoto();
+            //TODO: missing save function!
 
-            listener.onSubmitDish();
-            */
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("DAILY", FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -265,8 +261,8 @@ public class NewDailyOffer extends Fragment {
     }
 
     private void loadSharedPrefs(){
-        dishname.setText(pref.getString("dish", getResources().getString(R.string.dish_name)));
-        desc.setText(pref.getString("descDish", getResources().getString(R.string.desc_dish)));
+        dishname.setText(pref.getString("dish", getResources().getString(R.string.frDaily_defName)));
+        desc.setText(pref.getString("descDish", getResources().getString(R.string.frDaily_defDesc)));
         avail.setText(pref.getString("avail", String.valueOf(0)));
         price.setText(pref.getString("price", String.valueOf(0.00)));
         /* check if a photo is set */
@@ -395,5 +391,4 @@ public class NewDailyOffer extends Fragment {
             break;
         }
     }
-
 }

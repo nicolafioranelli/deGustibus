@@ -6,15 +6,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class DailyClass implements Parcelable {
-    String dish;
 
+    String dish;
     private int identifier;
     String pic;
     String type;
     String avail;
     String price;
-
-
 
     protected DailyClass(Parcel in) {
         pic =in.readString();
@@ -43,7 +41,6 @@ public class DailyClass implements Parcelable {
         public DailyClass createFromParcel(Parcel in) {
             return new DailyClass(in);
         }
-
         @Override
         public DailyClass[] newArray(int size) {
             return new DailyClass[size];
@@ -70,17 +67,26 @@ public class DailyClass implements Parcelable {
         return avail;
     }
 
-    public void setAvail(String avail) { this.avail = avail; }
+    public void setAvail(String avail) {
+        this.avail = avail;
+    }
 
     public String getPrice() {
         return price;
     }
 
-    public void setPrice(String price) { this.price = price; }
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-    public String getPic() { return pic; }
+    public String getPic() {
+        return pic;
+    }
 
-    public void setPic(String pic) { this.pic = pic; }
+    public void setPic(String pic) {
+        this.pic = pic;
+    }
+
     public int getIdentifier() {
         return identifier;
     }
@@ -89,7 +95,6 @@ public class DailyClass implements Parcelable {
         this.identifier = identifier;
     }
 
-
     public DailyClass (String dish,String type, String avail,String price, String pic) {
         this.dish = dish;
         this.pic = pic;
@@ -97,5 +102,4 @@ public class DailyClass implements Parcelable {
         this.avail = avail;
         this.price = price;
     }
-
 }

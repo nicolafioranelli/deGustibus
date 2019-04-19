@@ -298,13 +298,5 @@ NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListen
         if(dailyFragment != null) {
             dailyFragment.addOnDaily();
         }
-    }/*
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        ReservationFragment reservationFragment = (ReservationFragment)getSupportFragmentManager().findFragmentByTag("RESERVATION");
-        if(reservationFragment != null) {
-            getSupportFragmentManager().putFragment(outState,"RESERVATION", reservationFragment);
-        }
-    }*/
+    }
 }

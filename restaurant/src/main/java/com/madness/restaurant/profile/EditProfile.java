@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -91,7 +90,7 @@ public class EditProfile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.activity_edit, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Edit));
         return rootView;
     }
@@ -185,27 +184,27 @@ public class EditProfile extends Fragment {
 
     /* Method to load shared preferences */
     private void loadSharedPrefs(){
-        fullname.setText(pref.getString("name", getResources().getString(R.string.fullname)));
-        email.setText(pref.getString("email", getResources().getString(R.string.email)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
-        address.setText(pref.getString("address", getResources().getString(R.string.address)));
-        defaultOpen.setText(pref.getString("defaultOpen", getResources().getString(R.string.Opening)));
-        defaultClose.setText(pref.getString("defaultClose", getResources().getString(R.string.Closing)));
-        mondayOpen.setText(pref.getString("mondayOpen", getResources().getString(R.string.Opening)));
-        mondayClose.setText(pref.getString("mondayClose", getResources().getString(R.string.Closing)));
-        tuesdayOpen.setText(pref.getString("tuesdayOpen", getResources().getString(R.string.Opening)));
-        tuesdayClose.setText(pref.getString("tuesdayClose", getResources().getString(R.string.Closing)));
-        wednesdayOpen.setText(pref.getString("wednesdayOpen", getResources().getString(R.string.Opening)));
-        wednesdayClose.setText(pref.getString("wednesdayClose", getResources().getString(R.string.Closing)));
-        thursdayOpen.setText(pref.getString("thursdayOpen", getResources().getString(R.string.Opening)));
-        thursdayClose.setText(pref.getString("thursdayClose", getResources().getString(R.string.Closing)));
-        fridayOpen.setText(pref.getString("fridayOpen", getResources().getString(R.string.Opening)));
-        fridayClose.setText(pref.getString("fridayClose", getResources().getString(R.string.Closing)));
-        saturdayOpen.setText(pref.getString("saturdayOpen", getResources().getString(R.string.Opening)));
-        saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.Closing)));
-        sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.Opening)));
-        sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.Closing)));
+        fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
+        email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
+        desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
+        phone.setText(pref.getString("phone", getResources().getString(R.string.frProfile_defPhone)));
+        address.setText(pref.getString("address", getResources().getString(R.string.frProfile_defAddress)));
+        defaultOpen.setText(pref.getString("defaultOpen", getResources().getString(R.string.frProfile_defOpen)));
+        defaultClose.setText(pref.getString("defaultClose", getResources().getString(R.string.frProfile_defClose)));
+        mondayOpen.setText(pref.getString("mondayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        mondayClose.setText(pref.getString("mondayClose", getResources().getString(R.string.frProfile_defClose)));
+        tuesdayOpen.setText(pref.getString("tuesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        tuesdayClose.setText(pref.getString("tuesdayClose", getResources().getString(R.string.frProfile_defClose)));
+        wednesdayOpen.setText(pref.getString("wednesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        wednesdayClose.setText(pref.getString("wednesdayClose", getResources().getString(R.string.frProfile_defClose)));
+        thursdayOpen.setText(pref.getString("thursdayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        thursdayClose.setText(pref.getString("thursdayClose", getResources().getString(R.string.frProfile_defClose)));
+        fridayOpen.setText(pref.getString("fridayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        fridayClose.setText(pref.getString("fridayClose", getResources().getString(R.string.frProfile_defClose)));
+        saturdayOpen.setText(pref.getString("saturdayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.frProfile_defClose)));
+        sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.frProfile_defOpen)));
+        sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.frProfile_defClose)));
         /* check if a photo is set */
         if (pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));

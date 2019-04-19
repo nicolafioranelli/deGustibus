@@ -31,7 +31,7 @@
             android:id="@+id/tv_dish_name"
             android:layout_height="match_parent"
             android:layout_width="wrap_content"
-            android:text="@string/default_dish_name"
+            android:text="@string/frDaily_dishName"
             android:theme="@style/TextView"/>
         <EditText
             android:id="@+id/et_dish_name"
@@ -43,7 +43,7 @@
             android:id="@+id/tv_desc"
             android:layout_height="match_parent"
             android:layout_width="wrap_content"
-            android:text="@string/default_desc"
+            android:text="@string/frDaily_desc"
             android:theme="@style/TextView"/>
         <EditText
             android:id="@+id/et_desc"
@@ -63,7 +63,7 @@
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/availability" />
+                android:text="@string/frDaily_avail" />
 
             <Button
                 android:id="@+id/button_minus"
@@ -99,7 +99,7 @@
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/price" />
+                android:text="@string/frDaily_price" />
 
             <EditText
                 android:id="@+id/et_price"

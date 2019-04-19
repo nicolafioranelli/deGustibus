@@ -37,7 +37,7 @@
                 android:id="@+id/tv_edit_fullName"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:text="@string/default_fullname"
+                android:text="@string/frProfile_name"
                 android:theme="@style/TextView"/>
             <EditText
                 android:id="@+id/et_edit_fullName"
@@ -49,7 +49,7 @@
                 android:id="@+id/tv_edit_desc"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:text="@string/default_desc"
+                android:text="@string/frProfile_desc"
                 android:theme="@style/TextView"/>
             <EditText
                 android:id="@+id/et_edit_desc"
@@ -63,7 +63,7 @@
                 android:id="@+id/tv_edit_email"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:text="@string/default_email"
+                android:text="@string/frProfile_email"
                 android:theme="@style/TextView"/>
             <EditText
                 android:id="@+id/et_edit_email"
@@ -75,7 +75,7 @@
                 android:id="@+id/tv_edit_phone"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:text="@string/default_phone"
+                android:text="@string/frProfile_phone"
                 android:theme="@style/TextView"/>
             <EditText
                 android:id="@+id/et_edit_phone"
@@ -87,7 +87,7 @@
                 android:id="@+id/tv_edit_address"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:text="@string/default_address"
+                android:text="@string/frProfile_address"
                 android:theme="@style/TextView"/>
             <EditText
                 android:id="@+id/et_edit_address"
@@ -99,10 +99,8 @@
                 android:id="@+id/tv_edit_defDay"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/default_day"
+                android:text="@string/frProfile_defHours"
                 android:theme="@style/TextView" />
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -120,7 +118,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -141,7 +139,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -158,7 +156,7 @@
                 android:id="@+id/tv_edit_monday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/monday"
+                android:text="@string/frProfile_monday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -176,7 +174,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -197,7 +195,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -213,7 +211,7 @@
                 android:id="@+id/tv_edit_tuesday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/tuesday"
+                android:text="@string/frProfile_tuesday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -231,7 +229,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -252,7 +250,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -268,7 +266,7 @@
                 android:id="@+id/tv_edit_wednesday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/wednesday"
+                android:text="@string/frProfile_wednesday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -286,7 +284,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -307,7 +305,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -323,7 +321,7 @@
                 android:id="@+id/tv_edit_thursday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/thursday"
+                android:text="@string/frProfile_thursday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -341,7 +339,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -362,7 +360,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -378,7 +376,7 @@
                 android:id="@+id/tv_edit_friday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/friday"
+                android:text="@string/frProfile_friday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -396,7 +394,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -417,7 +415,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -432,7 +430,7 @@
                 android:id="@+id/tv_edit_saturday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/saturday"
+                android:text="@string/frProfile_saturday"
                 android:theme="@style/TextView" />
 
             <LinearLayout
@@ -451,7 +449,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -472,7 +470,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -487,7 +485,7 @@
                 android:id="@+id/tv_edit_sunday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:text="@string/sunday"
+                android:text="@string/frProfile_sunday"
                 android:theme="@style/TextView" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -505,7 +503,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetOpening"
+                        android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView
@@ -526,7 +524,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/SetClosing"
+                        android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
                     <TextView

@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-
     <ScrollView
         android:layout_height="match_parent"
         android:layout_width="match_parent">
@@ -39,8 +38,6 @@
 
             </android.support.constraint.ConstraintLayout>
 
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,7 +48,7 @@
                     android:id="@+id/tv_showD_fullName"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="@string/default_fullname"
+                    android:text="@string/frProfile_name"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_fullName"
@@ -63,7 +60,7 @@
                     android:id="@+id/tv_showD_desc"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="@string/default_desc"
+                    android:text="@string/frProfile_desc"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_desc"
@@ -76,7 +73,7 @@
                     android:id="@+id/tv_showD_email"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="@string/default_email"
+                    android:text="@string/frProfile_email"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_email"
@@ -88,7 +85,7 @@
                     android:id="@+id/tv_showD_phone"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="@string/default_phone"
+                    android:text="@string/frProfile_phone"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_phone"
@@ -100,7 +97,7 @@
                     android:id="@+id/tv_showD_address"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:text="@string/default_address"
+                    android:text="@string/frProfile_address"
                     android:theme="@style/TextView"/>
                 <TextView
                     android:id="@+id/tv_show_address"
@@ -118,7 +115,7 @@
                         android:id="@+id/tv_showD_monday"
                         android:layout_height="match_parent"
                         android:layout_width="100dp"
-                        android:text="@string/monday"
+                        android:text="@string/frProfile_monday"
                         android:theme="@style/TextView"/>
                         <TextView
                             android:id="@+id/tv_show_mondayOpen"
@@ -145,7 +142,7 @@
                     <TextView
                         android:id="@+id/tv_showD_tuesday"
                         android:layout_height="match_parent"
-                        android:text="@string/tuesday"
+                        android:text="@string/frProfile_tuesday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                         <TextView
@@ -173,7 +170,7 @@
                     <TextView
                         android:id="@+id/tv_showD_wednesday"
                         android:layout_height="match_parent"
-                        android:text="@string/wednesday"
+                        android:text="@string/frProfile_wednesday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                     <TextView
@@ -200,7 +197,7 @@
                     <TextView
                         android:id="@+id/tv_showD_thursday"
                         android:layout_height="match_parent"
-                        android:text="@string/thursday"
+                        android:text="@string/frProfile_thursday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                     <TextView
@@ -227,7 +224,7 @@
                     <TextView
                         android:id="@+id/tv_showD_friday"
                         android:layout_height="match_parent"
-                        android:text="@string/friday"
+                        android:text="@string/frProfile_friday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                     <TextView
@@ -254,7 +251,7 @@
                     <TextView
                         android:id="@+id/tv_showD_saturday"
                         android:layout_height="match_parent"
-                        android:text="@string/saturday"
+                        android:text="@string/frProfile_saturday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                     <TextView
@@ -281,7 +278,7 @@
                     <TextView
                         android:id="@+id/tv_showD_sunday"
                         android:layout_height="match_parent"
-                        android:text="@string/sunday"
+                        android:text="@string/frProfile_sunday"
                         android:theme="@style/TextView"
                         android:layout_width="100dp"/>
                     <TextView
