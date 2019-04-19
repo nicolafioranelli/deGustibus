@@ -55,6 +55,7 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        fragmentManager = getSupportFragmentManager();
 
         /* Instantiate home fragment */
         if(savedInstanceState == null) {
@@ -63,7 +64,6 @@ public class HomeActivity extends AppCompatActivity
                 Class fragmentClass;
                 fragmentClass = HomeFragment.class;
                 fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
                 navigationView.getMenu().getItem(0).setChecked(true);
             } catch (Exception e) {

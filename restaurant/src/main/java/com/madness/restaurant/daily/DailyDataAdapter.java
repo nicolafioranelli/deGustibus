@@ -46,7 +46,7 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
         holder.dish.setText(daily.getDish());
         holder.type.setText(daily.getType());
         holder.avail.setText(daily.getAvail());
-        holder.price.setText(daily.getPrice());
+        holder.price.setText(daily.getPrice() + " €");
         if(daily.getPic() == null) {
             //default pic
             holder.pic.setImageResource(R.drawable.dish_image);

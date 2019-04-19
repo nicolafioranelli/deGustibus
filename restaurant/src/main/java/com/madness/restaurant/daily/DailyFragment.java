@@ -53,13 +53,13 @@ public class DailyFragment extends Fragment {
 
     /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20 €",null);
+        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20",null);
         this.dailyList.add(daily);
 
-        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15 €",null);
+        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15",null);
         this.dailyList.add(daily1);
 
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20 €",null);
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20",null);
         this.dailyList.add(daily2);
     }
 
