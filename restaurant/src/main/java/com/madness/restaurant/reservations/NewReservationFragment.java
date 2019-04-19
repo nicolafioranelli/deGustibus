@@ -24,7 +24,7 @@ import com.madness.restaurant.R;
 import com.madness.restaurant.TimePickerFragment;
 
 /**
- * A simple {@link Fragment} subclass.
+ * NewReservation Fragment class
  */
 public class NewReservationFragment extends Fragment {
 

@@ -39,7 +39,6 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
     public ReservationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.reservation_listitem, parent, false);
-
         return new ReservationViewHolder(itemView);
     }
 
@@ -63,13 +62,16 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
         reservations.remove(position);
         notifyItemRemoved(position);
     }
+
     public ReservationClass getReservation(int position) {
         return reservations.get(position);
     }
+
     public void add (int position, ReservationClass reservationClass) {
         reservations.add(position, reservationClass);
         notifyItemInserted(position);
     }
+
     public ArrayList<ReservationClass> getList () {
         return reservations;
     }

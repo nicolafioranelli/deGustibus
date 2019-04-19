@@ -20,6 +20,6 @@ public class TimePickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current time as the default values for the picker
         return  new TimePickerDialog(getActivity(), (TimePickerDialog.OnTimeSetListener)getActivity(),hour, minute,android.text.format.DateFormat.is24HourFormat(getActivity()));
-    // Create a new instance of TimePickerDialog and return it
+        // Create a new instance of TimePickerDialog and return it
     }
 }

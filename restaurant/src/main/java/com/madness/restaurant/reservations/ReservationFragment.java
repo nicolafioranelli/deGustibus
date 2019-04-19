@@ -1,6 +1,5 @@
 package com.madness.restaurant.reservations;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -30,9 +29,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * A simple {@link Fragment} subclass.
+ * ReservationFragment class
  */
 public class ReservationFragment extends Fragment {
 
