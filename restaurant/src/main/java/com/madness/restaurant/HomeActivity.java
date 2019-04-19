@@ -54,7 +54,7 @@ NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListen
         toggle.syncState();
 
         // todo remove or not the custom navigation bar color
-        getWindow().setNavigationBarColor(this.getResources().getColor(R.color.theme_colorPrimary));
+        //getWindow().setNavigationBarColor(this.getResources().getColor(R.color.theme_colorPrimary));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
