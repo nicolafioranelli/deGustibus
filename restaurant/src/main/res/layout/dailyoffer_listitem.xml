@@ -59,7 +59,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Disponibilità: "
+                    android:text="@string/frDaily_avail"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -77,7 +77,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Prezzo:"
+                    android:text="@string/frDaily_price"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView"
-                    tools:text="@string/price" />
+                    tools:text="@string/frDaily_price" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

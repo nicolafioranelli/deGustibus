@@ -53,13 +53,13 @@ public class DailyFragment extends Fragment {
 
     /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20",null);
+        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20 €",null);
         this.dailyList.add(daily);
 
-        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15",null);
+        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15 €",null);
         this.dailyList.add(daily1);
 
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20",null);
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10 €","20",null);
         this.dailyList.add(daily2);
     }
 
@@ -155,8 +155,8 @@ public class DailyFragment extends Fragment {
             public void onClick(View v) {
                 added=true;
                 addedposition=mAdapter.getItemCount();
-                editor.putString("dish", getResources().getString(R.string.dish_name));
-                editor.putString("descDish", getResources().getString(R.string.desc_dish));
+                editor.putString("dish", getResources().getString(R.string.frDaily_defName));
+                editor.putString("descDish", getResources().getString(R.string.frDaily_defDesc));
                 editor.putString("avail", String.valueOf(0));
                 editor.putString("price", String.valueOf(0.00));
                 editor.putString("photoDish", null);

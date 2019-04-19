@@ -64,17 +64,17 @@ public class ReservationFragment extends Fragment {
     private void fakeContent() {
         ReservationClass reservation = new ReservationClass(
                 "Nicola Sabino",1,"3","18/04/2019",
-                "21:00","pizza margherita","");
+                "21:00","Risotto ai frutti di mare","");
         this.reservationList.add(reservation);
 
         ReservationClass reservation2 = new ReservationClass(
-                "Luca Rossi",2,"3","18/04/2019",
-                "21:00","pasta al sugo","");
+                "Luca Rossi",2,"4","18/04/2019",
+                "21:00","Pasta al pomodoro","");
         this.reservationList.add(reservation2);
 
         ReservationClass reservation3 = new ReservationClass(
-                "Jacopo Iezzi",3,"3","18/04/2019",
-                "21:00","pizza margherita","");
+                "Jacopo Iezzi",3,"2","18/04/2019",
+                "21:00","Pizza margherita","");
         this.reservationList.add(reservation3);
     }
 

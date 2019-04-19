@@ -44,10 +44,10 @@ class ReservationsDataAdapter extends RecyclerView.Adapter<ReservationsDataAdapt
     public void onBindViewHolder(ReservationViewHolder holder, int position) {
         ReservationClass reservation = reservations.get(position);
         holder.name.setText(reservation.getName());
-        holder.identifier.setText("reservation #" + String.valueOf(reservation.getIdentifier())); // TODO translation
+        holder.identifier.setText("#" + String.valueOf(reservation.getIdentifier()));
         holder.dish.setText(reservation.getOrderDishes());
-        holder.date_time.setText(reservation.getDate() + reservation.getTime());
-        holder.portions.setText(reservation.getSeats());
+        holder.date_time.setText("Orario prenotazione: " + reservation.getDate() + " " + reservation.getTime());
+        holder.portions.setText("Quantità:" + " " + reservation.getSeats()); // TODO: inserisci il metodo per recuperare da stringhe
     }
 
     @Override
