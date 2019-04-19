@@ -49,7 +49,7 @@ public class ReservationFragment extends Fragment {
     private  boolean added=true;
 
     private void setReservationsDataAdapter() {
-        mAdapter = new ReservationsDataAdapter(reservationList);
+        mAdapter = new ReservationsDataAdapter(reservationList, this.getContext());
     }
     private ReservationListener listener;
 
@@ -148,7 +148,7 @@ public class ReservationFragment extends Fragment {
         //initElements();
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        mAdapter = new ReservationsDataAdapter(reservationList);
+        mAdapter = new ReservationsDataAdapter(reservationList, this.getContext());
         recyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
@@ -191,7 +191,8 @@ public class ReservationFragment extends Fragment {
                 Log.d("MAD", "onLeftClicked: right");
                 super.onRightClicked(position);
             }
-        }));
+        }),this.getContext());
+
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerView);
 

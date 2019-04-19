@@ -138,7 +138,7 @@ public class DailyFragment extends Fragment {
                 //Log.d("MAD", "onLeftClicked: right");
                 super.onRightClicked(position);
             }
-        }));
+        }), this.getContext());
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerView);

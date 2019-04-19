@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#b22222</color>
-    <color name="colorPrimaryDark">#921c1c</color>
+   <color name="colorPrimaryDark">#921c1c</color>
     <color name="colorPrimaryLight">#FFECB3</color>
-    <color name="colorAccent">#FFC107</color>
+    <color name="colorAccent">#FFC107</color>-->
     <color name="colorBackground">#F8995F</color>
     <color name="colorBackgroundLight">#8c0000</color>
     <color name="titleColor">#FFF</color>
@@ -20,5 +20,5 @@
     <color name="theme_colorPrimaryDark">#9B2021</color>
     <color name="theme_colorAccent">#FFC928</color>
     <color name="theme_colorTertiary">#4FA588</color>
-    <color name="theme_colortTertiaryDark">#105252</color>
+    <color name="theme_colorTertiaryDark">#105252</color>
 </resources>

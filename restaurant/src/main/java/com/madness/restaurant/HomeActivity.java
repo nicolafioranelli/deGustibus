@@ -2,7 +2,9 @@ package com.madness.restaurant;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -37,6 +39,7 @@ NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListen
     Fragment fragment;
     FragmentManager fragmentManager;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,9 @@ NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListen
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        // todo remove or not the custom navigation bar color
+        getWindow().setNavigationBarColor(this.getResources().getColor(R.color.theme_colorPrimary));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

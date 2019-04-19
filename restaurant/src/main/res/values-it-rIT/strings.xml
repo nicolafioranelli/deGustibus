@@ -49,4 +49,6 @@
     <string name="defaultdishdesc">Pizza con salsa di pomodoro fresco</string>
     <string name="frProfile_defDesc">Oltre 30 tipi di pizza direttamente a casa tua!</string>
     <string name="reservation_quantity">Porzioni:&#160;</string>
+    <string name="reservation_adapter_quantity">"Quantità: "</string>
+    <string name="reservation_adapter_time">"Orario prenotazione: "</string>
 </resources>

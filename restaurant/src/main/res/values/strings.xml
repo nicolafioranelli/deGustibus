@@ -75,4 +75,6 @@
 
     <string name="defaultdish">"Pizza Margherita"</string>
     <string name="defaultdishdesc">Pizza with tomato sauce</string>
+    <string name="reservation_adapter_quantity">"Quantity: "</string>
+    <string name="reservation_adapter_time">Reservation time:</string>
 </resources>

@@ -27,8 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="#1"
-                android:textStyle="bold"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"/>
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/reservation_fullname"
@@ -48,12 +48,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="70">
+
                 <TextView
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
                     android:id="@+id/reservation_dish"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
-                    android:text="Pizza"/>
+                    android:text="Pizza"
+                    />
             </RelativeLayout>
 
             <RelativeLayout

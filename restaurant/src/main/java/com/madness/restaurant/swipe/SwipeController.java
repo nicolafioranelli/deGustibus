@@ -1,6 +1,7 @@
 package com.madness.restaurant.swipe;
 
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper.Callback;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.madness.restaurant.R;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.*;
 
@@ -32,8 +35,11 @@ public class SwipeController extends Callback {
 
     private static final float buttonWidth = 300;
 
-    public SwipeController(SwipeControllerActions buttonsActions) {
+    private Context context;
+
+    public SwipeController(SwipeControllerActions buttonsActions, Context context) {
         this.buttonsActions = buttonsActions;
+        this.context = context;
     }
 
     @Override
@@ -161,8 +167,8 @@ public class SwipeController extends Callback {
         Paint deleteColor = new Paint();
 
         backgroundColor.setColor(Color.TRANSPARENT);
-        editColor.setColor(Color.BLUE);
-        deleteColor.setColor(Color.RED);
+        editColor.setColor(this.context.getResources().getColor(R.color.theme_colorTertiaryDark));
+        deleteColor.setColor(this.context.getResources().getColor(R.color.theme_colorPrimaryDark));
 
 
         View itemView = viewHolder.itemView;
