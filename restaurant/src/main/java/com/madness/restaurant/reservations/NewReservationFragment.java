@@ -1,26 +1,13 @@
 package com.madness.restaurant.reservations;
 
-
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,35 +15,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.DayPickerFragment;
 import com.madness.restaurant.R;
 import com.madness.restaurant.TimePickerFragment;
-
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class NewReservationFragment extends Fragment {
 
-
     public NewReservationFragment() {
         // Required empty public constructor
     }
-
 
     /* Views */
     private EditText name;
@@ -71,7 +45,6 @@ public class NewReservationFragment extends Fragment {
     LinearLayout lunchday;
     LinearLayout lunchtime;
     Button submit;
-
     private NewReservationListener listener;
 
     public interface NewReservationListener {
@@ -87,6 +60,7 @@ public class NewReservationFragment extends Fragment {
             throw new ClassCastException(context.toString() + "must implement NewReservationListener");
         }
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +69,7 @@ public class NewReservationFragment extends Fragment {
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -133,17 +108,9 @@ public class NewReservationFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_edit) {
-            editor.putString("reservationName", name.getText().toString());
-            editor.putString("reservationDesc", desc.getText().toString());
-            editor.putString("reservationSeats",seats.getText().toString());
-            editor.putString("reservationOrderedDishes",orderDishes.getText().toString());
-            editor.putString("reservationTime", time.getText().toString());
-            editor.putString("reservationDay", day.getText().toString());
-            editor.apply();
-
             /* Handle save option and go back */
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-            listener.onSubmit();
+            //listener.onSubmit();
 
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("RESERVATION", FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -202,10 +169,12 @@ public class NewReservationFragment extends Fragment {
             }
         });
     }
+
     public void setHourAndMinute(int hour, int minute) {
         time.setText(String.format("%02d:%02d", hour, minute));
     }
-    public  void  setDate(int year, int month, int day){
+
+    public void setDate(int year, int month, int day){
         this.day.setText(String.format("%2d/%2d/%4d",day,month, year));
     }
 

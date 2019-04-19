@@ -116,6 +116,7 @@ public class ReservationFragment extends Fragment {
             mAdapter.notifyItemRangeChanged(replaced-1, mAdapter.getItemCount());
         }
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -159,10 +160,6 @@ public class ReservationFragment extends Fragment {
             }
         });
 
-        // add a separator
-        //DividerItemDecoration decoration = new DividerItemDecoration(getContext(), manager.getOrientation());
-        //recyclerView.addItemDecoration(decoration);
-
         // set swipe controller
         swipeController=new SwipeController((new SwipeControllerActions() {
             @Override
@@ -203,17 +200,7 @@ public class ReservationFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("Reservations", new ArrayList<>(mAdapter.getList()));
     }
-    /* Method to load shared preferences */
-    private void loadSharedPrefs(){
 
-    }/*
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            Bundle bundle = (Bundle) state;
-            reservationList = bundle.getParcelableArrayList("Reservations");
-        }
-    }*/
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -222,152 +209,5 @@ public class ReservationFragment extends Fragment {
             setReservationsDataAdapter();
             recyclerView.setAdapter(mAdapter);
         }
-    }/*
-    @Override
-    public void onResume() {
-        recyclerView = getView().findViewById(R.id.recyclerView);
-        LinearLayoutManager manager  = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(manager);
-        mAdapter =new ReservationsDataAdapter(reservationList);
-        recyclerView.setAdapter(mAdapter);
-        super.onResume();
-    }*/
-
-    /*
-    private void setupRecyclerView() {
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-    }*/
-/*
-    private void initElements(){
-
-        names.add("Mario Rossi");
-        identifiers.add(String.valueOf(1));
-        seats.add(String.valueOf(4));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Luca Verdi");
-        identifiers.add(String.valueOf(2));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("21:00");
-
-        names.add("Giuseppe Neri");
-        identifiers.add(String.valueOf(3));
-        seats.add(String.valueOf(6));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Raffaella Rossi");
-        identifiers.add(String.valueOf(4));
-        seats.add(String.valueOf(1));
-        dates.add("8/04/2019");
-        time.add("19:00");
-
-        names.add("Bruno Verdi");
-        identifiers.add(String.valueOf(5));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("20:30");
-
-        names.add("Mario Rossi");
-        identifiers.add(String.valueOf(6));
-        seats.add(String.valueOf(4));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Luca Verdi");
-        identifiers.add(String.valueOf(7));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("21:00");
-
-        names.add("Giuseppe Neri");
-        identifiers.add(String.valueOf(8));
-        seats.add(String.valueOf(6));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Raffaella Rossi");
-        identifiers.add(String.valueOf(9));
-        seats.add(String.valueOf(1));
-        dates.add("8/04/2019");
-        time.add("19:00");
-
-        names.add("Bruno Verdi");
-        identifiers.add(String.valueOf(10));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("20:30");
-
-        names.add("Mario Rossi");
-        identifiers.add(String.valueOf(11));
-        seats.add(String.valueOf(4));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Luca Verdi");
-        identifiers.add(String.valueOf(12));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("21:00");
-
-        names.add("Giuseppe Neri");
-        identifiers.add(String.valueOf(13));
-        seats.add(String.valueOf(6));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Raffaella Rossi");
-        identifiers.add(String.valueOf(14));
-        seats.add(String.valueOf(1));
-        dates.add("8/04/2019");
-        time.add("19:00");
-
-        names.add("Bruno Verdi");
-        identifiers.add(String.valueOf(15));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("20:30");
-
-        names.add("Mario Rossi");
-        identifiers.add(String.valueOf(16));
-        seats.add(String.valueOf(4));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Luca Verdi");
-        identifiers.add(String.valueOf(17));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("21:00");
-
-        names.add("Giuseppe Neri");
-        identifiers.add(String.valueOf(18));
-        seats.add(String.valueOf(6));
-        dates.add("8/04/2019");
-        time.add("20:00");
-
-        names.add("Raffaella Rossi");
-        identifiers.add(String.valueOf(19));
-        seats.add(String.valueOf(1));
-        dates.add("8/04/2019");
-        time.add("19:00");
-
-        names.add("Bruno Verdi");
-        identifiers.add(String.valueOf(20));
-        seats.add(String.valueOf(2));
-        dates.add("8/04/2019");
-        time.add("20:30");
-
     }
-*/
 }
