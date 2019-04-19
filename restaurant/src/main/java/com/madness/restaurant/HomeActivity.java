@@ -1,9 +1,14 @@
 package com.madness.restaurant;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,85 +17,267 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
+
+import com.madness.restaurant.daily.DailyFragment;
+import com.madness.restaurant.daily.NewDailyOffer;
+import com.madness.restaurant.home.HomeFragment;
+import com.madness.restaurant.profile.EditProfile;
+import com.madness.restaurant.profile.ProfileFragment;
+import com.madness.restaurant.reservations.NewReservationFragment;
+import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
+        NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
 
+    Toolbar toolbar;
+    DrawerLayout drawer;
+    NavigationView navigationView;
+    Fragment fragment;
+    FragmentManager fragmentManager;
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        fragmentManager = getSupportFragmentManager();
+
+        /* Instantiate home fragment */
+        if(savedInstanceState == null) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(0).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            fragment = (Fragment) getSupportFragmentManager().findFragmentByTag("HOME");
+        }
+
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                updateMenu();
+            }
+        });
+    }
+
+    @Override
+    public void onItemClicked() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = EditProfile.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "onItemClicked: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "EditP");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
+    }
+
+    private void updateMenu() {
+        fragment = fragmentManager.findFragmentById(R.id.flContent);
+        if(fragment!=null){
+            if(fragment instanceof ProfileFragment){
+                navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+            } else if(fragment instanceof EditProfile){
+                navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+            } else if(fragment instanceof DailyFragment){
+                navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
+            } else if(fragment instanceof NewDailyOffer){
+                navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
+            } else if(fragment instanceof ReservationFragment){
+                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
+            } else if(fragment instanceof NewReservationFragment){
+                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
+            } else {
+                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            }
+        }
+    }
+
+    @Override
+    public void addReservation() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = NewReservationFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "onItemClicked: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "AddReservation");
+        ft.addToBackStack("RESERVATION");
+        ft.commit();
+    }
+
+    @Override
+    public void addDailyOffer() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = NewDailyOffer.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "onItemClicked: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "AddOffer");
+        ft.addToBackStack("DAILY");
+        ft.commit();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        /*fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragment = fragmentManager.findFragmentById(R.id.flContent);
+        if(fragment!=null){
+            Log.d("MAD", "onBackPressed: TRUE");
+            if(fragment instanceof ProfileFragment){
+                Log.d("MAD", "onBackPressed: PROFILE");
+            }
+        }*/
+
+        super.onBackPressed();
     }
 
+    /* Inflate the menu: this adds items to the action bar */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
+    /* Handle clicks on action toolbar */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        /*
-        if (id == R.id.action_settings) {
-            return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        fragment = null;
+        Class fragmentClass;
 
-        if (id == R.id.nav_profile) {
-            // Handle the camera action
-        } else if (id == R.id.nav_daily) {
-
-        } else if (id == R.id.nav_reservations) {
-
-        } else if (id == R.id.nav_home) {
-
+        switch(item.getItemId()) {
+            case R.id.nav_profile:
+                try{
+                    fragmentClass = ProfileFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "PROFILE").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_reservations:
+                try{
+                    fragmentClass = ReservationFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_daily:
+                try {
+                    fragmentClass = DailyFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                try{
+                    fragmentClass = HomeFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        item.setChecked(true);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        EditProfile editFrag = (EditProfile)
+                getSupportFragmentManager().findFragmentByTag("EditP");
+        NewReservationFragment editRes = (NewReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("AddReservation");
+        if (editFrag != null) {
+            editFrag.setHourAndMinute(hourOfDay,minute);
+        }
+        else if(editRes != null) {
+            editRes.setHourAndMinute(hourOfDay,minute);
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        NewReservationFragment editRes = (NewReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("AddReservation");
+        if(editRes != null) {
+            editRes.setDate(year, month, dayOfMonth);
+        }
+    }
+
+    @Override
+    public void onSubmit() {
+        ReservationFragment reservationFragment = (ReservationFragment)
+                getSupportFragmentManager().findFragmentByTag("RESERVATION");
+        if(reservationFragment != null) {
+            reservationFragment.addOnReservation();
+        }
+    }
+
+    @Override
+    public void onSubmitDish() {
+        DailyFragment dailyFragment = (DailyFragment)
+                getSupportFragmentManager().findFragmentByTag("DAILY");
+        if(dailyFragment != null) {
+            dailyFragment.addOnDaily();
+        }
     }
 }

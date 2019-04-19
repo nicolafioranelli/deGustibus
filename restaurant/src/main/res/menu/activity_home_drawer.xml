@@ -8,23 +8,19 @@
             android:id="@+id/nav_home"
             android:title="@string/menu_home"
             android:icon="@drawable/ic_menu_home"/>
-    </group>
 
-    <item android:title="@string/menu_restaurant">
-        <menu>
-            <item
-                android:id="@+id/nav_profile"
-                android:icon="@drawable/ic_menu_user"
-                android:title="@string/menu_profile"
-                />
-            <item
-                android:id="@+id/nav_daily"
-                android:icon="@drawable/ic_menu_daily"
-                android:title="@string/menu_daily"/>
-            <item
-                android:id="@+id/nav_reservations"
-                android:icon="@drawable/ic_menu_reservations"
-                android:title="@string/menu_reservations"/>
-        </menu>
-    </item>
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_menu_user"
+            android:title="@string/menu_profile"
+            />
+        <item
+            android:id="@+id/nav_daily"
+            android:icon="@drawable/ic_menu_daily"
+            android:title="@string/menu_daily"/>
+        <item
+            android:id="@+id/nav_reservations"
+            android:icon="@drawable/ic_menu_reservations"
+            android:title="@string/menu_reservations"/>
+    </group>
 </menu>
