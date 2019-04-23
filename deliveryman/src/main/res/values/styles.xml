@@ -3,18 +3,20 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/theme_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/theme_colorPrimaryDark</item>
+        <item name="colorAccent">@color/theme_colorAccent</item>
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:fontFamily">@font/comfortaa_font</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="drawerArrowStyle">@style/DrawerHamburgerStyle</item>
     </style>
 
     <style name="EditTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorControlActivated">@color/colorAccent</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/theme_colorAccent</item>
+        <item name="colorControlHighlight">@color/theme_colorAccent</item>
     </style>
 
     <style name="TextViewShow" parent="Theme.AppCompat.Light.NoActionBar">
@@ -28,9 +30,23 @@
         <item name="android:textSize">18dp</item>
         <item name="android:textColor">@color/primaryText</item>
     </style>
-        
+
     <style name="ToolbarSubtitleAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textSize">10dp</item>
         <item name="android:textColor">@color/titleColor</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DrawerHamburgerStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 </resources>
