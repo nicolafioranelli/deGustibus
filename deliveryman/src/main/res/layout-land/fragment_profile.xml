@@ -1,49 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:layout_width="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="8dp"
-        android:theme="@style/ToolbarTheme"
-        app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
-        android:id="@+id/toolbar">
-    </android.support.v7.widget.Toolbar>
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
-    <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="16dp"
+            android:src="@drawable/user_profile"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:showDividers="end"
-                android:orientation="vertical"
-                android:divider="@drawable/divider_drawable">
-                <ImageView
-                    android:id="@+id/imageview"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:src="@drawable/user_profile"/>
-            </LinearLayout>
-
+            android:layout_gravity="center_vertical">
             <TextView
                 android:id="@+id/tv_showD_fullName"
                 android:layout_height="match_parent"
@@ -78,8 +60,7 @@
                 android:id="@+id/tv_show_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"
-                android:maxLines="4"/>
+                android:theme="@style/TextViewShow"/>
 
             <TextView
                 android:id="@+id/tv_showD_phone"
@@ -107,5 +88,5 @@
                 android:theme="@style/TextViewShow"/>
 
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

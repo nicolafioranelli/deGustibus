@@ -1,20 +1,21 @@
 package com.madness.deliveryman;
 
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -26,25 +27,25 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        toolbar = (Toolbar) findViewById(R.id.toolbarhome);
+        toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         fragmentManager = getSupportFragmentManager();
 
         /* Instantiate home fragment */
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             try {
                 fragment = null;
                 Class fragmentClass;
-                fragmentClass = HomeFragment.class;
+                fragmentClass = ProfileFragment.class;
                 fragment = (Fragment) fragmentClass.newInstance();
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
                 navigationView.getMenu().getItem(0).setChecked(true);
@@ -52,7 +53,7 @@ public class HomeActivity extends AppCompatActivity
                 Log.e("MAD", "onCreate: ", e);
             }
         } else {
-            fragment = (Fragment) getSupportFragmentManager().findFragmentByTag("HOME");
+            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -97,7 +98,7 @@ public class HomeActivity extends AppCompatActivity
         fragment = null;
         Class fragmentClass;
 
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 try {
                     fragmentClass = HomeFragment.class;
@@ -111,8 +112,26 @@ public class HomeActivity extends AppCompatActivity
         }
         item.setChecked(true);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void editProfileClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = EditProfileFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "editProfileClick: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "EditProfile");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
     }
 }
