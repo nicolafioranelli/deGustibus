@@ -1,6 +1,8 @@
 package com.madness.deliveryman;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
@@ -22,6 +27,8 @@ public class HomeActivity extends AppCompatActivity
     NavigationView navigationView;
     Fragment fragment;
     FragmentManager fragmentManager;
+    FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +36,20 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        /* Check if there is an user authenticated, in case no user launch the login screen */
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user == null){
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
+            }
+        };
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -45,7 +66,7 @@ public class HomeActivity extends AppCompatActivity
             try {
                 fragment = null;
                 Class fragmentClass;
-                fragmentClass = ProfileFragment.class;
+                fragmentClass = HomeFragment.class;
                 fragment = (Fragment) fragmentClass.newInstance();
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
                 navigationView.getMenu().getItem(0).setChecked(true);
@@ -62,6 +83,20 @@ public class HomeActivity extends AppCompatActivity
                 //updateMenu();
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(authStateListener!=null){
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
     }
 
     @Override
