@@ -22,8 +22,7 @@
             android:key="account3"
             android:title="Logout"
             android:icon="@drawable/settings_logout"
-             />
-
+            />
 
     </android.support.v7.preference.PreferenceCategory>
 

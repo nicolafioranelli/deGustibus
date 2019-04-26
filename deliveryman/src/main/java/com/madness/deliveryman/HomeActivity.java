@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +43,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user == null){
+                if (user == null) {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finish();
                 }
@@ -94,7 +93,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        if(authStateListener!=null){
+        if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
     }
@@ -108,38 +107,6 @@ public class HomeActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_notifications) {
-            fragment = null;
-            Class fragmentClass;
-            try {
-                fragmentClass = NotificationsFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Notifications").addToBackStack("HOME").commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            drawer = findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    */
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -227,18 +194,18 @@ public class HomeActivity extends AppCompatActivity
 
     private void updateMenu() {
         fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if(fragment!=null){
-            if(fragment instanceof ProfileFragment){
+        if (fragment != null) {
+            if (fragment instanceof ProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if(fragment instanceof EditProfileFragment){
+            } else if (fragment instanceof EditProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if(fragment instanceof CompletedFragment){
+            } else if (fragment instanceof CompletedFragment) {
                 navigationView.getMenu().findItem(R.id.nav_completed).setChecked(true);
-            } else if(fragment instanceof IncomingFragment){
+            } else if (fragment instanceof IncomingFragment) {
                 navigationView.getMenu().findItem(R.id.nav_incoming).setChecked(true);
-            } else if(fragment instanceof NotificationsFragment){
+            } else if (fragment instanceof NotificationsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
-            } else if(fragment instanceof SettingsFragment){
+            } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);

@@ -2,8 +2,10 @@ package com.madness.restaurant;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +22,8 @@ import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
@@ -38,14 +42,30 @@ public class HomeActivity extends AppCompatActivity
     NavigationView navigationView;
     Fragment fragment;
     FragmentManager fragmentManager;
+    FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         toolbar = (Toolbar) findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        /* Check if there is an user authenticated, in case no user launch the login screen */
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
+            }
+        };
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -79,6 +99,20 @@ public class HomeActivity extends AppCompatActivity
                 updateMenu();
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
     }
 
     @Override
