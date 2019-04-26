@@ -80,7 +80,7 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                //updateMenu();
+                updateMenu();
             }
         });
     }
@@ -109,6 +109,7 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -122,9 +123,23 @@ public class HomeActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if (id == R.id.action_notifications) {
+            fragment = null;
+            Class fragmentClass;
+            try {
+                fragmentClass = NotificationsFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Notifications").addToBackStack("HOME").commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            drawer = findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return super.onOptionsItemSelected(item);
     }
+    */
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -140,6 +155,46 @@ public class HomeActivity extends AppCompatActivity
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_incoming:
+                try {
+                    fragmentClass = IncomingFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Incoming").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_completed:
+                try {
+                    fragmentClass = CompletedFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Completed").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_profile:
+                try {
+                    fragmentClass = ProfileFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_settings:
+                try {
+                    fragmentClass = SettingsFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -169,4 +224,26 @@ public class HomeActivity extends AppCompatActivity
         ft.addToBackStack("PROFILE");
         ft.commit();
     }
+
+    private void updateMenu() {
+        fragment = fragmentManager.findFragmentById(R.id.flContent);
+        if(fragment!=null){
+            if(fragment instanceof ProfileFragment){
+                navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+            } else if(fragment instanceof EditProfileFragment){
+                navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+            } else if(fragment instanceof CompletedFragment){
+                navigationView.getMenu().findItem(R.id.nav_completed).setChecked(true);
+            } else if(fragment instanceof IncomingFragment){
+                navigationView.getMenu().findItem(R.id.nav_incoming).setChecked(true);
+            } else if(fragment instanceof NotificationsFragment){
+                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            } else if(fragment instanceof SettingsFragment){
+                navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
+            } else {
+                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            }
+        }
+    }
+
 }
