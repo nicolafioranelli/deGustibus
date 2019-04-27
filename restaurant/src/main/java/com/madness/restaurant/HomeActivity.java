@@ -7,16 +7,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        toolbar = (Toolbar) findViewById(R.id.toolbarhome);
+        toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -67,18 +67,18 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         fragmentManager = getSupportFragmentManager();
 
         /* Instantiate home fragment */
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -90,7 +90,7 @@ public class HomeActivity extends AppCompatActivity
                 Log.e("MAD", "onCreate: ", e);
             }
         } else {
-            fragment = (Fragment) getSupportFragmentManager().findFragmentByTag("HOME");
+            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -135,19 +135,21 @@ public class HomeActivity extends AppCompatActivity
 
     private void updateMenu() {
         fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if(fragment!=null){
-            if(fragment instanceof ProfileFragment){
+        if (fragment != null) {
+            if (fragment instanceof ProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if(fragment instanceof EditProfile){
+            } else if (fragment instanceof EditProfile) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if(fragment instanceof DailyFragment){
+            } else if (fragment instanceof DailyFragment) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
-            } else if(fragment instanceof NewDailyOffer){
+            } else if (fragment instanceof NewDailyOffer) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
-            } else if(fragment instanceof ReservationFragment){
+            } else if (fragment instanceof ReservationFragment) {
                 navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
-            } else if(fragment instanceof NewReservationFragment){
+            } else if (fragment instanceof NewReservationFragment) {
                 navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
+            } else if (fragment instanceof SettingsFragment) {
+                navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
@@ -192,15 +194,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        /*fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if(fragment!=null){
-            Log.d("MAD", "onBackPressed: TRUE");
-            if(fragment instanceof ProfileFragment){
-                Log.d("MAD", "onBackPressed: PROFILE");
-            }
-        }*/
-
         super.onBackPressed();
     }
 
@@ -226,9 +219,9 @@ public class HomeActivity extends AppCompatActivity
         fragment = null;
         Class fragmentClass;
 
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_profile:
-                try{
+                try {
                     fragmentClass = ProfileFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
@@ -238,7 +231,7 @@ public class HomeActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_reservations:
-                try{
+                try {
                     fragmentClass = ReservationFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
@@ -257,8 +250,18 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
+            case R.id.nav_settings:
+                try {
+                    fragmentClass = SettingsFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "SETTINGS").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
-                try{
+                try {
                     fragmentClass = HomeFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
@@ -269,7 +272,7 @@ public class HomeActivity extends AppCompatActivity
         }
         item.setChecked(true);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -281,10 +284,9 @@ public class HomeActivity extends AppCompatActivity
         NewReservationFragment editRes = (NewReservationFragment)
                 getSupportFragmentManager().findFragmentByTag("AddReservation");
         if (editFrag != null) {
-            editFrag.setHourAndMinute(hourOfDay,minute);
-        }
-        else if(editRes != null) {
-            editRes.setHourAndMinute(hourOfDay,minute);
+            editFrag.setHourAndMinute(hourOfDay, minute);
+        } else if (editRes != null) {
+            editRes.setHourAndMinute(hourOfDay, minute);
         }
     }
 
@@ -292,7 +294,7 @@ public class HomeActivity extends AppCompatActivity
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         NewReservationFragment editRes = (NewReservationFragment)
                 getSupportFragmentManager().findFragmentByTag("AddReservation");
-        if(editRes != null) {
+        if (editRes != null) {
             editRes.setDate(year, month, dayOfMonth);
         }
     }
@@ -301,7 +303,7 @@ public class HomeActivity extends AppCompatActivity
     public void onSubmit() {
         ReservationFragment reservationFragment = (ReservationFragment)
                 getSupportFragmentManager().findFragmentByTag("RESERVATION");
-        if(reservationFragment != null) {
+        if (reservationFragment != null) {
             reservationFragment.addOnReservation();
         }
     }
@@ -310,7 +312,7 @@ public class HomeActivity extends AppCompatActivity
     public void onSubmitDish() {
         DailyFragment dailyFragment = (DailyFragment)
                 getSupportFragmentManager().findFragmentByTag("DAILY");
-        if(dailyFragment != null) {
+        if (dailyFragment != null) {
             dailyFragment.addOnDaily();
         }
     }

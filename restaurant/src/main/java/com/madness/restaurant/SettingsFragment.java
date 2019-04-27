@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.restaurant;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -75,6 +75,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return false;
             }
         });
+
+        getActivity().setTitle(getString(R.string.title_Settings));
     }
 }
 

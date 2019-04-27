@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Account">
+    <android.support.v7.preference.PreferenceCategory android:title="@string/set_CatAccount">
 
         <android.support.v7.preference.Preference
-            android:key="account1"
-            android:title="Modify Password"
-            android:summary="Click here to insert a new password"
             android:icon="@drawable/settings_password"
-            />
+            android:key="account1"
+            android:summary="@string/set_SumModify"
+            android:title="@string/set_TitleModify" />
 
         <android.support.v7.preference.Preference
+            android:icon="@drawable/settings_delete"
             android:key="account2"
-            android:title="Delete account"
-            android:summary="This operation removes the account permanently"
-            android:icon="@drawable/settings_delete"/>
+            android:summary="@string/set_SumDelete"
+            android:title="@string/set_TitleDelete" />
 
         <android.support.v7.preference.Preference
-            android:key="account3"
-            android:title="Logout"
             android:icon="@drawable/settings_logout"
-            />
+            android:key="account3"
+            android:title="@string/set_TitleLogout" />
 
     </android.support.v7.preference.PreferenceCategory>
 
