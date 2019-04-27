@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".HomeActivity">
 
     <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_save"
+        android:id="@+id/action_notifications"
+        android:icon="@drawable/ic_toolbar_notifications"
         android:orderInCategory="300"
-        android:title="Save"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/title_Notifications"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">deGustibus</string>
-    <string name="gallery">Seleziona dalla galleria</string>
-    <string name="saved">Salvato!</string>
+    <string name="action_sign_in_short">Registrati</string>
+    <string name="auth_failed">Autenticazione fallita! Verifica l\'email e la password o registrati.</string>
+    <string name="btn_forgot_password">Dimenticata la password?</string>
+    <string name="btn_link_to_login">Già registrato. Effettua il login!</string>
+    <string name="btn_link_to_register">Non sei registrato? Iscriviti subito a deGustibus!</string>
+    <string name="btn_send">Invia</string>
     <string name="camera">Scatta una foto</string>
-    <string name="default_phone">Telefono</string>
-    <string name="default_email">Email</string>
-    <string name="default_desc">Descrizione</string>
-    <string name="default_fullname">Nome</string>
-    <string name="default_address">Indirizzo</string>
-    <string name="desc">Mi piace molto la pizza e la pasta.</string>
+    <string name="connect_failed">Verifica la tua connessione a internet!</string>
+    <string name="forgot_password_msg">Abbiamo bisogno solo della tua email di registrazione per poterti inviare le istruzioni per il reset della password.</string>
+    <string name="frProfile_addr">Indirizzo</string>
+    <string name="frProfile_defDesc">Mi piace la pizza e la pasta alla carbonara.</string>
+    <string name="frProfile_desc">Descrizione</string>
+    <string name="frProfile_name">Nome</string>
+    <string name="frProfile_phone">Telefono</string>
+    <string name="gallery">Seleziona dalla galleria</string>
+    <string name="lbl_forgot_password">Password dimenticata?</string>
+    <string name="menu_profile">Profilo</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="minimum_password">La password è troppo breve, inseriscine una di almeno 6 caratteri!</string>
+    <string name="permission_denied">Per poter accedere a questa funzionalità, abilita i permessi richiesti!</string>
+    <string name="saved">Salvato!</string>
     <string name="select_action">Seleziona un\'azione</string>
+    <string name="set_SumDelete">Questa operazione rimuoverà in maniera definitiva il tuo account.</string>
+    <string name="set_SumModify">Clicca se desideri inserire una nuova password.</string>
+    <string name="set_TitleDelete">Elimina account</string>
+    <string name="set_TitleLogout">Esci</string>
+    <string name="set_TitleModify">Modifica password</string>
+    <string name="title_EditProfile">Modifica</string>
+    <string name="title_Notifications">Notifiche</string>
+    <string name="title_Profile">Profilo</string>
+    <string name="title_Settings">Impostazioni</string>
+    <string name="title_activity_login">Registrati</string>
 </resources>

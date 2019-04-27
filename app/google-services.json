@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "582364918540",
+    "firebase_url": "https://madpolito-45e42.firebaseio.com",
+    "project_id": "madpolito-45e42",
+    "storage_bucket": "madpolito-45e42.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582364918540:android:c7c7a441fa42c7d0",
+        "android_client_info": {
+          "package_name": "com.madness.degustibus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582364918540-jt201p2j73e5agmdbhjsu40mk0eakrhs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.madness.degustibus",
+            "certificate_hash": "1c986fe00f45875440d5c8f0042a4bb9985f58f1"
+          }
+        },
+        {
+          "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4g0hYZd134M_OyWAsiJDjrGsWb-C_3ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582364918540:android:8e12983615f3b60a",
+        "android_client_info": {
+          "package_name": "com.madness.deliveryman"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582364918540-nf9voh0iq0021bsn9ooaot85t0v45084.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.madness.deliveryman",
+            "certificate_hash": "1c986fe00f45875440d5c8f0042a4bb9985f58f1"
+          }
+        },
+        {
+          "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4g0hYZd134M_OyWAsiJDjrGsWb-C_3ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582364918540:android:a24a83832fa0c63a",
+        "android_client_info": {
+          "package_name": "com.madness.restaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582364918540-lug7e5bmh102r0ts3dpl77pdn0mks79a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.madness.restaurant",
+            "certificate_hash": "1c986fe00f45875440d5c8f0042a4bb9985f58f1"
+          }
+        },
+        {
+          "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4g0hYZd134M_OyWAsiJDjrGsWb-C_3ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582364918540-fgs6u4hme757lebaijlv24u29vefn8fp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
