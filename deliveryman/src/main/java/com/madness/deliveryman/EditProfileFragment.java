@@ -32,9 +32,6 @@ import android.widget.Toast;
 
 import java.io.File;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class EditProfileFragment extends Fragment {
 
     private EditText fullname;
@@ -68,9 +65,7 @@ public class EditProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
-        //getActivity().setTitle(getResources().getString(R.string.title_Edit));
-        //TODO: modify by adding string
-        getActivity().setTitle("Edit profile");
+        getActivity().setTitle(getString(R.string.title_Edit));
         return rootView;
     }
 
@@ -82,21 +77,21 @@ public class EditProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         /* store the status of the radio button */
-        vehicles = (RadioGroup) getView().findViewById(R.id.rg_edit_vehicle);
+        vehicles = getView().findViewById(R.id.rg_edit_vehicle);
         vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                button = (RadioButton) getView().findViewById(checkedId);
+                button = getView().findViewById(checkedId);
                 switch (button.getId()) {
-                    case R.id.rb_edit_bike:{
+                    case R.id.rb_edit_bike: {
                         vehicle = "bike";
                     }
                     break;
-                    case R.id.rb_edit_car:{
+                    case R.id.rb_edit_car: {
                         vehicle = "car";
                     }
                     break;
-                    case R.id.rb_edit_motorbike:{
+                    case R.id.rb_edit_motorbike: {
                         vehicle = "motorbike";
                     }
                     break;
@@ -105,9 +100,9 @@ public class EditProfileFragment extends Fragment {
         });
 
         //restore the content
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             loadBundle(savedInstanceState);
-        }else{
+        } else {
             loadSharedPrefs();
         }
 
@@ -119,7 +114,7 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /* Click listener to correctly handle actions related to toolbar items */
@@ -139,7 +134,7 @@ public class EditProfileFragment extends Fragment {
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
             editor.putString("vehicle", this.vehicle);
-            if (getPrefPhoto()!=null) {
+            if (getPrefPhoto() != null) {
                 editor.putString("photo", getPrefPhoto());
             }
             editor.apply();
@@ -155,18 +150,18 @@ public class EditProfileFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private String getPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        return pref.getString("photo", null);
+    }
+
     /* Methods (getters, setters and delete) to retrieve temporary photo uri. */
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("photo", cameraFilePath);
         editor.commit();
-    }
-
-    private String getPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        return pref.getString("photo", null);
     }
 
     private void delPrefPhoto() {
@@ -176,7 +171,7 @@ public class EditProfileFragment extends Fragment {
         editor.apply();
     }
 
-    private void loadSharedPrefs(){
+    private void loadSharedPrefs() {
         fullname = getView().findViewById(R.id.et_edit_fullName);
         email = getView().findViewById(R.id.et_edit_email);
         desc = getView().findViewById(R.id.et_edit_desc);
@@ -193,19 +188,19 @@ public class EditProfileFragment extends Fragment {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
 
-        String tmp = pref.getString("vehicle","bike");
+        String tmp = pref.getString("vehicle", "bike");
         switch (tmp) {
-            case "bike":{
+            case "bike": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_bike);
                 button.toggle();
             }
             break;
-            case "car":{
+            case "car": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_car);
                 button.toggle();
             }
             break;
-            case "motorbike":{
+            case "motorbike": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_motorbike);
                 button.toggle();
             }
@@ -213,7 +208,7 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
-    private void loadBundle(Bundle bundle){
+    private void loadBundle(Bundle bundle) {
         fullname = getView().findViewById(R.id.et_edit_fullName);
         email = getView().findViewById(R.id.et_edit_email);
         desc = getView().findViewById(R.id.et_edit_desc);
@@ -224,23 +219,23 @@ public class EditProfileFragment extends Fragment {
         email.setText(bundle.getString("email"));
         desc.setText(bundle.getString("desc"));
         phone.setText(bundle.getString("phone"));
-        if(bundle.getString("photo")!=null) {
+        if (bundle.getString("photo") != null) {
             img.setImageURI(Uri.parse(bundle.getString("photo")));
         }
         String selector = bundle.getString("vehicle");
 
         switch (selector) {
-            case "bike":{
+            case "bike": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_bike);
                 button.toggle();
             }
             break;
-            case "car":{
+            case "car": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_car);
                 button.toggle();
             }
             break;
-            case "motorbike":{
+            case "motorbike": {
                 RadioButton button = getView().findViewById(R.id.rb_edit_motorbike);
                 button.toggle();
             }
@@ -264,11 +259,9 @@ public class EditProfileFragment extends Fragment {
         outState.putString("email", email.getText().toString());
         outState.putString("desc", desc.getText().toString());
         outState.putString("phone", phone.getText().toString());
-        outState.putString("vehicle",this.vehicle);
-        if(getPrefPhoto()==null) {
-
+        outState.putString("vehicle", this.vehicle);
+        if (getPrefPhoto() == null) {
             outState.putString("photo", pref.getString("photo", null));
-            Log.d("MAD", "onSaveInstanceState: " + outState.getString("photo"));
         } else {
             outState.putString("photo", getPrefPhoto());
         }
@@ -277,7 +270,7 @@ public class EditProfileFragment extends Fragment {
     /* This method is used to retrieve the photo via camera or gallery and it is the same
      * of the previous laboratory.
      */
-    public void getPhoto(View v){
+    public void getPhoto(View v) {
         img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,7 +301,7 @@ public class EditProfileFragment extends Fragment {
      * gallery; in case the result is canceled (the user presses back before take the picture)
      * the temporary file is canceled.
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -323,9 +316,8 @@ public class EditProfileFragment extends Fragment {
                     setPrefPhoto(selectedImage.toString());
                     break;
             }
-        } else if(resultCode == Activity.RESULT_CANCELED) {
-            Log.d("MAD", "onActivityResult: CANCELED");
-            try{
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            try {
                 File photoToCancel = new File(getPrefPhoto());
                 photoToCancel.delete();
             } catch (Exception e) {
@@ -341,19 +333,18 @@ public class EditProfileFragment extends Fragment {
      * caught by the method onRequestPermissionsResult() that in case everything is ok will perform the requested
      * operations, otherwise will do nothing.
      */
-    private void checkPermissionsAndStartGallery(){
+    private void checkPermissionsAndStartGallery() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
-            Log.d("MAD", "onCreate: permission granted" );
             //Create an Intent with action as ACTION_PICK
-            Intent intent=new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
             intent.setType("image/*");
             //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
             String[] mimeTypes = {"image/jpeg", "image/png"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             // Launching the Intent
             startActivityForResult(intent, 1);
         }
@@ -392,7 +383,6 @@ public class EditProfileFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d("MAD", "onRequestPermissionsResult: HERE");
         switch (requestCode) {
             case 20: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -451,7 +441,7 @@ public class EditProfileFragment extends Fragment {
             public void onClick(View v) {
                 boolean checked = ((RadioButton) v).isChecked();
                 // Check which radio button was clicked
-                switch(v.getId()) {
+                switch (v.getId()) {
                     case R.id.rb_edit_bike:
                         if (checked)
                             vehicle = "bike";

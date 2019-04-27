@@ -6,8 +6,8 @@
 
     <item
         android:id="@+id/action_notifications"
-        android:orderInCategory="300"
-        android:title="Notifications"
         android:icon="@drawable/ic_toolbar_notifications"
-        app:showAsAction="ifRoom"/>
+        android:orderInCategory="300"
+        android:title="@string/title_Notifications"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,17 +1,38 @@
 <resources>
     <string name="app_name">deGustibus</string>
 
+    <!-- Fragment Titles -->
+    <string name="title_Home" translatable="false">Home</string>
+    <string name="title_Completed">Completed</string>
+    <string name="title_Edit">Edit</string>
+    <string name="title_Incoming">Incoming</string>
+    <string name="title_Notifications">Notifications</string>
+    <string name="title_Profile">Profile</string>
+    <string name="title_Settings">Settings</string>
+
+    <!-- Nav titles -->
+    <string name="menu_home" translatable="false">Home</string>
+    <string name="menu_incoming">Incoming</string>
+    <string name="menu_completed">Completed</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_settings">Settings</string>
+
+    <!-- Settings -->
+    <string name="set_TitleModify">Modify Password</string>
+    <string name="set_TitleDelete">Delete Account</string>
+    <string name="set_TitleLogout">Logout</string>
+    <string name="set_CatAccount" translatable="false">Account</string>
+    <string name="set_SumModify">Click here to insert a new password</string>
+    <string name="set_SumDelete">This operation will remove the account permanently</string>
+
     <!-- EDIT PROFILE -->
-    <string name="default_email">Email</string>
+    <string name="default_email" translatable="false">Email</string>
     <string name="default_desc">Description</string>
     <string name="default_phone">Phone</string>
     <string name="default_location">Zones</string>
     <string name="default_availab">Availability</string>
     <string name="default_car">Vehicle</string>
 
-    <string name="camera">Capture photo from camera</string>
-    <string name="gallery">Select photo from gallery</string>
-    <string name="saved">Saved!</string>
     <string name="default_fullname">Name and Surname</string>
     <string name="bike">Bike</string>
     <string name="car">Car</string>
@@ -21,54 +42,39 @@
     <string name="email" translatable="false">mario@delivering.it</string>
     <string name="desc">Love delivering.</string>
     <string name="phone" translatable="false">011 2537598</string>
-    <string name="title_activity_home">HomeActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <!-- Utils -->
+    <string name="camera">Capture photo from camera</string>
+    <string name="gallery">Select photo from gallery</string>
+    <string name="saved">Saved!</string>
     <string name="permission_denied">Please, enable the requested permissions to access this functionality!</string>
 
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
     <!-- Authentication -->
     <string name="action_sign_in_short">Register</string>
-    <string name="reg_email">Email</string>
+    <string name="reg_email" translatable="false">Email</string>
     <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
     <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
     <string name="connect_failed">Please, check your internet connection!</string>
-    <string name="change_email">Change Email</string>
-    <string name="change_password">Change Password</string>
-    <string name="send_password_reset_email">Send Password reset email</string>
-    <string name="remove_user">Remove user</string>
-    <string name="new_pass">New Password</string>
-    <string name="title_activity_profile">Firebase</string>
-    <string name="title_activity_login">Sign in</string>
-    <string name="hint_email">Email</string>
-    <string name="hint_password">Password</string>
-    <string name="hint_name">Fullname</string>
-    <string name="btn_login">LOGIN</string>
+    <string name="hint_email" translatable="false">Email</string>
+    <string name="hint_password" translatable="false">Password</string>
+    <string name="btn_login" translatable="false">LOGIN</string>
     <string name="btn_link_to_register">Not a member? Get registered in deGustibus now!</string>
     <string name="btn_link_to_login">Already registered. Login Me!</string>
     <string name="btn_forgot_password">Forgot your password?</string>
-    <string name="btn_reset_password">Reset Password</string>
-    <string name="btn_back"><![CDATA[<< Back]]></string>
-    <string name="hint_new_email">New Email</string>
-    <string name="btn_change">Change</string>
-    <string name="btn_send">Send</string>
-    <string name="btn_remove">Remove</string>
-    <string name="btn_sign_out">Sign Out</string>
+    <string name="btn_reset_password" translatable="false">Reset Password</string>
+    <string name="btn_back" translatable="false"><![CDATA[<< Back]]></string>
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email to sent you password reset instructions.</string>
+
+    <string name="err_emailMiss">Enter email address!</string>
+    <string name="err_passMiss">Enter password!</string>
+    <string name="psw_changed">Password changed successfully!</string>
+    <string name="err_passShort">Password too short, enter minimum 6 characters!</string>
+    <string name="reg_compl">Registration completed successfully, welcome!</string>
+    <string name="err_reg">Authentication failed.</string>
+    <string name="pass_ok">We have sent you instructions to reset your password!</string>
+    <string name="pass_err">Failed to send reset email!</string>
 </resources>

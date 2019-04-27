@@ -63,4 +63,13 @@
     <string name="btn_send">Send</string>
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email to sent you password reset instructions.</string>
+
+    <string name="err_emailMiss">Enter email address!</string>
+    <string name="err_passMiss">Enter password!</string>
+    <string name="psw_changed">Password changed successfully!</string>
+    <string name="err_passShort">Password too short, enter minimum 6 characters!</string>
+    <string name="reg_compl">Registration completed successfully, welcome!</string>
+    <string name="err_reg">Authentication failed.</string>
+    <string name="pass_ok">We have sent you instructions to reset your password!</string>
+    <string name="pass_err">Failed to send reset email!</string>
 </resources>

@@ -10,23 +10,19 @@
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_incoming"
-            android:title="Consegne"
             android:icon="@drawable/ic_menu_incoming"
-            />
+            android:title="@string/menu_incoming" />
         <item
             android:id="@+id/nav_completed"
-            android:title="Ordini completati"
             android:icon="@drawable/ic_menu_completed"
-            />
+            android:title="@string/menu_completed" />
         <item
             android:id="@+id/nav_profile"
-            android:title="Profilo"
             android:icon="@drawable/ic_menu_profile"
-            />
+            android:title="@string/menu_profile" />
         <item
             android:id="@+id/nav_settings"
-            android:title="Impostazioni"
             android:icon="@drawable/ic_menu_settings"
-            />
+            android:title="@string/menu_settings" />
     </group>
 </menu>

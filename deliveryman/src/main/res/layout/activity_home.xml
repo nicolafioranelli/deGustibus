@@ -22,10 +22,9 @@
         <!-- The main content view where fragments are loaded -->
         <FrameLayout
             android:id="@+id/flContent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-        </FrameLayout>
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"></FrameLayout>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

@@ -43,7 +43,7 @@ public class ModifyPasswordFragment extends DialogFragment {
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        update();
                     }
                 })
                 .setTitle("Modify password");
@@ -74,7 +74,7 @@ public class ModifyPasswordFragment extends DialogFragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(getActivity().getApplicationContext(), "Password changed successfully!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.psw_changed), Toast.LENGTH_LONG).show();
                             }
                         }
                     });

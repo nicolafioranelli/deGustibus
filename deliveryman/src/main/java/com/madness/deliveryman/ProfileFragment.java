@@ -15,9 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class ProfileFragment extends Fragment {
 
     /* Views */
@@ -31,11 +28,6 @@ public class ProfileFragment extends Fragment {
     private SharedPreferences pref;
     private ProfileListener listener;
 
-    /* Interface for the listener */
-    public interface ProfileListener {
-        public void editProfileClick();
-    }
-
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -44,7 +36,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof ProfileListener) {
+        if (context instanceof ProfileListener) {
             listener = (ProfileListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement ProfileListener");
@@ -62,8 +54,8 @@ public class ProfileFragment extends Fragment {
     /* Populates the menu with the edit button */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);;
-        super.onCreateOptionsMenu(menu,inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /* Click listener to correctly handle actions related to toolbar items */
@@ -84,9 +76,7 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
-        //getActivity().setTitle(getResources().getString(R.string.title_Profile));
-        getActivity().setTitle("Profile");
-        //TODO: insert string
+        getActivity().setTitle(getString(R.string.title_Profile));
         return rootView;
     }
 
@@ -104,29 +94,34 @@ public class ProfileFragment extends Fragment {
         desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
         phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
 
-        String selector = pref.getString("vehicle","bike");
+        String selector = pref.getString("vehicle", "bike");
         switch (selector) {
-            case "bike":{
-                String v  = this.getString(R.string.bike);
+            case "bike": {
+                String v = this.getString(R.string.bike);
                 vehicle.setText(v);
             }
             break;
-            case "car":{
-                String v  = this.getString(R.string.car);
+            case "car": {
+                String v = this.getString(R.string.car);
                 vehicle.setText(v);
             }
             break;
-            case "motorbike":{
-                String v  = this.getString(R.string.motorbike);
+            case "motorbike": {
+                String v = this.getString(R.string.motorbike);
                 vehicle.setText(v);
             }
             break;
         }
 
-        if(pref.getString("photo", null) != null) {
+        if (pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
         super.onResume();
+    }
+
+    /* Interface for the listener */
+    public interface ProfileListener {
+        void editProfileClick();
     }
 
 }

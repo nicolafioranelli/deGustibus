@@ -75,6 +75,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return false;
             }
         });
+
+        getActivity().setTitle(getString(R.string.title_Settings));
     }
 }
 
