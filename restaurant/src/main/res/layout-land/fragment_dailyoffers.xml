@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:name="com.madness.restaurant.DailyFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<android.support.v7.widget.RecyclerView
-    android:id="@+id/dishes"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    tools:listitem="@layout/dailyoffer_listitem" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/dishes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/dailyoffer_listitem" />
 
-<android.support.design.widget.FloatingActionButton
-    android:id="@+id/dailyFab"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="end|bottom"
-    android:src="@drawable/ic_add"
-    android:layout_margin="16dp" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/dailyFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add" />
 
 </FrameLayout>

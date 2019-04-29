@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +17,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,11 +55,6 @@ public class NewDailyOffer extends Fragment {
     private SharedPreferences.Editor editor;
     private NewDailyOfferListener listener;
 
-    /* Listener is temporary disabled since no integration with the database is present */
-    public interface NewDailyOfferListener {
-        public void onSubmitDish();
-    }
-
     public NewDailyOffer() {
         // Required empty public constructor
     }
@@ -68,7 +63,7 @@ public class NewDailyOffer extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof NewDailyOfferListener) {
+        if (context instanceof NewDailyOfferListener) {
             listener = (NewDailyOfferListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement NewDailyOfferListener");
@@ -89,7 +84,7 @@ public class NewDailyOffer extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.fragment_new_daily_offer, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_new_daily_offer, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
         return rootView;
     }
@@ -99,27 +94,27 @@ public class NewDailyOffer extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-        minusBtn = (Button) getActivity().findViewById(R.id.button_minus);
-        plusBtn = (Button) getActivity().findViewById(R.id.button_plus);
+        minusBtn = getActivity().findViewById(R.id.button_minus);
+        plusBtn = getActivity().findViewById(R.id.button_plus);
         dishname = getActivity().findViewById(R.id.et_dish_name);
         desc = getActivity().findViewById(R.id.et_desc);
         avail = getActivity().findViewById(R.id.et_avail);
         price = getActivity().findViewById(R.id.et_price);
         img = getActivity().findViewById(R.id.imageviewfordish);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             loadBundle(savedInstanceState);
-        }else{
+        } else {
             loadSharedPrefs();
         }
 
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                avail = (EditText) getActivity().findViewById(R.id.et_avail);
+                avail = getActivity().findViewById(R.id.et_avail);
                 String num = avail.getText().toString();
                 int n = Integer.parseInt(num);
-                if (n>0) {
+                if (n > 0) {
                     n--;
                 }
                 avail.setText(String.valueOf(n));
@@ -129,9 +124,9 @@ public class NewDailyOffer extends Fragment {
         plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                avail = (EditText) getActivity().findViewById(R.id.et_avail);
+                avail = getActivity().findViewById(R.id.et_avail);
                 String num = avail.getText().toString();
-                int n = Integer.parseInt(num)+1;
+                int n = Integer.parseInt(num) + 1;
                 avail.setText(String.valueOf(n));
             }
         });
@@ -148,7 +143,7 @@ public class NewDailyOffer extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -158,17 +153,17 @@ public class NewDailyOffer extends Fragment {
 
         outState.putString("dish", dishname.getText().toString());
         outState.putString("descDish", desc.getText().toString());
-        outState.putString("avail",avail.getText().toString());
-        outState.putString("price",price.getText().toString());
-        if(getPrefPhoto()==null) {
+        outState.putString("avail", avail.getText().toString());
+        outState.putString("price", price.getText().toString());
+        if (getPrefPhoto() == null) {
             outState.putString("photoDish", pref.getString("photoDish", null));
         } else {
             outState.putString("photoDish", getPrefPhoto());
         }
     }
 
-    public void getPhoto(View v){
-        ImageView imageView = (ImageView) getActivity().findViewById(R.id.imageviewfordish);
+    public void getPhoto(View v) {
+        ImageView imageView = getActivity().findViewById(R.id.imageviewfordish);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,11 +186,12 @@ public class NewDailyOffer extends Fragment {
                             }
                         });
                 pictureDialog.show();
-            };
+            }
+
         });
     }
 
-    public void onActivityResult(int requestCode,int resultCode,Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -211,9 +207,9 @@ public class NewDailyOffer extends Fragment {
                     setPrefPhoto(selectedImage.toString());
                     break;
             }
-        } else if(resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.d("MAD", "onActivityResult: CANCELED");
-            try{
+            try {
                 File photoToCancel = new File(getPrefPhoto());
                 photoToCancel.delete();
             } catch (Exception e) {
@@ -223,6 +219,11 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
+    private String getPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        return pref.getString("photoDish", null);
+    }
 
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
@@ -231,19 +232,12 @@ public class NewDailyOffer extends Fragment {
         editor.apply();
     }
 
-    private String getPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        return pref.getString("photoDish", null);
-    }
-
     private void delPrefPhoto() {
         SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.remove("photoDish");
         editor.apply();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -260,7 +254,7 @@ public class NewDailyOffer extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadSharedPrefs(){
+    private void loadSharedPrefs() {
         dishname.setText(pref.getString("dish", getResources().getString(R.string.frDaily_defName)));
         desc.setText(pref.getString("descDish", getResources().getString(R.string.frDaily_defDesc)));
         avail.setText(pref.getString("avail", String.valueOf(0)));
@@ -271,12 +265,12 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
-    private void loadBundle(Bundle bundle){
+    private void loadBundle(Bundle bundle) {
         dishname.setText(bundle.getString("dish"));
         desc.setText(bundle.getString("descDish"));
         avail.setText(bundle.getString("avail"));
         price.setText(bundle.getString("price"));
-        if(bundle.getString("photoDish")!=null) {
+        if (bundle.getString("photoDish") != null) {
             img.setImageURI(Uri.parse(bundle.getString("photoDish")));
         }
 
@@ -288,19 +282,19 @@ public class NewDailyOffer extends Fragment {
      * caught by the method onRequestPermissionsResult() that in case everything is ok will perform the requested
      * operations, otherwise will do nothing.
      */
-    private void checkPermissionsAndStartGallery(){
+    private void checkPermissionsAndStartGallery() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
-            Log.d("MAD", "onCreate: permission granted" );
+            Log.d("MAD", "onCreate: permission granted");
             //Create an Intent with action as ACTION_PICK
-            Intent intent=new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
             intent.setType("image/*");
             //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
             String[] mimeTypes = {"image/jpeg", "image/png"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             // Launching the Intent
             startActivityForResult(intent, 1);
         }
@@ -390,5 +384,10 @@ public class NewDailyOffer extends Fragment {
             }
             break;
         }
+    }
+
+    /* Listener is temporary disabled since no integration with the database is present */
+    public interface NewDailyOfferListener {
+        void onSubmitDish();
     }
 }

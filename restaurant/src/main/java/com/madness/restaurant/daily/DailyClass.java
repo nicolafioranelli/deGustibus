@@ -1,25 +1,42 @@
 package com.madness.restaurant.daily;
 
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class DailyClass implements Parcelable {
 
+    public static final Creator<DailyClass> CREATOR = new Creator<DailyClass>() {
+        @Override
+        public DailyClass createFromParcel(Parcel in) {
+            return new DailyClass(in);
+        }
+
+        @Override
+        public DailyClass[] newArray(int size) {
+            return new DailyClass[size];
+        }
+    };
     String dish;
-    private int identifier;
     String pic;
     String type;
     String avail;
     String price;
+    private int identifier;
 
     protected DailyClass(Parcel in) {
-        pic =in.readString();
+        pic = in.readString();
         dish = in.readString();
         type = in.readString();
         avail = in.readString();
         price = in.readString();
+    }
+
+    public DailyClass(String dish, String type, String avail, String price, String pic) {
+        this.dish = dish;
+        this.pic = pic;
+        this.type = type;
+        this.avail = avail;
+        this.price = price;
     }
 
     @Override
@@ -35,17 +52,6 @@ public class DailyClass implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<DailyClass> CREATOR = new Creator<DailyClass>() {
-        @Override
-        public DailyClass createFromParcel(Parcel in) {
-            return new DailyClass(in);
-        }
-        @Override
-        public DailyClass[] newArray(int size) {
-            return new DailyClass[size];
-        }
-    };
 
     public String getDish() {
         return dish;
@@ -93,13 +99,5 @@ public class DailyClass implements Parcelable {
 
     public void setIdentifier(int identifier) {
         this.identifier = identifier;
-    }
-
-    public DailyClass (String dish,String type, String avail,String price, String pic) {
-        this.dish = dish;
-        this.pic = pic;
-        this.type = type;
-        this.avail = avail;
-        this.price = price;
     }
 }

@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.madness.restaurant.R;
+
 import java.util.ArrayList;
 
 public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.DailyViewHolder> {
@@ -16,20 +18,6 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
 
     public DailyDataAdapter(ArrayList<DailyClass> dailies) {
         this.dailies = dailies;
-    }
-
-    public class DailyViewHolder extends RecyclerView.ViewHolder {
-        private TextView dish, type, avail, price;
-        private ImageView pic;
-
-        public DailyViewHolder(@NonNull View view) {
-            super(view);
-            pic = (ImageView) view.findViewById(R.id.dish_icon);
-            dish = (TextView) view.findViewById(R.id.dish_name);
-            type = (TextView) view.findViewById(R.id.dish_type);
-            avail = (TextView) view.findViewById(R.id.dish_quantity);
-            price = (TextView) view.findViewById(R.id.dish_price);
-        }
     }
 
     @NonNull
@@ -47,7 +35,7 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
         holder.type.setText(daily.getType());
         holder.avail.setText(daily.getAvail());
         holder.price.setText(daily.getPrice() + " €");
-        if(daily.getPic() == null) {
+        if (daily.getPic() == null) {
             //default pic
             holder.pic.setImageResource(R.drawable.dish_image);
         } else {
@@ -57,7 +45,7 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
 
     @Override
     public int getItemCount() {
-        return  dailies == null ? 0 : dailies.size();
+        return dailies == null ? 0 : dailies.size();
     }
 
     public void remove(int position) {
@@ -69,12 +57,26 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyDataAdapter.Dail
         return dailies.get(position);
     }
 
-    public void add (int position, DailyClass daily) {
+    public void add(int position, DailyClass daily) {
         dailies.add(position, daily);
         notifyItemInserted(position);
     }
 
-    public ArrayList<DailyClass> getList () {
+    public ArrayList<DailyClass> getList() {
         return dailies;
+    }
+
+    public class DailyViewHolder extends RecyclerView.ViewHolder {
+        private TextView dish, type, avail, price;
+        private ImageView pic;
+
+        public DailyViewHolder(@NonNull View view) {
+            super(view);
+            pic = view.findViewById(R.id.dish_icon);
+            dish = view.findViewById(R.id.dish_name);
+            type = view.findViewById(R.id.dish_type);
+            avail = view.findViewById(R.id.dish_quantity);
+            price = view.findViewById(R.id.dish_price);
+        }
     }
 }

@@ -3,22 +3,17 @@ package com.madness.restaurant.daily;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
@@ -34,17 +29,17 @@ import java.util.ArrayList;
  */
 public class DailyFragment extends Fragment {
 
-    private DailyListener listener;
+    private static final String ARG_COLUMN_COUNT = "column-count";
     ArrayList<DailyClass> dailyList = new ArrayList<>();
+    private DailyListener listener;
     private RecyclerView recyclerView;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private DailyDataAdapter mAdapter;
     private SwipeController swipeController;
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    private int replaced=0;
-    private int addedposition=0;
-    private boolean added=true;
+    private int replaced = 0;
+    private int addedposition = 0;
+    private boolean added = true;
     private int mColumnCount = 1;
 
     public DailyFragment() {
@@ -53,19 +48,14 @@ public class DailyFragment extends Fragment {
 
     /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella","10","20",null);
+        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella", "10", "20", null);
         this.dailyList.add(daily);
 
-        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù","10","15",null);
+        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù", "10", "15", null);
         this.dailyList.add(daily1);
 
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio","10","20",null);
+        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio", "10", "20", null);
         this.dailyList.add(daily2);
-    }
-
-    /* Here is defined the interface for the HomeActivity in order to manage the click */
-    public interface DailyListener {
-        void addDailyOffer();
     }
 
     /* Here is set the Adapter */
@@ -77,7 +67,7 @@ public class DailyFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof DailyListener) {
+        if (context instanceof DailyListener) {
             listener = (DailyListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement DailyListner");
@@ -97,7 +87,7 @@ public class DailyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView =  inflater.inflate(R.layout.fragment_dailyoffers, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_dailyoffers, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
 
         recyclerView = rootView.findViewById(R.id.dishes);
@@ -114,11 +104,11 @@ public class DailyFragment extends Fragment {
         });
 
         // set swipe controller
-        swipeController=new SwipeController((new SwipeControllerActions() {
+        swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
-                added=false;
-                replaced=position+1;
+                added = false;
+                replaced = position + 1;
                 editor.putString("dish", mAdapter.getDailyClass(position).getDish());
                 editor.putString("descDish", mAdapter.getDailyClass(position).getType());
                 editor.putString("avail", mAdapter.getDailyClass(position).getAvail());
@@ -149,12 +139,12 @@ public class DailyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FloatingActionButton resFb = (FloatingActionButton) getActivity().findViewById(R.id.dailyFab);
+        FloatingActionButton resFb = getActivity().findViewById(R.id.dailyFab);
         resFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                added=true;
-                addedposition=mAdapter.getItemCount();
+                added = true;
+                addedposition = mAdapter.getItemCount();
                 editor.putString("dish", getResources().getString(R.string.frDaily_defName));
                 editor.putString("descDish", getResources().getString(R.string.frDaily_defDesc));
                 editor.putString("avail", String.valueOf(0));
@@ -190,13 +180,18 @@ public class DailyFragment extends Fragment {
                 pref.getString("price", "13:00"),
                 pref.getString("photoDish", getResources().getString(R.string.reservation_dishesOrderededit))
         );
-        if(added)
-            mAdapter.add(addedposition,dailyClass);
-        if(!added){
-            mAdapter.add(replaced,dailyClass);
-            mAdapter.remove(replaced-1);
-            mAdapter.notifyItemRemoved(replaced-1);
-            mAdapter.notifyItemRangeChanged(replaced-1, mAdapter.getItemCount());
+        if (added)
+            mAdapter.add(addedposition, dailyClass);
+        if (!added) {
+            mAdapter.add(replaced, dailyClass);
+            mAdapter.remove(replaced - 1);
+            mAdapter.notifyItemRemoved(replaced - 1);
+            mAdapter.notifyItemRangeChanged(replaced - 1, mAdapter.getItemCount());
         }
+    }
+
+    /* Here is defined the interface for the HomeActivity in order to manage the click */
+    public interface DailyListener {
+        void addDailyOffer();
     }
 }
