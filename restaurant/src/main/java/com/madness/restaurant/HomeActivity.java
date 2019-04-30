@@ -24,6 +24,7 @@ import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;

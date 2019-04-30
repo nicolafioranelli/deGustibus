@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.picker;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;

@@ -1,4 +1,4 @@
-package com.madness.restaurant;
+package com.madness.restaurant.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.madness.restaurant.HomeActivity;
+import com.madness.restaurant.R;
 
 public class RegisterActivity extends AppCompatActivity {
 

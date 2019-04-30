@@ -19,9 +19,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.madness.restaurant.DayPickerFragment;
+import com.madness.restaurant.picker.DayPickerFragment;
 import com.madness.restaurant.R;
-import com.madness.restaurant.TimePickerFragment;
+import com.madness.restaurant.picker.TimePickerFragment;
 
 /**
  * NewReservation Fragment class

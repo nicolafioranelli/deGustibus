@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
-import com.madness.restaurant.TimePickerFragment;
+import com.madness.restaurant.picker.TimePickerFragment;
 
 import java.io.File;
 
