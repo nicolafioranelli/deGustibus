@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.degustibus.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,16 +24,18 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.madness.degustibus.HomeActivity;
+import com.madness.degustibus.R;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private static final int RC_SIGN_IN = 9001;
-    GoogleApiClient mGoogleApiClient;
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
+    private static final int RC_SIGN_IN = 9001;
     private SignInButton signInButton;
+    GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +54,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
 
         /* Retrieve elements of the view */
-        inputEmail = findViewById(R.id.email);
-        inputPassword = findViewById(R.id.password);
-        progressBar = findViewById(R.id.progressBar);
-        btnSignup = findViewById(R.id.btn_signup);
-        btnLogin = findViewById(R.id.btn_login);
-        btnReset = findViewById(R.id.btn_reset_password);
-        signInButton = findViewById(R.id.sign_in_button);
+        inputEmail = (EditText) findViewById(R.id.email);
+        inputPassword = (EditText) findViewById(R.id.password);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        btnSignup = (Button) findViewById(R.id.btn_signup);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnReset = (Button) findViewById(R.id.btn_reset_password);
+        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
         /* Set the listners for the buttons */
         btnSignup.setOnClickListener(new View.OnClickListener() {
@@ -125,8 +127,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(LoginActivity.this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .enableAutoManage(LoginActivity.this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                 .build();
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -140,16 +142,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /* Method for login with Google */
     private void signIn() {
         Intent signIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signIntent, RC_SIGN_IN);
+        startActivityForResult(signIntent,RC_SIGN_IN);
     }
 
     /* If signin in with google has been completed successfully then login will be launched automatically */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
+        if(requestCode==RC_SIGN_IN){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
+            if(result.isSuccess()){
                 GoogleSignInAccount account = result.getSignInAccount();
                 authWithGoogle(account);
             }
@@ -158,15 +160,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     /* Authentication with Google account */
     private void authWithGoogle(GoogleSignInAccount account) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
         auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
+                if(task.isSuccessful()){
                     startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                     finish();
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.auth_failed) ,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -175,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /* Display error message in case no connection is available */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getApplicationContext(), getString(R.string.connect_failed), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.connect_failed) ,Toast.LENGTH_LONG).show();
     }
 
 }

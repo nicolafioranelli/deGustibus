@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.madness.degustibus.auth.LoginActivity;
 
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
