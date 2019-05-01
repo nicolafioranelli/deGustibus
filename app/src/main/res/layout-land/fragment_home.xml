@@ -16,25 +16,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF"
-        android:gravity="center"
+        android:gravity="bottom"
         android:orientation="vertical"
         android:visibility="invisible">
 
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:layout_gravity="center"
-            android:src="@drawable/notification_done" />
+            android:src="@drawable/empty_layout" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="Well done... nothing more here!"
+            android:text="Ops... there is nothing here!"
             android:textSize="20dp"
             android:theme="@style/FirebaseUI.Text.BodyText" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/resFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_search" />
+    </LinearLayout>
+
 </FrameLayout>

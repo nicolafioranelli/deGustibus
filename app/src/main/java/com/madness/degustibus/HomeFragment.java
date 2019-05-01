@@ -8,12 +8,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -48,6 +50,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setHomeDataAdapter();
     }
 
     /* Here is set the Adapter */
@@ -64,16 +67,28 @@ public class HomeFragment extends Fragment {
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new HomeDataAdapter(restaurantList);
-        recyclerView.setAdapter(mAdapter);
 
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(manager);
-        /*recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });*/
+        /* Here is checked if there are elements to be displayed, in case nothing can be shown an
+        icon is set as visible and the other elements of the fragment are set invisible.
+         */
+        if (mAdapter.getItemCount() == 0) {
+            recyclerView.setVisibility(View.GONE);
+
+            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
+            linearLayout.setVisibility(View.VISIBLE);
+            LinearLayout linearLayout1 = rootView.findViewById(R.id.fabLayout);
+            linearLayout1.setVisibility(View.INVISIBLE);
+        } else {
+            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
+            linearLayout.setVisibility(View.INVISIBLE);
+            LinearLayout linearLayout1 = rootView.findViewById(R.id.fabLayout);
+            linearLayout1.setVisibility(View.VISIBLE);
+
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(mAdapter);
+            LinearLayoutManager manager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(manager);
+        }
         return rootView;
     }
 
@@ -81,7 +96,7 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            restaurantList = savedInstanceState.getParcelableArrayList("Dailies");
+            restaurantList = savedInstanceState.getParcelableArrayList("Restaurant");
             setHomeDataAdapter();
             recyclerView.setAdapter(mAdapter);
         }
@@ -90,7 +105,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("Restaurant", new ArrayList<>(mAdapter.getList()));
+
+        /* Checks if the fragment actually loaded is the home fragment, in case no disable the saving operation */
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
+        if( fragment instanceof HomeFragment ) {
+            View rootView = getLayoutInflater().inflate(R.layout.fragment_home, (ViewGroup) getView().getParent(), false);
+            recyclerView = rootView.findViewById(R.id.recyclerView);
+            if (recyclerView.getVisibility() == View.VISIBLE) {
+                outState.putParcelableArrayList("Restaurant", new ArrayList<>(mAdapter.getList()));
+            }
+        }
     }
 
     /* Populates the menu with the notification button */

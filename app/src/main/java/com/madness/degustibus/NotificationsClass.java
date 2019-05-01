@@ -3,45 +3,45 @@ package com.madness.degustibus;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class HomeClass implements Parcelable {
+public class NotificationsClass implements Parcelable {
 
-    public static final Creator<HomeClass> CREATOR = new Creator<HomeClass>() {
+    public static final Creator<NotificationsClass> CREATOR = new Creator<NotificationsClass>() {
         @Override
-        public HomeClass createFromParcel(Parcel in) {
-            return new HomeClass(in);
+        public NotificationsClass createFromParcel(Parcel in) {
+            return new NotificationsClass(in);
         }
 
         @Override
-        public HomeClass[] newArray(int size) {
-            return new HomeClass[size];
+        public NotificationsClass[] newArray(int size) {
+            return new NotificationsClass[size];
         }
     };
     String title;
-    String subtitle;
     String description;
-    String pic;
+    String date;
+    String hour;
     private int identifier;
 
-    protected HomeClass(Parcel in) {
+    protected NotificationsClass(Parcel in) {
         title = in.readString();
-        subtitle = in.readString();
+        date = in.readString();
         description = in.readString();
-        pic = in.readString();
+        hour = in.readString();
     }
 
-    public HomeClass(String title, String subtitle, String description, String pic) {
+    public NotificationsClass(String title, String description, String date, String hour) {
         this.title = title;
-        this.subtitle = subtitle;
+        this.date = date;
         this.description = description;
-        this.pic = pic;
+        this.hour = hour;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
-        dest.writeString(subtitle);
+        dest.writeString(date);
         dest.writeString(description);
-        dest.writeString(pic);
+        dest.writeString(hour);
     }
 
     @Override
@@ -57,12 +57,12 @@ public class HomeClass implements Parcelable {
         this.title = title;
     }
 
-    public String getSubtitle() {
-        return subtitle;
+    public String getDate() {
+        return date;
     }
 
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getDescription() {
@@ -73,12 +73,12 @@ public class HomeClass implements Parcelable {
         this.description = description;
     }
 
-    public String getPic() {
-        return pic;
+    public String getHour() {
+        return hour;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
+    public void setHour(String hour) {
+        this.hour = hour;
     }
 
     public int getIdentifier() {
@@ -89,3 +89,4 @@ public class HomeClass implements Parcelable {
         this.identifier = identifier;
     }
 }
+
