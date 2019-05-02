@@ -28,7 +28,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.madness.degustibus.auth.LoginActivity;
+
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -115,6 +123,7 @@ public class EditProfileFragment extends Fragment {
                 editor.putString("photo", getPrefPhoto());
             }
             editor.apply();
+            storeOnFirebase();
             delPrefPhoto();
 
             /* Handle save option and go back */
@@ -376,6 +385,27 @@ public class EditProfileFragment extends Fragment {
             }
             break;
         }
+    }
+
+    /*
+     * This method allows to save personal informations on Firebase. We need first to get the current
+     * user instance, then prepare an hash map where information can be put and last insert the map into
+     * the database under the child "customers" with the uid of the current authenticated user.
+     */
+    private void storeOnFirebase() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", fullname.getText().toString());
+        map.put("email", email.getText().toString());
+        map.put("desc", desc.getText().toString());
+        map.put("phone", phone.getText().toString());
+        map.put("address", address.getText().toString());
+        map.put("photo", getPrefPhoto());
+
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("customers").child(user.getUid()).updateChildren(map);
     }
 
 }
