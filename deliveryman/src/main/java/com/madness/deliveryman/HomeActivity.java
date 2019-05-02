@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.madness.deliveryman.auth.LoginActivity;
 
-public class HomeActivity extends AppCompatActivity
+public class    HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
     Toolbar toolbar;
