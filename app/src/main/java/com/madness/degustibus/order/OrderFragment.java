@@ -1,4 +1,5 @@
-package com.madness.degustibus;
+package com.madness.degustibus.order;
+
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,69 +9,46 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+
+import com.madness.degustibus.R;
+import com.madness.degustibus.notifications.NotificationsFragment;
 
 import java.util.ArrayList;
 
+
 /**
- * The HomeFragment inflates the layout for the homepage of the application.
+ * A simple {@link Fragment} subclass.
  */
+public class OrderFragment extends Fragment {
 
-public class HomeFragment extends Fragment {
-
-    ArrayList<HomeClass> restaurantList = new ArrayList<>();
+    ArrayList<MenuClass> dishList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private HomeDataAdapter mAdapter;
+    private MenuDataAdapter mAdapter;
 
-    public HomeFragment() {
+    public OrderFragment() {
         // Required empty public constructor
         fakeConstructor();
-    }
-
-    /* Here is set the content to be shown, this method will be removed from the following lab */
-    private void fakeConstructor() {
-        HomeClass daily = new HomeClass("Pizza Express", "Via Montebello, 3", "Specializzati in pizza fritta", null);
-        this.restaurantList.add(daily);
-
-        HomeClass daily1 = new HomeClass("Pizza Express", "Via Montebello, 3", "Specializzati in pizza fritta", null);
-        this.restaurantList.add(daily1);
-
-        HomeClass daily2 = new HomeClass("Pizza Express", "Via Montebello, 3", "Specializzati in pizza fritta", null);
-        this.restaurantList.add(daily2);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        setHomeDataAdapter();
-    }
-
-    /* Here is set the Adapter */
-    private void setHomeDataAdapter() {
-        mAdapter = new HomeDataAdapter(restaurantList);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-        getActivity().setTitle(getString(R.string.title_Home));
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_order, container, false);
+        getActivity().setTitle("New order");
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        mAdapter = new HomeDataAdapter(restaurantList);
+        mAdapter = new MenuDataAdapter(dishList);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
-         */
+
         if (mAdapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
 
@@ -89,15 +67,38 @@ public class HomeFragment extends Fragment {
             LinearLayoutManager manager = new LinearLayoutManager(getContext());
             recyclerView.setLayoutManager(manager);
         }
+        */
+        recyclerView.setAdapter(mAdapter);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
         return rootView;
     }
+
+    /* Here is set the content to be shown, this method will be removed from the following lab */
+    private void fakeConstructor() {
+        MenuClass dish1 = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "1", null);
+        this.dishList.add(dish1);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        setMenuDataAdapter();
+    }
+
+    /* Here is set the Adapter */
+    private void setMenuDataAdapter() {
+        mAdapter = new MenuDataAdapter(dishList);
+    }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            restaurantList = savedInstanceState.getParcelableArrayList("Restaurant");
-            setHomeDataAdapter();
+            dishList = savedInstanceState.getParcelableArrayList("Menu");
+            setMenuDataAdapter();
             recyclerView.setAdapter(mAdapter);
         }
     }
@@ -109,11 +110,11 @@ public class HomeFragment extends Fragment {
         /* Checks if the fragment actually loaded is the home fragment, in case no disable the saving operation */
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if( fragment instanceof HomeFragment ) {
-            View rootView = getLayoutInflater().inflate(R.layout.fragment_home, (ViewGroup) getView().getParent(), false);
+        if( fragment instanceof OrderFragment) {
+            View rootView = getLayoutInflater().inflate(R.layout.fragment_order, (ViewGroup) getView().getParent(), false);
             recyclerView = rootView.findViewById(R.id.recyclerView);
             if (recyclerView.getVisibility() == View.VISIBLE) {
-                outState.putParcelableArrayList("Restaurant", new ArrayList<>(mAdapter.getList()));
+                outState.putParcelableArrayList("Menu", new ArrayList<>(mAdapter.getList()));
             }
         }
     }
@@ -147,4 +148,5 @@ public class HomeFragment extends Fragment {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

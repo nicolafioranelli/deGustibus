@@ -18,6 +18,9 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.madness.degustibus.auth.LoginActivity;
+import com.madness.degustibus.home.HomeFragment;
+import com.madness.degustibus.order.CompletedOrderFragment;
+import com.madness.degustibus.order.OrderFragment;
 
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
@@ -188,6 +191,10 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
+            } else if (fragment instanceof OrderFragment) {
+                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            } else if (fragment instanceof CompletedOrderFragment) {
+                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }

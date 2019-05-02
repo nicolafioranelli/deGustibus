@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.degustibus.notifications;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import com.madness.degustibus.R;
 
 import java.util.ArrayList;
 

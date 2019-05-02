@@ -1,4 +1,4 @@
-package com.madness.degustibus;
+package com.madness.degustibus.notifications;
 
 import android.os.Parcel;
 import android.os.Parcelable;

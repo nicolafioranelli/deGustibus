@@ -8,6 +8,7 @@
     <string name="title_Edit">Edit</string>
     <string name="title_Activity_home" translatable="false">deGustibus</string>
     <string name="title_Settings">Settings</string>
+    <string name="title_Notifications">Notifications</string>
 
     <!-- Menu Titles -->
     <string name="menu_home" translatable="false">Home</string>

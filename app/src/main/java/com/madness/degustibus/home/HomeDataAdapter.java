@@ -1,19 +1,30 @@
-package com.madness.degustibus;
+package com.madness.degustibus.home;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.madness.degustibus.order.OrderFragment;
+import com.madness.degustibus.R;
+
 import java.util.ArrayList;
 
-public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeViewHolder> {
+public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeViewHolder> implements View.OnClickListener {
 
     private ArrayList<HomeClass> RestaurantList;
+    private Button btn;
+    private Fragment fragment;
+    private FragmentManager fragmentManager;
 
     public HomeDataAdapter(ArrayList<HomeClass> reservations) {
         this.RestaurantList = reservations;
@@ -24,7 +35,28 @@ public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeVi
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurants_listitem, parent, false);
+        btn = itemView.findViewById(R.id.button1);
+        btn.setOnClickListener(this);
         return new HomeViewHolder(itemView);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.button1) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = OrderFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                Log.e("MAD", "editProfileClick: ", e);
+            }
+
+            ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.flContent, fragment, "New order")
+                    .addToBackStack("Home")
+                    .commit();
+        }
     }
 
     @Override
