@@ -31,11 +31,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
 import com.madness.restaurant.picker.TimePickerFragment;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * EditProfile Fragment class is used to manage Restaurateur profile changes. In particular here
@@ -171,6 +177,7 @@ public class EditProfile extends Fragment {
                 editor.putString("photo", getPrefPhoto());
             }
             editor.apply();
+            storeOnFirebase();
             delPrefPhoto();
 
             /* Handle save option and go back */
@@ -712,5 +719,43 @@ public class EditProfile extends Fragment {
             }
             break;
         }
+    }
+
+    /*
+     * This method allows to save personal informations on Firebase. We need first to get the current
+     * user instance, then prepare an hash map where information can be put and last insert the map into
+     * the database under the child "restaurants" with the uid of the current authenticated user.
+     */
+    private void storeOnFirebase() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("name", fullname.getText().toString());
+        map.put("email", email.getText().toString());
+        map.put("desc", desc.getText().toString());
+        map.put("phone", phone.getText().toString());
+        map.put("address", address.getText().toString());
+        map.put("defaultOpen",defaultOpen.getText().toString());
+        map.put("defaultClose",defaultClose.getText().toString());
+        map.put("mondayOpen",mondayOpen.getText().toString());
+        map.put("mondayClose",mondayClose.getText().toString());
+        map.put("tuesdayOpen",tuesdayOpen.getText().toString());
+        map.put("tuesdayClose",tuesdayClose.getText().toString());
+        map.put("wednesdayOpen",wednesdayOpen.getText().toString());
+        map.put("wednesdayClose",wednesdayClose.getText().toString());
+        map.put("thursdayOpen",thursdayOpen.getText().toString());
+        map.put("thursdayClose",thursdayClose.getText().toString());
+        map.put("fridayOpen",fridayOpen.getText().toString());
+        map.put("fridayClose",fridayClose.getText().toString());
+        map.put("saturdayOpen",saturdayOpen.getText().toString());
+        map.put("saturdayClose",saturdayClose.getText().toString());
+        map.put("sundayOpen",sundayOpen.getText().toString());
+        map.put("sundayClose",sundayClose.getText().toString());
+        // todo add photo
+
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
     }
 }
