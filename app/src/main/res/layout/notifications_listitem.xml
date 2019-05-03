@@ -20,7 +20,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Title"
+            android:text="@string/Title"
             android:textSize="13dp" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Description"
+            android:text="@string/Description"
             android:textSize="15dp" />
 
         <LinearLayout
@@ -45,7 +45,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="Date"
+                android:text="@string/Date"
                 android:textSize="12dp"/>
 
             <TextView
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Hour"
+                android:text="@string/Hour"
                 android:textSize="12dp"/>
         </LinearLayout>
 

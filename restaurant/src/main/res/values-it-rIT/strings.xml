@@ -76,4 +76,7 @@
     <string name="psw_changed">La password è stata cambiata con successo!</string>
     <string name="reg_compl">Registrazione completata, benvenuto!</string>
     <string name="title_Settings">Impostazioni</string>
+    <string name="title_Notifications">Notifiche</string>
+    <string name="btn_login">ACCEDI</string>
+    <string name="btn_reset_password">nuova Password</string>
 </resources>

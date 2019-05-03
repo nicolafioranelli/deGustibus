@@ -54,7 +54,7 @@
     <string name="title_activity_login">Sign in</string>
     <string name="hint_email" translatable="false">Email</string>
     <string name="hint_password" translatable="false">Password</string>
-    <string name="btn_login" translatable="false">LOGIN</string>
+    <string name="btn_login">LOGIN</string>
     <string name="btn_link_to_register">Not a member? Get registered in deGustibus now!</string>
     <string name="btn_link_to_login">Already registered. Login Me!</string>
     <string name="btn_forgot_password">Forgot your password?</string>
@@ -72,4 +72,18 @@
     <string name="err_reg">Authentication failed.</string>
     <string name="pass_ok">We have sent you instructions to reset your password!</string>
     <string name="pass_err">Failed to send reset email!</string>
+    <string name="or" translatable="false">OR</string>
+    <string name="es_title" translatable="false">Pizza Express</string>
+    <string name="title_daily_list">Daily Menu</string>
+    <string name="es_street" translatable="false">Via Montebello, 13 - Torino (TO)</string>
+    <string name="Title">Title</string>
+    <string name="Description">Description</string>
+    <string name="Price">Price</string>
+    <string name="subtitle_user">User</string>
+    <string name="Date">Date</string>
+    <string name="Hour">Hour</string>
+    <string name="es_subtitle" translatable="false">subtitle</string>
+    <string name="es_text" translatable="false">Lorem ipsum dolor sit amet, orci volutpat pede, at et ratione eleifend, nulla ipsum nascetur nulla, tincidunt a odio cras elementum, sapien nulla amet.</string>
+    <string name="btn_new_reservation">NEW RESERVATION</string>
+    <string name="btn_or">OR</string>
 </resources>

@@ -41,4 +41,14 @@
     <string name="err_passMiss">Inserisci password</string>
     <string name="err_passShort">Password troppo breve, per favore inseriscine una di almeno 6 caratteri!</string>
     <string name="err_reg">Autenticazione fallita.</string>
+    <string name="btn_or">O</string>
+    <string name="btn_login">ACCEDI</string>
+    <string name="title_daily_list">Menù del giorno</string>
+    <string name="Title">Titolo</string>
+    <string name="Description">Descrizione</string>
+    <string name="Price">Prezzo</string>
+    <string name="subtitle_user">Utente</string>
+    <string name="Date">Data</string>
+    <string name="Hour">Ora</string>
+    <string name="btn_new_reservation">NUOVA PRENOTAZIONE</string>
 </resources>

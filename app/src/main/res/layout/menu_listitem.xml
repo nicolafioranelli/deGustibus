@@ -34,7 +34,7 @@
                 android:ellipsize="end"
                 android:maxEms="25"
                 android:maxLines="1"
-                android:text="Title"
+                android:text="@string/Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:ellipsize="end"
                 android:maxEms="25"
                 android:maxLines="1"
-                android:text="Description"
+                android:text="@string/Description"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle" />
 
             <LinearLayout
@@ -63,7 +63,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Price"
+                        android:text="@string/Price"
                         android:textStyle="bold" />
                 </RelativeLayout>
 
@@ -76,7 +76,7 @@
                         android:id="@+id/price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="25 €" />
+                        android:text="25€" />
                 </RelativeLayout>
 
                 <RelativeLayout
