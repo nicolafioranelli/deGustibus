@@ -2,11 +2,14 @@ package com.madness.restaurant.profile;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,10 +34,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
 import com.madness.restaurant.picker.TimePickerFragment;
@@ -48,6 +58,7 @@ import java.util.Map;
  * are defined the methods to pick a picture (through the camera or gallery) and methods to store
  * the file and the other inserted data.
  */
+
 public class EditProfile extends Fragment {
 
     private EditText fullname;
@@ -89,6 +100,7 @@ public class EditProfile extends Fragment {
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
         setHasOptionsMenu(true);
+
     }
 
     /* This method simply sets the title on the toolbar */
@@ -129,6 +141,8 @@ public class EditProfile extends Fragment {
         sundayOpen = getView().findViewById(R.id.et_edit_sundayOpen);
         sundayClose = getView().findViewById(R.id.et_edit_sundayClose);
         img = getView().findViewById(R.id.imageviewedit);
+        //loadFromDatabase();
+
         if(savedInstanceState != null){
             loadBundle(savedInstanceState);
         }else{
@@ -142,7 +156,7 @@ public class EditProfile extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /* Click listener to correctly handle actions related to toolbar items */
@@ -157,23 +171,23 @@ public class EditProfile extends Fragment {
             editor.putString("desc", desc.getText().toString());
             editor.putString("phone", phone.getText().toString());
             editor.putString("address", address.getText().toString());
-            editor.putString("defaultOpen",defaultOpen.getText().toString());
-            editor.putString("defaultClose",defaultClose.getText().toString());
-            editor.putString("mondayOpen",mondayOpen.getText().toString());
-            editor.putString("mondayClose",mondayClose.getText().toString());
-            editor.putString("tuesdayOpen",tuesdayOpen.getText().toString());
-            editor.putString("tuesdayClose",tuesdayClose.getText().toString());
-            editor.putString("wednesdayOpen",wednesdayOpen.getText().toString());
-            editor.putString("wednesdayClose",wednesdayClose.getText().toString());
-            editor.putString("thursdayOpen",thursdayOpen.getText().toString());
-            editor.putString("thursdayClose",thursdayClose.getText().toString());
-            editor.putString("fridayOpen",fridayOpen.getText().toString());
-            editor.putString("fridayClose",fridayClose.getText().toString());
-            editor.putString("saturdayOpen",saturdayOpen.getText().toString());
-            editor.putString("saturdayClose",saturdayClose.getText().toString());
-            editor.putString("sundayOpen",sundayOpen.getText().toString());
-            editor.putString("sundayClose",sundayClose.getText().toString());
-            if (getPrefPhoto()!=null) {
+            editor.putString("defaultOpen", defaultOpen.getText().toString());
+            editor.putString("defaultClose", defaultClose.getText().toString());
+            editor.putString("mondayOpen", mondayOpen.getText().toString());
+            editor.putString("mondayClose", mondayClose.getText().toString());
+            editor.putString("tuesdayOpen", tuesdayOpen.getText().toString());
+            editor.putString("tuesdayClose", tuesdayClose.getText().toString());
+            editor.putString("wednesdayOpen", wednesdayOpen.getText().toString());
+            editor.putString("wednesdayClose", wednesdayClose.getText().toString());
+            editor.putString("thursdayOpen", thursdayOpen.getText().toString());
+            editor.putString("thursdayClose", thursdayClose.getText().toString());
+            editor.putString("fridayOpen", fridayOpen.getText().toString());
+            editor.putString("fridayClose", fridayClose.getText().toString());
+            editor.putString("saturdayOpen", saturdayOpen.getText().toString());
+            editor.putString("saturdayClose", saturdayClose.getText().toString());
+            editor.putString("sundayOpen", sundayOpen.getText().toString());
+            editor.putString("sundayClose", sundayClose.getText().toString());
+            if (getPrefPhoto() != null) {
                 editor.putString("photo", getPrefPhoto());
             }
             editor.apply();
@@ -190,7 +204,7 @@ public class EditProfile extends Fragment {
     }
 
     /* Method to load shared preferences */
-    private void loadSharedPrefs(){
+    private void loadSharedPrefs() {
         fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
         email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
         desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
@@ -218,7 +232,7 @@ public class EditProfile extends Fragment {
         }
     }
 
-    private void loadBundle(Bundle bundle){
+    private void loadBundle(Bundle bundle) {
         fullname.setText(bundle.getString("name"));
         email.setText(bundle.getString("email"));
         desc.setText(bundle.getString("desc"));
@@ -241,36 +255,37 @@ public class EditProfile extends Fragment {
         saturdayClose.setText(bundle.getString("saturdayClose"));
         sundayOpen.setText(bundle.getString("sundayOpen"));
         sundayClose.setText(bundle.getString("sundayClose"));
-        if(bundle.getString("photo")!=null) {
+        if (bundle.getString("photo") != null) {
             img.setImageURI(Uri.parse(bundle.getString("photo")));
         }
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString("name",fullname.getText().toString());
-        outState.putString("email",email.getText().toString());
-        outState.putString("desc",desc.getText().toString());
-        outState.putString("phone",phone.getText().toString());
-        outState.putString("address",address.getText().toString());
-        outState.putString("defaultOpen",defaultOpen.getText().toString());
-        outState.putString("defaultClose",defaultClose.getText().toString());
-        outState.putString("mondayOpen",mondayOpen.getText().toString());
-        outState.putString("mondayClose",mondayClose.getText().toString());
-        outState.putString("tuesdayOpen",tuesdayOpen.getText().toString());
-        outState.putString("tuesdayClose",tuesdayClose.getText().toString());
-        outState.putString("wednesdayOpen",wednesdayOpen.getText().toString());
-        outState.putString("wednesdayClose",wednesdayClose.getText().toString());
-        outState.putString("thursdayOpen",thursdayOpen.getText().toString());
-        outState.putString("thursdayClose",thursdayClose.getText().toString());
-        outState.putString("fridayOpen",fridayOpen.getText().toString());
-        outState.putString("fridayClose",fridayClose.getText().toString());
-        outState.putString("saturdayOpen",saturdayOpen.getText().toString());
-        outState.putString("saturdayClose",saturdayClose.getText().toString());
-        outState.putString("sundayOpen",sundayOpen.getText().toString());
-        outState.putString("sundayClose",sundayClose.getText().toString());
-        if(getPrefPhoto()==null) {
+        outState.putString("name", fullname.getText().toString());
+        outState.putString("email", email.getText().toString());
+        outState.putString("desc", desc.getText().toString());
+        outState.putString("phone", phone.getText().toString());
+        outState.putString("address", address.getText().toString());
+        outState.putString("defaultOpen", defaultOpen.getText().toString());
+        outState.putString("defaultClose", defaultClose.getText().toString());
+        outState.putString("mondayOpen", mondayOpen.getText().toString());
+        outState.putString("mondayClose", mondayClose.getText().toString());
+        outState.putString("tuesdayOpen", tuesdayOpen.getText().toString());
+        outState.putString("tuesdayClose", tuesdayClose.getText().toString());
+        outState.putString("wednesdayOpen", wednesdayOpen.getText().toString());
+        outState.putString("wednesdayClose", wednesdayClose.getText().toString());
+        outState.putString("thursdayOpen", thursdayOpen.getText().toString());
+        outState.putString("thursdayClose", thursdayClose.getText().toString());
+        outState.putString("fridayOpen", fridayOpen.getText().toString());
+        outState.putString("fridayClose", fridayClose.getText().toString());
+        outState.putString("saturdayOpen", saturdayOpen.getText().toString());
+        outState.putString("saturdayClose", saturdayClose.getText().toString());
+        outState.putString("sundayOpen", sundayOpen.getText().toString());
+        outState.putString("sundayClose", sundayClose.getText().toString());
+        if (getPrefPhoto() == null) {
             outState.putString("photo", pref.getString("photo", null));
         } else {
             outState.putString("photo", getPrefPhoto());
@@ -280,14 +295,14 @@ public class EditProfile extends Fragment {
     /* The method allows to set the listeners in the corresponding items in order to get the
      * time pickers once clicked.
      */
-    public void takeTimeTextViews(){
+    public void takeTimeTextViews() {
         LinearLayout layout1 = getActivity().findViewById(R.id.defaultOpenLinearLayout);
         layout1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=0;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 0;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -296,9 +311,9 @@ public class EditProfile extends Fragment {
         layout2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=0;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 0;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -307,9 +322,9 @@ public class EditProfile extends Fragment {
         layout3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=1;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 1;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -318,9 +333,9 @@ public class EditProfile extends Fragment {
         layout4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=1;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 1;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -329,9 +344,9 @@ public class EditProfile extends Fragment {
         layout5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=2;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 2;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -340,9 +355,9 @@ public class EditProfile extends Fragment {
         layout6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=2;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 2;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -351,9 +366,9 @@ public class EditProfile extends Fragment {
         layout7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=3;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 3;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -362,9 +377,9 @@ public class EditProfile extends Fragment {
         layout8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=3;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 3;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -373,9 +388,9 @@ public class EditProfile extends Fragment {
         layout9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=4;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 4;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -384,9 +399,9 @@ public class EditProfile extends Fragment {
         layout10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=4;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 4;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -395,9 +410,9 @@ public class EditProfile extends Fragment {
         layout11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=5;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 5;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -406,9 +421,9 @@ public class EditProfile extends Fragment {
         layout12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=5;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 5;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -417,9 +432,9 @@ public class EditProfile extends Fragment {
         layout13.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=6;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 6;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -428,9 +443,9 @@ public class EditProfile extends Fragment {
         layout14.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=6;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 6;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -439,9 +454,9 @@ public class EditProfile extends Fragment {
         layout15.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=7;
-                moment=0;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 7;
+                moment = 0;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -450,9 +465,9 @@ public class EditProfile extends Fragment {
         layout16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                weekDay=7;
-                moment=1;
-                DialogFragment timePicker= new TimePickerFragment();
+                weekDay = 7;
+                moment = 1;
+                DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getFragmentManager(), "time picker");
             }
         });
@@ -460,9 +475,9 @@ public class EditProfile extends Fragment {
 
     /* The method allows to set the values taken with the time pickers in the text views */
     public void setHourAndMinute(int hour, int minute) {
-        switch (this.weekDay){
+        switch (this.weekDay) {
             case 0:
-                if(this.moment==0) {
+                if (this.moment == 0) {
                     defaultOpen.setText(String.format("%02d:%02d", hour, minute));
                     mondayOpen.setText(String.format("%02d:%02d", hour, minute));
                     tuesdayOpen.setText(String.format("%02d:%02d", hour, minute));
@@ -471,8 +486,7 @@ public class EditProfile extends Fragment {
                     fridayOpen.setText(String.format("%02d:%02d", hour, minute));
                     saturdayOpen.setText(String.format("%02d:%02d", hour, minute));
                     sundayOpen.setText(String.format("%02d:%02d", hour, minute));
-                }
-                else{
+                } else {
                     defaultClose.setText(String.format("%02d:%02d", hour, minute));
                     mondayClose.setText(String.format("%02d:%02d", hour, minute));
                     tuesdayClose.setText(String.format("%02d:%02d", hour, minute));
@@ -484,43 +498,43 @@ public class EditProfile extends Fragment {
                 }
                 break;
             case 1:
-                if(this.moment==0)
+                if (this.moment == 0)
                     mondayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     mondayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 2:
-                if(this.moment==0)
+                if (this.moment == 0)
                     tuesdayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     tuesdayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 3:
-                if(this.moment==0)
+                if (this.moment == 0)
                     wednesdayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     wednesdayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 4:
-                if(this.moment==0)
+                if (this.moment == 0)
                     thursdayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     thursdayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 5:
-                if(this.moment==0)
+                if (this.moment == 0)
                     fridayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     fridayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 6:
-                if(this.moment==0)
+                if (this.moment == 0)
                     saturdayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     saturdayClose.setText(String.format("%02d:%02d", hour, minute));
                 break;
             case 7:
-                if(this.moment==0)
+                if (this.moment == 0)
                     sundayOpen.setText(String.format("%02d:%02d", hour, minute));
                 else
                     sundayClose.setText(String.format("%02d:%02d", hour, minute));
@@ -532,7 +546,7 @@ public class EditProfile extends Fragment {
     /* This method is used to retrieve the photo via camera or gallery and it is the same
      * of the previous laboratory.
      */
-    public void getPhoto(View v){
+    public void getPhoto(View v) {
         ImageView imageView = getActivity().findViewById(R.id.imageviewedit);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -564,7 +578,7 @@ public class EditProfile extends Fragment {
      * gallery; in case the result is canceled (the user presses back before take the picture)
      * the temporary file is canceled.
      */
-    public void onActivityResult(int requestCode,int resultCode,Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -579,9 +593,9 @@ public class EditProfile extends Fragment {
                     setPrefPhoto(selectedImage.toString());
                     break;
             }
-        } else if(resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.d("MAD", "onActivityResult: CANCELED");
-            try{
+            try {
                 File photoToCancel = new File(getPrefPhoto());
                 photoToCancel.delete();
             } catch (Exception e) {
@@ -591,17 +605,17 @@ public class EditProfile extends Fragment {
         }
     }
 
+    private String getPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        return pref.getString("profilePhoto", null);
+    }
+
     private void setPrefPhoto(String cameraFilePath) {
         SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("profilePhoto", cameraFilePath);
         editor.apply();
-    }
-
-    private String getPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        return pref.getString("profilePhoto", null);
     }
 
     private void delPrefPhoto() {
@@ -617,19 +631,19 @@ public class EditProfile extends Fragment {
      * caught by the method onRequestPermissionsResult() that in case everything is ok will perform the requested
      * operations, otherwise will do nothing.
      */
-    private void checkPermissionsAndStartGallery(){
+    private void checkPermissionsAndStartGallery() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
-            Log.d("MAD", "onCreate: permission granted" );
+            Log.d("MAD", "onCreate: permission granted");
             //Create an Intent with action as ACTION_PICK
-            Intent intent=new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
             intent.setType("image/*");
             //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
             String[] mimeTypes = {"image/jpeg", "image/png"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             // Launching the Intent
             startActivityForResult(intent, 1);
         }
@@ -737,25 +751,105 @@ public class EditProfile extends Fragment {
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", address.getText().toString());
-        map.put("defaultOpen",defaultOpen.getText().toString());
-        map.put("defaultClose",defaultClose.getText().toString());
-        map.put("mondayOpen",mondayOpen.getText().toString());
-        map.put("mondayClose",mondayClose.getText().toString());
-        map.put("tuesdayOpen",tuesdayOpen.getText().toString());
-        map.put("tuesdayClose",tuesdayClose.getText().toString());
-        map.put("wednesdayOpen",wednesdayOpen.getText().toString());
-        map.put("wednesdayClose",wednesdayClose.getText().toString());
-        map.put("thursdayOpen",thursdayOpen.getText().toString());
-        map.put("thursdayClose",thursdayClose.getText().toString());
-        map.put("fridayOpen",fridayOpen.getText().toString());
-        map.put("fridayClose",fridayClose.getText().toString());
-        map.put("saturdayOpen",saturdayOpen.getText().toString());
-        map.put("saturdayClose",saturdayClose.getText().toString());
-        map.put("sundayOpen",sundayOpen.getText().toString());
-        map.put("sundayClose",sundayClose.getText().toString());
-        // todo add photo
+        //map.put("defaultOpen",defaultOpen.getText().toString());
+        //map.put("defaultClose",defaultClose.getText().toString());
+        map.put("mondayOpen", mondayOpen.getText().toString());
+        map.put("mondayClose", mondayClose.getText().toString());
+        map.put("tuesdayOpen", tuesdayOpen.getText().toString());
+        map.put("tuesdayClose", tuesdayClose.getText().toString());
+        map.put("wednesdayOpen", wednesdayOpen.getText().toString());
+        map.put("wednesdayClose", wednesdayClose.getText().toString());
+        map.put("thursdayOpen", thursdayOpen.getText().toString());
+        map.put("thursdayClose", thursdayClose.getText().toString());
+        map.put("fridayOpen", fridayOpen.getText().toString());
+        map.put("fridayClose", fridayClose.getText().toString());
+        map.put("saturdayOpen", saturdayOpen.getText().toString());
+        map.put("saturdayClose", saturdayClose.getText().toString());
+        map.put("sundayOpen", sundayOpen.getText().toString());
+        map.put("sundayClose", sundayClose.getText().toString());
+
+        String value;
+        if (getPrefPhoto() != null) {
+            map.put("pic", getPrefPhoto());
+        } else if ((value = pref.getString("photo", null)) != null) {
+            map.put("pic", value);
+        } else {
+            map.put("pic", "default");
+        }
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
+    }
+
+    private void loadFromDatabase() {
+        final ProgressDialog mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    String value = (String) objectMap.get("address");
+
+                    fullname.setText((String) objectMap.get("name"));
+                    email.setText((String) objectMap.get("email"));
+                    desc.setText((String) objectMap.get("desc"));
+                    phone.setText((String) objectMap.get("phone"));
+                    address.setText((String) objectMap.get("address"));
+                    mondayOpen.setText((String) objectMap.get("mondayOpen"));
+                    mondayClose.setText((String) objectMap.get("mondayClose"));
+                    tuesdayOpen.setText((String) objectMap.get("tuesdayOpen"));
+                    tuesdayClose.setText((String) objectMap.get("tuesdayClose"));
+                    wednesdayOpen.setText((String) objectMap.get("wednesdayOpen"));
+                    wednesdayClose.setText((String) objectMap.get("wednesdayClose"));
+                    thursdayOpen.setText((String) objectMap.get("thursdayOpen"));
+                    thursdayClose.setText((String) objectMap.get("thursdayClose"));
+                    fridayOpen.setText((String) objectMap.get("fridayOpen"));
+                    fridayClose.setText((String) objectMap.get("fridayClose"));
+                    saturdayOpen.setText((String) objectMap.get("saturdayOpen"));
+                    saturdayClose.setText((String) objectMap.get("saturdayClose"));
+                    sundayOpen.setText((String) objectMap.get("sundayOpen"));
+                    sundayClose.setText((String) objectMap.get("sundayClose"));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Ops... something went wrong!", Toast.LENGTH_LONG).show();
+            }
+        };
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("restaurants").child(user.getUid()).addValueEventListener(userListener);
+
+        try {
+            final File image;
+            File storageDir = getContext().getFilesDir();
+            image = File.createTempFile(
+                    "img",
+                    ".jpg",
+                    storageDir
+            );
+
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+            storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").getFile(image).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+                    img.setImageBitmap(bitmap);
+
+                    //TODO: eventually check how to dismiss progress dialog when both are done
+                    mProgressDialog.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            Log.e("MAD", "loadFromDatabase: ", e);
+        }
     }
 }

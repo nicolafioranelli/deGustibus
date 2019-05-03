@@ -24,6 +24,8 @@ import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
@@ -67,6 +69,8 @@ public class HomeActivity extends AppCompatActivity
                 }
             }
         };
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
