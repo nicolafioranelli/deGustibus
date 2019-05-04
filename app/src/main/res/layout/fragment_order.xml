@@ -67,6 +67,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical" />
+            <Button
+                android:id="@+id/complete_order_btn"
+                android:layout_width="267dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="50dp"
+                android:layout_marginBottom="20dp"
+                android:background="#FF9800"
+                android:clickable="true"
+                android:text="Completa Ordine" />
         </LinearLayout>
 
     </ScrollView>

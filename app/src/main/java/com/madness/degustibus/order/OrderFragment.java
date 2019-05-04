@@ -4,17 +4,20 @@ package com.madness.degustibus.order;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
@@ -30,6 +33,8 @@ public class OrderFragment extends Fragment {
     ArrayList<MenuClass> dishList = new ArrayList<>();
     private RecyclerView recyclerView;
     private MenuDataAdapter mAdapter;
+    private Button confirm_btn;
+    private Fragment fragment;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -43,6 +48,7 @@ public class OrderFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle("New order");
 
+        confirm_btn = rootView.findViewById(R.id.complete_order_btn);
         recyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new MenuDataAdapter(dishList);
 
@@ -71,6 +77,24 @@ public class OrderFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
+        confirm_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    fragment = null;
+                    Class fragmentClass;
+                    fragmentClass = CompletedOrderFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                } catch (Exception e) {
+                    Log.e("MAD", "editProfileClick: ", e);
+                }
+
+                ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.flContent, fragment, "Complete order")
+                        .addToBackStack("Home")
+                        .commit();
+            }
+        });
         return rootView;
     }
 
