@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.deliveryman.notifications;
 
 import android.os.Parcel;
 import android.os.Parcelable;

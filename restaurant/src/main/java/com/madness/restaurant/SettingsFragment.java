@@ -1,6 +1,8 @@
 package com.madness.restaurant;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +31,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     FirebaseAuth firebaseAuth;
     FirebaseUser user;
     Preference modify, delete, logout;
+    private SharedPreferences pref;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -63,6 +66,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                pref = getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+                pref.edit().clear().apply();
                 firebaseAuth.signOut();
                 return false;
             }
@@ -184,6 +189,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
+                                        pref = getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+                                        pref.edit().clear().apply();
                                         Toast.makeText(getContext(), "Account deleted", Toast.LENGTH_SHORT).show();
                                     }
                                 }

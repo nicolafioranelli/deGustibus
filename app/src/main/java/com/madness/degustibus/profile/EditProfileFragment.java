@@ -406,16 +406,6 @@ public class EditProfileFragment extends Fragment {
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", address.getText().toString());
-        map.put("photo", getPrefPhoto());
-
-        String value;
-        if (getPrefPhoto() != null) {
-            map.put("pic", getPrefPhoto());
-        } else if ((value = pref.getString("photo", null)) != null) {
-            map.put("pic", value);
-        } else {
-            map.put("pic", "default");
-        }
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));

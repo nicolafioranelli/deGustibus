@@ -18,8 +18,11 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.madness.deliveryman.auth.LoginActivity;
+import com.madness.deliveryman.notifications.NotificationsFragment;
+import com.madness.deliveryman.profile.EditProfileFragment;
+import com.madness.deliveryman.profile.ProfileFragment;
 
-public class    HomeActivity extends AppCompatActivity
+public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
     Toolbar toolbar;

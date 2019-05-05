@@ -70,7 +70,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
     }
 
     /* Populates the menu with the edit button */

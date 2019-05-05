@@ -97,7 +97,7 @@ public class EditProfile extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
         editor = pref.edit();
         setHasOptionsMenu(true);
 
@@ -768,88 +768,10 @@ public class EditProfile extends Fragment {
         map.put("sundayOpen", sundayOpen.getText().toString());
         map.put("sundayClose", sundayClose.getText().toString());
 
-        String value;
-        if (getPrefPhoto() != null) {
-            map.put("pic", getPrefPhoto());
-        } else if ((value = pref.getString("photo", null)) != null) {
-            map.put("pic", value);
-        } else {
-            map.put("pic", "default");
-        }
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
-    }
-
-    private void loadFromDatabase() {
-        final ProgressDialog mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setMessage("Loading...");
-        mProgressDialog.show();
-
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-
-        ValueEventListener userListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    String value = (String) objectMap.get("address");
-
-                    fullname.setText((String) objectMap.get("name"));
-                    email.setText((String) objectMap.get("email"));
-                    desc.setText((String) objectMap.get("desc"));
-                    phone.setText((String) objectMap.get("phone"));
-                    address.setText((String) objectMap.get("address"));
-                    mondayOpen.setText((String) objectMap.get("mondayOpen"));
-                    mondayClose.setText((String) objectMap.get("mondayClose"));
-                    tuesdayOpen.setText((String) objectMap.get("tuesdayOpen"));
-                    tuesdayClose.setText((String) objectMap.get("tuesdayClose"));
-                    wednesdayOpen.setText((String) objectMap.get("wednesdayOpen"));
-                    wednesdayClose.setText((String) objectMap.get("wednesdayClose"));
-                    thursdayOpen.setText((String) objectMap.get("thursdayOpen"));
-                    thursdayClose.setText((String) objectMap.get("thursdayClose"));
-                    fridayOpen.setText((String) objectMap.get("fridayOpen"));
-                    fridayClose.setText((String) objectMap.get("fridayClose"));
-                    saturdayOpen.setText((String) objectMap.get("saturdayOpen"));
-                    saturdayClose.setText((String) objectMap.get("saturdayClose"));
-                    sundayOpen.setText((String) objectMap.get("sundayOpen"));
-                    sundayClose.setText((String) objectMap.get("sundayClose"));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Ops... something went wrong!", Toast.LENGTH_LONG).show();
-            }
-        };
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("restaurants").child(user.getUid()).addValueEventListener(userListener);
-
-        try {
-            final File image;
-            File storageDir = getContext().getFilesDir();
-            image = File.createTempFile(
-                    "img",
-                    ".jpg",
-                    storageDir
-            );
-
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-            storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").getFile(image).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                    img.setImageBitmap(bitmap);
-
-                    //TODO: eventually check how to dismiss progress dialog when both are done
-                    mProgressDialog.dismiss();
-                }
-            });
-        } catch (Exception e) {
-            Log.e("MAD", "loadFromDatabase: ", e);
-        }
     }
 }
