@@ -1,4 +1,4 @@
-package com.madness.degustibus;
+package com.madness.degustibus.profile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.madness.degustibus.R;
 
 public class ProfileFragment extends Fragment {
 
@@ -47,7 +49,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        pref = getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
     }
 
     /* Populates the menu with the edit button */

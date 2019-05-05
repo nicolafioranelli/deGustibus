@@ -1,6 +1,11 @@
 package com.madness.degustibus;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -14,13 +19,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madness.degustibus.auth.LoginActivity;
 import com.madness.degustibus.home.HomeFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
+import com.madness.degustibus.profile.EditProfileFragment;
+import com.madness.degustibus.profile.ProfileFragment;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
@@ -200,4 +222,7 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
+
+
+
 }
