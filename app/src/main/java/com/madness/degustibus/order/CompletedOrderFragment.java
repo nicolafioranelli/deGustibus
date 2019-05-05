@@ -55,7 +55,7 @@ public class CompletedOrderFragment extends Fragment {
 
         recyclerView = rootView.findViewById(R.id.recyclerViewOrderCompleted);
         complete_btn = rootView.findViewById(R.id.confirm_btn);
-        mAdapter = new MenuDataAdapter(dishList);
+        //mAdapter = new MenuDataAdapter(dishList);
         recyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
@@ -114,7 +114,7 @@ public class CompletedOrderFragment extends Fragment {
     }
 
     private void setMenuDataAdapter() {
-        mAdapter = new MenuDataAdapter(dishList);
+        //mAdapter = new MenuDataAdapter(dishList,this);
     }
 
 }

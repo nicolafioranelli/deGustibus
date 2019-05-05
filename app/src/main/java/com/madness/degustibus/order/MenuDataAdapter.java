@@ -6,16 +6,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.madness.degustibus.R;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuViewHolder> {
 
     private ArrayList<MenuClass> dishList;
+
+
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
 
     public MenuDataAdapter(ArrayList<MenuClass> dishes) {
         this.dishList = dishes;
@@ -24,9 +33,21 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     @NonNull
     @Override
     public MenuDataAdapter.MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
+        final View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.menu_listitem, parent, false);
+
+
         return new MenuDataAdapter.MenuViewHolder(itemView);
+    }
+    public void onClick(View v) {
+        if(v.getId() == R.id.buttonMinus) {
+
+
+        }
+        if(v.getId() == R.id.buttonPlus) {
+
+
+        }
     }
 
     @Override
@@ -71,17 +92,54 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
         return dishList;
     }
 
-    public class MenuViewHolder extends RecyclerView.ViewHolder {
+    public class MenuViewHolder extends RecyclerView.ViewHolder{
         private TextView title, description, price, quantity;
         private ImageView image;
+        private Button buttonPlus;
+        private Button buttonMinus;
 
         public MenuViewHolder (View view) {
+
             super(view);
             title = view.findViewById(R.id.title);
             description = view.findViewById(R.id.description);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
             image = view.findViewById(R.id.imageView);
+            buttonMinus = view.findViewById(R.id.buttonMinus);
+
+            if (Integer.parseInt(quantity.getText().toString())==0){
+                buttonMinus.setVisibility(View.VISIBLE);
+                quantity.setVisibility(View.VISIBLE);
+            }
+            buttonMinus.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    int clickPosition = getAdapterPosition();
+                    MenuClass dish = getDish(clickPosition);
+                    if (v.getId() == R.id.buttonMinus) {
+                            int n =Integer.parseInt(quantity.getText().toString());
+                            n --;
+                            quantity.setText(String.valueOf(n));
+                            dish.setQuantity(String.valueOf(n));
+
+                    }
+                }
+            });
+            buttonPlus = view.findViewById(R.id.buttonPlus);
+            buttonPlus.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    int clickPosition = getAdapterPosition();
+                    MenuClass dish = getDish(clickPosition);
+                    if (v.getId() == R.id.buttonPlus) {
+                            int n =Integer.parseInt(quantity.getText().toString());
+                            n ++;
+                            quantity.setText(String.valueOf(n));
+                            dish.setQuantity(String.valueOf(n));
+                    }
+                }
+            });
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.madness.degustibus.order;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,23 +19,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OrderFragment extends Fragment {
+public class OrderFragment extends Fragment{
 
     ArrayList<MenuClass> dishList = new ArrayList<>();
+    DatabaseReference databaseRef;
     private RecyclerView recyclerView;
     private MenuDataAdapter mAdapter;
     private Button confirm_btn;
     private Fragment fragment;
+    private String pathName;
+    HashMap<String,String> order=new HashMap<>();
 
     public OrderFragment() {
         // Required empty public constructor
@@ -47,6 +56,8 @@ public class OrderFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle("New order");
+
+        databaseRef = FirebaseDatabase.getInstance().getReference();
 
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
         recyclerView = rootView.findViewById(R.id.recyclerView);
@@ -77,14 +88,31 @@ public class OrderFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
+
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
                     fragment = null;
                     Class fragmentClass;
                     fragmentClass = CompletedOrderFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
+                    int i=0;
+                    for(MenuClass dish: mAdapter.getList()){
+
+                        if(dish.quantity != "0"){
+                            databaseRef.child("prova2").setValue("prova2");
+                            order.put("dishname",dish.title);
+                            order.put("descr",dish.description);
+                            order.put("price",dish.price);
+                            order.put("quantity",dish.quantity);
+                            databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").push().setValue(order);
+                        }
+                        else{
+                            databaseRef.child("prova3").setValue("prova2");
+                        }
+                    }
                 } catch (Exception e) {
                     Log.e("MAD", "editProfileClick: ", e);
                 }
@@ -100,7 +128,10 @@ public class OrderFragment extends Fragment {
 
     /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeConstructor() {
-        MenuClass dish1 = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "1", null);
+
+        MenuClass dish1 = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "0", null);
+        this.dishList.add(dish1);
+        dish1 = new MenuClass("Pizza patatine", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "0", null);
         this.dishList.add(dish1);
     }
 
@@ -140,6 +171,22 @@ public class OrderFragment extends Fragment {
             if (recyclerView.getVisibility() == View.VISIBLE) {
                 outState.putParcelableArrayList("Menu", new ArrayList<>(mAdapter.getList()));
             }
+        }
+        String piatto = "0";
+        for(MenuClass dish: dishList){
+            outState.putString(piatto,dish.quantity);
+            // Toast.makeText(getContext(), getResources().getString(Integer.valueOf(dish.quantity)), Toast.LENGTH_SHORT).show();
+             Toast.makeText(getContext(),dish.quantity,Toast.LENGTH_SHORT).show();
+            piatto = String.valueOf(Integer.valueOf(piatto)+1);
+
+        }
+
+    }
+    private void loadBundle(Bundle bundle) {
+        String piatto = "0";
+        for(MenuClass dish: dishList){
+            dish.setQuantity(bundle.getString(piatto));
+            piatto = String.valueOf(Integer.valueOf(piatto)+1);
         }
     }
 
