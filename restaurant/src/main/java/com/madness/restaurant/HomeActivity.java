@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.madness.restaurant.auth.LoginActivity;
-import com.madness.restaurant.daily.DailyFragment;
+import com.madness.restaurant.daily.DailyFragment2;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.profile.EditProfile;
@@ -37,7 +37,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener/*, DailyFragment.DailyListener*/,
         NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
 
     Toolbar toolbar;
@@ -145,7 +145,7 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
             } else if (fragment instanceof EditProfile) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if (fragment instanceof DailyFragment) {
+            } else if (fragment instanceof DailyFragment2) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
             } else if (fragment instanceof NewDailyOffer) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
@@ -179,6 +179,7 @@ public class HomeActivity extends AppCompatActivity
         ft.commit();
     }
 
+    /*
     @Override
     public void addDailyOffer() {
         try {
@@ -195,7 +196,7 @@ public class HomeActivity extends AppCompatActivity
         ft.replace(R.id.flContent, fragment, "AddOffer");
         ft.addToBackStack("DAILY");
         ft.commit();
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -247,7 +248,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.nav_daily:
                 try {
-                    fragmentClass = DailyFragment.class;
+                    fragmentClass = DailyFragment2.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").addToBackStack("HOME").commit();
@@ -313,12 +314,13 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     public void onSubmitDish() {
-        DailyFragment dailyFragment = (DailyFragment)
+        DailyFragment2 dailyFragment = (DailyFragment2)
                 getSupportFragmentManager().findFragmentByTag("DAILY");
         if (dailyFragment != null) {
-            dailyFragment.addOnDaily();
+            //dailyFragment.addOnDaily();
         }
     }
 }

@@ -245,6 +245,16 @@ public class NewDailyOffer extends Fragment {
         if (id == R.id.action_edit) {
 
             //TODO: missing save function!
+            editor.putString("dish", dishname.getText().toString());
+            editor.putString("descDish", desc.getText().toString());
+            editor.putString("avail",avail.getText().toString());
+            editor.putString("price",price.getText().toString());
+            if (getPrefPhoto()!=null) {
+                editor.putString("photoDish", getPrefPhoto());
+            }
+            editor.apply();
+            delPrefPhoto();
+            listener.onSubmitDish();
 
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();

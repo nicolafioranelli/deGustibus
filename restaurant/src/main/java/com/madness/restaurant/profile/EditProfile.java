@@ -769,7 +769,7 @@ public class EditProfile extends Fragment {
         map.put("sundayClose", sundayClose.getText().toString());
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
+        //storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
