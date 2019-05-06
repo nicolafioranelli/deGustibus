@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madness.degustibus.R;
 
 import java.util.ArrayList;
@@ -53,6 +56,8 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
     }
 
     public void remove(int position) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
         dishList.remove(position);
         notifyItemRemoved(position);
     }
@@ -97,11 +102,12 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
                     int clickPosition = getAdapterPosition();
                     CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
+                        if(Integer.parseInt(quantity.getText().toString())!= 0){
                             int n =Integer.parseInt(quantity.getText().toString());
                             n --;
                             quantity.setText(String.valueOf(n));
                             dish.setQuantity(String.valueOf(n));
-
+                        }
                     }
                 }
             });

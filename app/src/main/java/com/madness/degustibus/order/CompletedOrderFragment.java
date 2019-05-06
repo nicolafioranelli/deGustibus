@@ -95,15 +95,12 @@ public class CompletedOrderFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
-                /*System.out.println("inizio" );
-                orders= (HashMap<String, String>) dataSnapshot.getValue();
-                System.out.println("dimmi" + orders.values());
-                System.out.println("prova" + orders.);*/
                 for(DataSnapshot dS : dataSnapshot.getChildren()){
                     System.out.println("prova" + dS + "-" + dS.getValue().getClass());
                     dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
                     dishList.add(dish);
                 }
+
 
                 mAdapter = new CartDataAdapter(dishList);
                 recyclerView.setAdapter(mAdapter);

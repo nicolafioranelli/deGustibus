@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -173,8 +172,6 @@ public class OrderFragment extends Fragment{
         String piatto = "0";
         for(MenuClass dish: dishList){
             outState.putString(piatto,dish.quantity);
-            // Toast.makeText(getContext(), getResources().getString(Integer.valueOf(dish.quantity)), Toast.LENGTH_SHORT).show();
-             Toast.makeText(getContext(),dish.quantity,Toast.LENGTH_SHORT).show();
             piatto = String.valueOf(Integer.valueOf(piatto)+1);
 
         }
