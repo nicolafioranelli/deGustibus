@@ -14,9 +14,9 @@ import com.madness.degustibus.R;
 
 import java.util.ArrayList;
 
-public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuViewHolder> {
+public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuViewHolder> {
 
-    private ArrayList<MenuClass> dishList;
+    private ArrayList<CartClass> dishList;
 
 
     public interface ItemClickListener {
@@ -24,43 +24,27 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     }
 
 
-    public MenuDataAdapter(ArrayList<MenuClass> dishes) {
+    public CartDataAdapter(ArrayList<CartClass> dishes) {
+
         this.dishList = dishes;
     }
 
     @NonNull
     @Override
-    public MenuDataAdapter.MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CartDataAdapter.MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.menu_listitem, parent, false);
+                .inflate(R.layout.cart_listitem, parent, false);
 
 
-        return new MenuDataAdapter.MenuViewHolder(itemView);
-    }
-    public void onClick(View v) {
-        if(v.getId() == R.id.buttonMinus) {
-
-
-        }
-        if(v.getId() == R.id.buttonPlus) {
-
-
-        }
+        return new CartDataAdapter.MenuViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MenuDataAdapter.MenuViewHolder holder, int position) {
-        MenuClass menu = dishList.get(position);
+    public void onBindViewHolder(@NonNull CartDataAdapter.MenuViewHolder holder, int position) {
+        CartClass menu = dishList.get(position);
         holder.title.setText(menu.getTitle());
-        holder.description.setText(menu.getDescription());
         holder.price.setText(menu.getPrice());
         holder.quantity.setText(menu.getQuantity());
-        if (menu.getPic() == null) {
-            // Set default image
-            holder.image.setImageResource(R.drawable.dish_image);
-        } else {
-            holder.image.setImageURI(Uri.parse(menu.getPic()));
-        }
     }
 
     @Override
@@ -73,26 +57,25 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
         notifyItemRemoved(position);
     }
 
-    public MenuClass getMenuClass(int position) {
+    public CartClass getCartClass(int position) {
         return dishList.get(position);
     }
 
-    public MenuClass getDish(int position) {
+    public CartClass getDish(int position) {
         return dishList.get(position);
     }
 
-    public void add(int position, MenuClass menuClass) {
-        dishList.add(position, menuClass);
+    public void add(int position, CartClass cartClass) {
+        dishList.add(position, cartClass);
         notifyItemInserted(position);
     }
 
-    public ArrayList<MenuClass> getList() {
+    public ArrayList<CartClass> getList() {
         return dishList;
     }
 
     public class MenuViewHolder extends RecyclerView.ViewHolder{
-        private TextView title, description, price, quantity;
-        private ImageView image;
+        private TextView title, price, quantity;
         private Button buttonPlus;
         private Button buttonMinus;
 
@@ -100,10 +83,8 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
 
             super(view);
             title = view.findViewById(R.id.title);
-            description = view.findViewById(R.id.description);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
-            image = view.findViewById(R.id.imageView);
             buttonMinus = view.findViewById(R.id.buttonMinus);
 
             if (Integer.parseInt(quantity.getText().toString())==0){
@@ -114,7 +95,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n --;
@@ -129,7 +110,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonPlus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;

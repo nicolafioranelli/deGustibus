@@ -42,7 +42,6 @@ public class OrderFragment extends Fragment{
     private MenuDataAdapter mAdapter;
     private Button confirm_btn;
     private Fragment fragment;
-    private String pathName;
     HashMap<String,String> order=new HashMap<>();
 
     public OrderFragment() {
@@ -104,7 +103,6 @@ public class OrderFragment extends Fragment{
                         if(dish.quantity != "0"){
                             databaseRef.child("prova2").setValue("prova2");
                             order.put("dishname",dish.title);
-                            order.put("descr",dish.description);
                             order.put("price",dish.price);
                             order.put("quantity",dish.quantity);
                             databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").push().setValue(order);
