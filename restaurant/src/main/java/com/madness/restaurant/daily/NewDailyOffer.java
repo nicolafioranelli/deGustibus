@@ -2,14 +2,17 @@ package com.madness.restaurant.daily;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,11 +27,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
 
@@ -54,6 +63,22 @@ public class NewDailyOffer extends Fragment {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private NewDailyOfferListener listener;
+
+    //Folder path for Firebase Storage
+    String m_StoragePath = "All_Image_Uploads/";
+
+    //Root Database name for firebase database
+    String mDataBasePath= "Offers";
+
+    //Creating URI
+    Uri mFilePathUri;
+
+    //Creating StorageReference and Database reference
+    StorageReference mStorageReference;
+    DatabaseReference mDatabaseReference;
+
+    //ProgressBar
+    ProgressBar progressBar;
 
     public NewDailyOffer() {
         // Required empty public constructor
@@ -200,6 +225,13 @@ public class NewDailyOffer extends Fragment {
                     //img = getView().findViewById(R.id.imageviewfordish);
                     img.setImageURI(photo);
                     setPrefPhoto(photo.toString());
+                    mFilePathUri=photo;
+                    try{
+                        Bitmap bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),photo);
+                    }
+                    catch(Exception e){
+                        Toast.makeText(getContext(), "Not Saved correctly", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
@@ -254,6 +286,8 @@ public class NewDailyOffer extends Fragment {
             }
             editor.apply();
             delPrefPhoto();
+            
+            //uploadDataOnFirebase();
             listener.onSubmitDish();
 
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
@@ -262,6 +296,26 @@ public class NewDailyOffer extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    /*
+    private void uploadDataOnFirebase() {
+        if(mFilePathUri!= null){
+            StorageReference storageReference2nd= mStorageReference.child(m_StoragePath + System.currentTimeMillis() + "." + getFileExtension(mFilePathUri));
+            storageReference2nd.putFile(mFilePathUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        }
+                    })
+        }
+    }
+*/
+    //method to get the selected image file from path uri
+    private String getFileExtension(Uri uri) {
+        ContentResolver contentResolver=getContext().getContentResolver();
+        MimeTypeMap mimeTypeMap= MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
     private void loadSharedPrefs() {

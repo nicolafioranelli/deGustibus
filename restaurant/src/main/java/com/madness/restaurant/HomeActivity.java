@@ -37,7 +37,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener/*, DailyFragment.DailyListener*/,
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment2.DailyListener,
         NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
 
     Toolbar toolbar;
@@ -179,7 +179,7 @@ public class HomeActivity extends AppCompatActivity
         ft.commit();
     }
 
-    /*
+
     @Override
     public void addDailyOffer() {
         try {
@@ -196,7 +196,7 @@ public class HomeActivity extends AppCompatActivity
         ft.replace(R.id.flContent, fragment, "AddOffer");
         ft.addToBackStack("DAILY");
         ft.commit();
-    }*/
+    }
 
     @Override
     public void onBackPressed() {
@@ -320,7 +320,7 @@ public class HomeActivity extends AppCompatActivity
         DailyFragment2 dailyFragment = (DailyFragment2)
                 getSupportFragmentManager().findFragmentByTag("DAILY");
         if (dailyFragment != null) {
-            //dailyFragment.addOnDaily();
+            dailyFragment.addOnDaily();
         }
     }
 }

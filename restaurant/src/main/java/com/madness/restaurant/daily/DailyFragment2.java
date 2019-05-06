@@ -31,17 +31,22 @@ public class DailyFragment2 extends Fragment {
     private int addedposition = 0;
     private boolean added = true;
     private int mColumnCount = 1;
-    private DailyFragment.DailyListener listener;
+    private DailyListener listener;
     private SwipeController swipeController;
     private RecyclerView recyclerView;
     private DatabaseReference mDataRef;
     private FirebaseRecyclerAdapter<DailyClass, ViewHolder> adapter;
 
+
+
+    public interface DailyListener {
+        void addDailyOffer();
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DailyFragment.DailyListener) {
-            listener = (DailyFragment.DailyListener) context;
+        if (context instanceof DailyFragment2.DailyListener) {
+            listener = (DailyListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement DailyListner");
         }
@@ -147,4 +152,6 @@ public class DailyFragment2 extends Fragment {
             price = itemView.findViewById(R.id.dish_price);
         }
     }
+
+    public void addOnDaily() {}
 }
