@@ -35,8 +35,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
-        NewReservationFragment.NewReservationListener {
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -160,7 +159,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void addReservation() {
+    public void addReservation(String identifier) {
         try {
             fragment = null;
             Class fragmentClass;
@@ -169,6 +168,10 @@ public class HomeActivity extends AppCompatActivity
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
         }
+
+        Bundle args = new Bundle();
+        args.putString("id", identifier);
+        fragment.setArguments(args);
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -306,12 +309,4 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onSubmit() {
-        ReservationFragment reservationFragment = (ReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("RESERVATION");
-        if (reservationFragment != null) {
-            reservationFragment.addOnReservation();
-        }
-    }
 }

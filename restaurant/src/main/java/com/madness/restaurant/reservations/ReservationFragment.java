@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,67 +11,47 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ReservationFragment class
  */
 public class ReservationFragment extends Fragment {
 
-
-    // fake content for list
-    ArrayList<ReservationClass> reservationList = new ArrayList<>();
+    private ReservationListener listener;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseDatabase db;
+    private DatabaseReference databaseReference;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private RecyclerView recyclerView;
-    private ReservationsDataAdapter mAdapter;
     private SwipeController swipeController;
-    private int replaced=0;
-    private int addedposition=0;
-    private  boolean added=true;
-
-    private void setReservationsDataAdapter() {
-        mAdapter = new ReservationsDataAdapter(reservationList, this.getContext());
-    }
-    private ReservationListener listener;
+    private FirebaseRecyclerAdapter adapter;
+    private FirebaseUser user;
 
     public interface ReservationListener {
-        public void addReservation();
+        public void addReservation(String identifier);
     }
+
     public ReservationFragment() {
         // Required empty public constructor
-        fakeContent();
-    }
-
-    private void fakeContent() {
-        ReservationClass reservation = new ReservationClass(
-                "Nicola Sabino",1,"3","18/04/2019",
-                "21:00","Risotto ai frutti di mare","");
-        this.reservationList.add(reservation);
-
-        ReservationClass reservation2 = new ReservationClass(
-                "Luca Rossi",2,"4","18/04/2019",
-                "21:00","Pasta al pomodoro","");
-        this.reservationList.add(reservation2);
-
-        ReservationClass reservation3 = new ReservationClass(
-                "Jacopo Iezzi",3,"2","18/04/2019",
-                "21:00","Pizza margherita","");
-        this.reservationList.add(reservation3);
     }
 
     @Override
@@ -82,7 +60,7 @@ public class ReservationFragment extends Fragment {
         if(context instanceof ReservationListener) {
             listener = (ReservationListener) context;
         } else {
-            throw new ClassCastException(context.toString() + "must implement DailyListner");
+            throw new ClassCastException(context.toString() + "must implement ReservationListener");
         }
     }
 
@@ -91,64 +69,58 @@ public class ReservationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
-        setReservationsDataAdapter();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public void addOnReservation() {
-        ReservationClass reservationClass = new ReservationClass(
-                pref.getString("reservationName", getResources().getString(R.string.reservation_customerNameEdit)),
-                pref.getInt("reservationIdentifier",0),
-                pref.getString("reservationSeats", "0"),
-                pref.getString("reservationDay", "01/01/2019"),
-                pref.getString("reservationTime", "13:00"),
-                pref.getString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit)),
-                pref.getString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit))
-                );
 
-        if(added)
-            mAdapter.add(addedposition,reservationClass);
-        if(!added){
-            mAdapter.add(replaced,reservationClass);
-            mAdapter.remove(replaced-1);
-            mAdapter.notifyItemRemoved(replaced-1);
-            mAdapter.notifyItemRangeChanged(replaced-1, mAdapter.getItemCount());
-        }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        FloatingActionButton resFb = (FloatingActionButton) getActivity().findViewById(R.id.resFab);
-        resFb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                added=true;
-                addedposition=mAdapter.getItemCount();
-                editor.putString("reservationName", getResources().getString(R.string.reservation_customerNameEdit));
-                editor.putString("reservationSeats", "0");
-                editor.putInt("reservationIdentifier",mAdapter.getItemCount());
-                editor.putString("reservationTime", "13:00");
-                editor.putString("reservationDay", "01/01/2019");
-                editor.putString("reservationDesc", getResources().getString(R.string.reservation_reservationDescedit));
-                editor.putString("reservationOrderedDishes", getResources().getString(R.string.reservation_dishesOrderededit));
-                editor.apply();
-                listener.addReservation();
-            }
-        });
-    }
+    /* During the creation of the view the title is set and layout is generated */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // inflate the fragment layout
-        View rootView =  inflater.inflate(R.layout.fragment_reservations, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_reservations, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Reservations));
-        // initialize the fake content
-        //initElements();
 
+        db = FirebaseDatabase.getInstance();
+        databaseReference = db.getReference();
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        mAdapter = new ReservationsDataAdapter(reservationList, this.getContext());
-        recyclerView.setAdapter(mAdapter);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
+        final Query query = databaseReference.child("reservations").child(user.getUid());
+
+        FirebaseRecyclerOptions<ReservationClass> options =
+                new FirebaseRecyclerOptions.Builder<ReservationClass>()
+                        .setQuery(query, ReservationClass.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<ReservationClass, ReservationHolder>(options) {
+
+            @NonNull
+            @Override
+            public ReservationHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                // Create a new instance of the ViewHolder, in this case we are using a custom
+                // layout called R.layout.message for each item
+                View view = LayoutInflater.from(viewGroup.getContext()).
+                        inflate(R.layout.reservation_listitem, viewGroup, false);
+                rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                return new ReservationHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull ReservationHolder holder, int position, @NonNull ReservationClass model) {
+                holder.fullname.setText(model.getFullname());
+                holder.identifier.setText(model.getIdentifier());
+                holder.dish.setText(model.getDish());
+                holder.portions.setText(model.getPortions());
+                holder.datetime.setText(model.getDatetime());
+            }
+
+        };
+
+        recyclerView.setAdapter(adapter);
+
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -159,54 +131,65 @@ public class ReservationFragment extends Fragment {
         });
 
         // set swipe controller
-        swipeController=new SwipeController((new SwipeControllerActions() {
+        swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
-                added=false;
-                replaced=position+1;
-                editor.putString("reservationName", mAdapter.getReservation(position).getName());
-                editor.putString("reservationSeats", mAdapter.getReservation(position).getSeats());
-                editor.putInt("reservationIdentifier", mAdapter.getReservation(position).getIdentifier());
-                editor.putString("reservationTime", mAdapter.getReservation(position).getTime());
-                editor.putString("reservationDay", mAdapter.getReservation(position).getDate());
-                editor.putString("reservationDesc", mAdapter.getReservation(position).getDesc());
-                editor.putString("reservationOrderedDishes", mAdapter.getReservation(position).getOrderDishes());
-                editor.apply();
-                listener.addReservation();
-
-                Log.d("MAD", "onLeftClicked: left");
+                listener.addReservation(adapter.getRef(position).getKey());
                 super.onLeftClicked(position);
             }
 
             @Override
             public void onRightClicked(int position) {
-                mAdapter.remove(position);
-                mAdapter.notifyItemRemoved(position);
-                mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
-                Log.d("MAD", "onLeftClicked: right");
+                databaseReference = db.getReference();
+                Query removeQuery = databaseReference.child("reservations")
+                        .child(user.getUid())
+                        .orderByKey()
+                        .equalTo(adapter.getRef(position).getKey());
+
+                removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            singleSnapshot.getRef().removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 super.onRightClicked(position);
             }
-        }),this.getContext());
+        }), this.getContext());
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerView);
-
         return rootView;
     }
 
+    /* Here is set the click listener on the floating button */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("Reservations", new ArrayList<>(mAdapter.getList()));
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        FloatingActionButton resFb = getActivity().findViewById(R.id.resFab);
+        resFb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.addReservation("null");
+            }
+        });
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            reservationList = savedInstanceState.getParcelableArrayList("Reservations");
-            setReservationsDataAdapter();
-            recyclerView.setAdapter(mAdapter);
-        }
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 }

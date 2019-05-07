@@ -105,7 +105,6 @@ public class NewDailyOffer extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setHasOptionsMenu(true);
         minusBtn = getActivity().findViewById(R.id.button_minus);
         plusBtn = getActivity().findViewById(R.id.button_plus);
         dishname = getActivity().findViewById(R.id.et_dish_name);

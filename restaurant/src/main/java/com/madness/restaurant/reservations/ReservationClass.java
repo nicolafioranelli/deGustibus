@@ -1,117 +1,61 @@
 package com.madness.restaurant.reservations;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class ReservationClass {
 
-public class ReservationClass implements Parcelable {
+    private String fullname;
+    private String identifier;
+    private String dish;
+    private String portions;
+    private String datetime;
 
-    private String name;
-    private int identifier;
-    private String seats;
-
-    public String getDate() {
-        return date;
+    public ReservationClass() {
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    private String date;
-        private String time;
-    private String orderDishes;
-    private String desc;
-
-    public static final Creator<ReservationClass> CREATOR = new Creator<ReservationClass>() {
-        @Override
-        public ReservationClass createFromParcel(Parcel in) {
-            return new ReservationClass(in);
-        }
-
-        @Override
-        public ReservationClass[] newArray(int size) {
-            return new ReservationClass[size];
-        }
-    };
-
-    public String getOrderDishes() {
-        return orderDishes;
-    }
-
-    public ReservationClass (Parcel parcel) {
-        this.name = parcel.readString();
-        this.identifier = parcel.readInt();
-        this.seats = parcel.readString();
-        this.date = parcel.readString();
-        this.time = parcel.readString();
-        this.orderDishes = parcel.readString();
-        this.desc = parcel.readString();
-    }
-    public ReservationClass (String name,int identifier,String seats,String date, String time,String orderDishes,String desc ) {
-        this.name = name;
+    public ReservationClass(String fullname, String identifier, String dish, String portions, String datetime) {
+        this.fullname = fullname;
         this.identifier = identifier;
-        this.seats = seats;
-        this.date = date;
-        this.time = time;
-        this.orderDishes = orderDishes;
-        this.desc = desc;
-    }
-    public void setOrderDishes(String orderDishes) {
-        this.orderDishes = orderDishes;
+        this.dish = dish;
+        this.portions = portions;
+        this.datetime = datetime;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getFullname() {
+        return fullname;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
-    public int getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
-    public void setIdentifier(int identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    public String getSeats() {
-        return seats;
+    public String getDish() {
+        return dish;
     }
 
-    public void setSeats(String seat) {
-        this.seats = seat;
+    public void setDish(String dish) {
+        this.dish = dish;
     }
 
-    public String getName() {
-        return name;
+    public String getPortions() {
+        return portions;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPortions(String portions) {
+        this.portions = portions;
     }
 
-    @Override
-    public int describeContents() {return 0;
+    public String getDatetime() {
+        return datetime;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(seats);
-        dest.writeString(date);
-        dest.writeString(time);
-        dest.writeString(desc);
-        dest.writeInt(identifier);
-        dest.writeString(orderDishes);
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 }

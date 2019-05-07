@@ -60,7 +60,7 @@ public class DailyFragment extends Fragment {
         if (context instanceof DailyListener) {
             listener = (DailyListener) context;
         } else {
-            throw new ClassCastException(context.toString() + "must implement DailyListner");
+            throw new ClassCastException(context.toString() + "must implement DailyListener");
         }
     }
 
