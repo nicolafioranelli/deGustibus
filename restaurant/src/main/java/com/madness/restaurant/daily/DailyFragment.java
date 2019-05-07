@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -125,6 +126,11 @@ public class DailyFragment extends Fragment {
                 holder.type.setText(model.getType());
                 holder.avail.setText(model.getAvail());
                 holder.price.setText(model.getPrice());
+
+                Glide.with(holder.pic.getContext())
+                        .load("http://inthecheesefactory.com/uploads/source/glidepicasso/cover.jpg")
+                        .placeholder(R.drawable.dish_image)
+                        .into(holder.pic);
             }
 
         };

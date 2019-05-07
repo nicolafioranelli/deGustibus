@@ -125,8 +125,6 @@ public class NewDailyOffer extends Fragment {
         price = getActivity().findViewById(R.id.et_price);
         img = getActivity().findViewById(R.id.imageviewfordish);
 
-
-
         if (savedInstanceState != null) {
             loadBundle(savedInstanceState);
         }
