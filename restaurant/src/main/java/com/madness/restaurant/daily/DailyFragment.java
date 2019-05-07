@@ -208,7 +208,13 @@ public class DailyFragment extends Fragment {
     }
     private void getAllOffers(DataSnapshot dataSnapshot) {
         DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
-        dailyList.add(new DailyClass(dailyClass.dish,dailyClass.type,dailyClass.avail,dailyClass.price,dailyClass.pic));
+
+        dailyList.add(new DailyClass(dailyClass.getDish(),
+                dailyClass.getType(),dailyClass.getAvail(),
+                dailyClass.getPrice(),dailyClass.getPic(),
+                dailyClass.getRestaurant(),
+                dailyClass.getIdentifier()));
+
         mAdapter = new DailyDataAdapter(getContext(),dailyList);
         recyclerView.setAdapter(mAdapter);
 
