@@ -180,7 +180,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void addDailyOffer() {
+    public void addDailyOffer(String identifier) {
+
         try {
             fragment = null;
             Class fragmentClass;
@@ -189,6 +190,10 @@ public class HomeActivity extends AppCompatActivity
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
         }
+
+        Bundle args = new Bundle();
+        args.putString("id", identifier);
+        fragment.setArguments(args);
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();

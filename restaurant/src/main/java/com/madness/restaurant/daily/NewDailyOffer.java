@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -125,13 +126,19 @@ public class NewDailyOffer extends Fragment {
         price = getActivity().findViewById(R.id.et_price);
         img = getActivity().findViewById(R.id.imageviewfordish);
 
-
-
-        if (savedInstanceState != null) {
-            loadBundle(savedInstanceState);
+        /* Check if it is a new insertion or an edit one in case id equals to null is a new insertion
+         * and the view is populated with the canonical strings else they are downloaded from firebase.
+         */
+        Bundle bundle = getArguments();
+        if(bundle.getString("id").equals("null")) {
+            dishname.setText(getResources().getString(R.string.frDaily_defName));
+            desc.setText(getResources().getString(R.string.frDaily_defDesc));
+            avail.setText(String.valueOf(0));
+            price.setText(String.valueOf(0.00));
+            img.setImageResource(R.drawable.dish_image);
+        } else {
+            loadFromFirebase(bundle.getString("id"));
         }
-
-        loadFromFirebase();
 
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,21 +356,9 @@ public class NewDailyOffer extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void loadSharedPrefs() {
-        dishname.setText(pref.getString("dish", getResources().getString(R.string.frDaily_defName)));
-        desc.setText(pref.getString("descDish", getResources().getString(R.string.frDaily_defDesc)));
-        avail.setText(pref.getString("avail", String.valueOf(0)));
-        price.setText(pref.getString("price", String.valueOf(0.00)));
-        /* check if a photo is set */
-        if (pref.getString("photoDish", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photoDish", null)));
-        }
-    }
-
-    private void loadFromFirebase(){
-            String identifier = pref.getString("dishIdentifier",null);
-            Query query = databaseReference.orderByChild("identifier").equalTo(identifier);
+    private void loadFromFirebase(String id){
+            //String identifier = pref.getString("dishIdentifier",null);
+            Query query = databaseReference.orderByChild("identifier").equalTo(id);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
