@@ -16,32 +16,39 @@ public class HomeClass implements Parcelable {
             return new HomeClass[size];
         }
     };
-    String title;
-    String subtitle;
-    String description;
+    String name;
+    String address;
+    String desc;
     String pic;
+    String id;
     private int identifier;
 
     protected HomeClass(Parcel in) {
-        title = in.readString();
-        subtitle = in.readString();
-        description = in.readString();
+        name = in.readString();
+        address = in.readString();
+        desc = in.readString();
         pic = in.readString();
+        id = in.readString();
     }
 
-    public HomeClass(String title, String subtitle, String description, String pic) {
-        this.title = title;
-        this.subtitle = subtitle;
-        this.description = description;
+    public HomeClass(){
+        //required empty
+    }
+    public HomeClass(String name, String address, String desc, String pic,String id) {
+        this.name = name;
+        this.address = address;
+        this.desc = desc;
         this.pic = pic;
+        this.id = id;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(subtitle);
-        dest.writeString(description);
+        dest.writeString(name);
+        dest.writeString(address);
+        dest.writeString(desc);
         dest.writeString(pic);
+        dest.writeString(id);
     }
 
     @Override
@@ -49,28 +56,37 @@ public class HomeClass implements Parcelable {
         return 0;
     }
 
-    public String getTitle() {
-        return title;
+    public String getId() {
+        return id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getSubtitle() {
-        return subtitle;
+    public String getName() {
+        return name;
     }
 
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public void setName(String title) {
+        this.name = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAddress(String subtitle) {
+        this.address = subtitle;
+    }
+
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String description) {
+        this.desc = description;
     }
 
     public String getPic() {

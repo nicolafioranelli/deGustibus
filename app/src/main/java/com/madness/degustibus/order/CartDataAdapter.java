@@ -7,16 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
 
 import java.util.ArrayList;
@@ -63,8 +57,6 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart/" + dishList.get(position).getId());
         databaseRef.removeValue();
-        //dishList.remove(position);
-        //notifyItemRemoved(position);
         dishList.clear();
     }
 

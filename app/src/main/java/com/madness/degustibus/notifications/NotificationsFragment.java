@@ -13,16 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
-import com.madness.degustibus.order.MenuClass;
 import com.madness.degustibus.order.SummaryOrderFragment;
 
 import java.util.ArrayList;
@@ -142,9 +139,6 @@ public class NotificationsFragment extends Fragment implements NotificationsData
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        System.out.println("ECCOMIIIIIIII" + notifList.get(clickedItemIndex).getIdOrder());
-        String toastMessage = "Item #" + clickedItemIndex + " clicked.";
-         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
          notifList.get(clickedItemIndex);
         try {
 

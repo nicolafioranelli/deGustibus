@@ -64,12 +64,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/fab_margin"
                 android:text="descrizione" />
+
             <TextView
                 android:id="@+id/summary_details"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="8dp"
-                android:text="Dettaglio dei costi"
+                android:text="Dettagli di consegna"
                 android:textAllCaps="true" />
 
             <TextView

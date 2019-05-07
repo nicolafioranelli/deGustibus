@@ -41,10 +41,10 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     @Override
     public void onBindViewHolder(@NonNull MenuDataAdapter.MenuViewHolder holder, int position) {
         MenuClass menu = dishList.get(position);
-        holder.title.setText(menu.getTitle());
-        holder.description.setText(menu.getDescription());
+        holder.title.setText(menu.getDish());
+        holder.description.setText(menu.getType());
         holder.price.setText(menu.getPrice());
-        holder.quantity.setText(menu.getQuantity());
+        holder.quantity.setText(menu.getAvail());
         if (menu.getPic() == null) {
             // Set default image
             holder.image.setImageResource(R.drawable.dish_image);
@@ -110,7 +110,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                             int n =Integer.parseInt(quantity.getText().toString());
                             n --;
                             quantity.setText(String.valueOf(n));
-                            dish.setQuantity(String.valueOf(n));
+                            dish.setAvail(String.valueOf(n));
                         }
                     }
                 }
@@ -125,7 +125,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;
                             quantity.setText(String.valueOf(n));
-                            dish.setQuantity(String.valueOf(n));
+                            dish.setAvail(String.valueOf(n));
                     }
                 }
             });

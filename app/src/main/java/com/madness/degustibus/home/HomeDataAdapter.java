@@ -1,6 +1,7 @@
 package com.madness.degustibus.home;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -19,15 +20,21 @@ import com.madness.degustibus.R;
 
 import java.util.ArrayList;
 
-public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeViewHolder> implements View.OnClickListener {
+public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeViewHolder> {
 
     private ArrayList<HomeClass> RestaurantList;
     private Button btn;
     private Fragment fragment;
     private FragmentManager fragmentManager;
+    final private ItemClickListener mOnClickListener;
 
-    public HomeDataAdapter(ArrayList<HomeClass> reservations) {
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+    public HomeDataAdapter(ArrayList<HomeClass> reservations,ItemClickListener listener) {
         this.RestaurantList = reservations;
+        mOnClickListener = listener;
     }
 
     @NonNull
@@ -35,36 +42,16 @@ public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeVi
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.restaurants_listitem, parent, false);
-        btn = itemView.findViewById(R.id.button1);
-        btn.setOnClickListener(this);
         return new HomeViewHolder(itemView);
     }
 
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.button1) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = OrderFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                Log.e("MAD", "editProfileClick: ", e);
-            }
-
-            ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.flContent, fragment, "New order")
-                    .addToBackStack("Home")
-                    .commit();
-        }
-    }
 
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
         HomeClass restaurant = RestaurantList.get(position);
-        holder.title.setText(restaurant.getTitle());
-        holder.subtitle.setText(restaurant.getSubtitle());
-        holder.description.setText(restaurant.getDescription());
+        holder.title.setText(restaurant.getName());
+        holder.subtitle.setText(restaurant.getAddress());
+        holder.description.setText(restaurant.getDesc());
         if (restaurant.getPic() == null) {
             // Set default image
             holder.image.setImageResource(R.drawable.restaurant);
@@ -100,16 +87,24 @@ public class HomeDataAdapter extends RecyclerView.Adapter<HomeDataAdapter.HomeVi
         return RestaurantList;
     }
 
-    public class HomeViewHolder extends RecyclerView.ViewHolder {
+    public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView title, subtitle, description;
         private ImageView image;
 
         public HomeViewHolder(View view) {
             super(view);
+            itemView.setOnClickListener(this);
             title = view.findViewById(R.id.title);
             subtitle = view.findViewById(R.id.subtitle);
             description = view.findViewById(R.id.description);
             image = view.findViewById(R.id.imageView);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
+
         }
     }
 }
