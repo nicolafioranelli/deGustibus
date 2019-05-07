@@ -4,13 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -19,16 +22,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
+import com.madness.degustibus.order.MenuClass;
+import com.madness.degustibus.order.SummaryOrderFragment;
 
 import java.util.ArrayList;
 
-public class NotificationsFragment extends Fragment {
+public class NotificationsFragment extends Fragment implements NotificationsDataAdapter.ItemClickListener{
 
     ArrayList<NotificationsClass> notificationList = new ArrayList<>();
     private RecyclerView recyclerView;
     private NotificationsDataAdapter mAdapter;
     private  NotificationsClass notif;
     private ArrayList<NotificationsClass> notifList= new ArrayList<>();
+    private Fragment fragment;
 
     public NotificationsFragment() {
         // Required empty public constructor
@@ -45,11 +51,14 @@ public class NotificationsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setNotificationsDataAdapter();
+        mAdapter = new NotificationsDataAdapter(notifList,this);
+
+
     }
 
     /* Here is set the Adapter */
     private void setNotificationsDataAdapter() {
-        mAdapter = new NotificationsDataAdapter(notificationList);
+        mAdapter = new NotificationsDataAdapter(notificationList,this);
     }
 
     @Override
@@ -59,6 +68,7 @@ public class NotificationsFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
         getActivity().setTitle(getString(R.string.title_Notifications));
 
+        mAdapter = new NotificationsDataAdapter(notifList,this);
         recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
@@ -67,22 +77,20 @@ public class NotificationsFragment extends Fragment {
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
+        final DatabaseReference databaseRef = database.getReference("orders");
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
                 for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    notif = new NotificationsClass(dS.getValue(NotificationsClass.class).getTitle(),dS.getValue(NotificationsClass.class).getDescription(),null,null,dS.getValue(NotificationsClass.class).getPrice());
-                    System.out.println("quaaa" +dS.toString() + "notif = " + notif.title + notif.getDescription() + notif.price );
+                    notif = new NotificationsClass(dS.getValue(NotificationsClass.class).getTitle(),dS.getValue(NotificationsClass.class).getDescription(),null,null,dS.getValue(NotificationsClass.class).getPrice(),dS.getKey());
                     notifList.add(notif);
                 }
 
 
 
-                mAdapter = new NotificationsDataAdapter(notifList);
-                recyclerView.setAdapter(mAdapter);
+
                 if (mAdapter.getItemCount() == 0) {
                     recyclerView.setVisibility(View.GONE);
 
@@ -130,5 +138,34 @@ public class NotificationsFragment extends Fragment {
                 outState.putParcelableArrayList("Notifications", new ArrayList<>(mAdapter.getList()));
             }
         }
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        System.out.println("ECCOMIIIIIIII" + notifList.get(clickedItemIndex).getIdOrder());
+        String toastMessage = "Item #" + clickedItemIndex + " clicked.";
+         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
+         notifList.get(clickedItemIndex);
+        try {
+
+            Bundle bundle = new Bundle();
+            bundle.putString("idOrder",notifList.get(clickedItemIndex).idOrder);
+            fragment = null;
+            Class fragmentClass;
+            fragment = (Fragment) SummaryOrderFragment.class.newInstance();
+            fragment.setArguments(bundle);
+
+            int i=0;
+
+
+        } catch (Exception e) {
+            Log.e("MAD", "editProfileClick: ", e);
+        }
+
+        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                .replace(R.id.flContent, fragment, " Order")
+                .addToBackStack("Home")
+                .commit();
+
     }
 }

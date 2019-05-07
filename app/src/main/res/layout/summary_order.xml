@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".order.CompletedOrderFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/fab_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/summary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Summary"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/order_id_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:layout_height="match_parent"
+                    android:text="ordine id#"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/order_id"
+                    android:layout_width="0dp"
+                    android:layout_weight="75"
+                    android:layout_height="match_parent"
+                    android:text="id oridne"
+                    android:textAllCaps="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/rest_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="restaurant name" />
+
+            <TextView
+                android:id="@+id/summary_descr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="descrizione" />
+            <TextView
+                android:id="@+id/summary_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:text="Dettaglio dei costi"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/summary_costumer_addr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="indirizzo di consegna" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:orientation="horizontal"
+
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/summary_data"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:layout_height="match_parent"
+                    android:text="data"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/summary_hour"
+                    android:layout_width="0dp"
+                    android:layout_weight="75"
+                    android:layout_height="match_parent"
+                    android:text="hour"
+                    android:textAllCaps="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/orders_price_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="Dettaglio dei costi"
+                android:textAllCaps="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="100">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="80"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Summary_prod_price_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Products"
+                        android:textAlignment="viewStart" />
+
+                    <TextView
+                        android:id="@+id/Summary_shipping_price_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="shipping" />
+
+                    <TextView
+                        android:id="@+id/Summary_total_price_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/summary_products_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1" />
+
+                    <TextView
+                        android:id="@+id/summary_shipping_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1" />
+
+                    <TextView
+                        android:id="@+id/summary_total_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="€" />
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="€" />
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="€" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/order_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_gravity="center"
+                android:text="stato ordine" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</FrameLayout>

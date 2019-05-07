@@ -14,9 +14,16 @@ import java.util.ArrayList;
 public class NotificationsDataAdapter extends RecyclerView.Adapter<NotificationsDataAdapter.NotificationsViewHolder> {
 
     private ArrayList<NotificationsClass> notificationsList;
+    final private ItemClickListener mOnClickListener;
 
-    public NotificationsDataAdapter(ArrayList<NotificationsClass> notifications) {
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+
+    public NotificationsDataAdapter(ArrayList<NotificationsClass> notifications, ItemClickListener listener) {
         this.notificationsList = notifications;
+        mOnClickListener = listener;
     }
 
     @NonNull
@@ -60,7 +67,7 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
         return notificationsList;
     }
 
-    public class NotificationsViewHolder extends RecyclerView.ViewHolder {
+    public class NotificationsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title, date, description, hour,price;
 
         public NotificationsViewHolder(View view) {
@@ -70,6 +77,13 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
             description = view.findViewById(R.id.description);
             hour = view.findViewById(R.id.hour);
             price = view.findViewById(R.id.not_price);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.madness.degustibus.home;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.R;
 
@@ -28,8 +35,10 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment {
 
     ArrayList<HomeClass> restaurantList = new ArrayList<>();
+    HomeClass rest;
     private RecyclerView recyclerView;
     private HomeDataAdapter mAdapter;
+    private DatabaseReference databaseRef;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -70,6 +79,7 @@ public class HomeFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
         mAdapter = new HomeDataAdapter(restaurantList);
 
+
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
          */
@@ -90,6 +100,23 @@ public class HomeFragment extends Fragment {
             recyclerView.setAdapter(mAdapter);
             LinearLayoutManager manager = new LinearLayoutManager(getContext());
             recyclerView.setLayoutManager(manager);
+            databaseRef = FirebaseDatabase.getInstance().getReference("offers");
+            //TODO caricamento ristoranti con offerte
+            databaseRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //this method is called once with the initial value and again whenever data at this location is updated
+                    for(DataSnapshot dS : dataSnapshot.getChildren()){
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
         return rootView;
     }

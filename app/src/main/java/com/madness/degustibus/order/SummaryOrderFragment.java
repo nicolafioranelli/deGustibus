@@ -4,6 +4,7 @@ package com.madness.degustibus.order;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -14,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +34,8 @@ import java.util.HashMap;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CompletedOrderFragment extends Fragment {
-    private TextView customerAddress;
+public class SummaryOrderFragment extends Fragment {
+    private TextView tv;
     private TextView productsPrice;
     private TextView shippingPrice;
     private TextView totalPrice;
@@ -54,7 +53,7 @@ public class CompletedOrderFragment extends Fragment {
     private SharedPreferences pref;
 
 
-    public CompletedOrderFragment() {
+    public SummaryOrderFragment() {
         // Required empty public constructor
     }
 
@@ -62,73 +61,58 @@ public class CompletedOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_completed_order, container, false);
-        getActivity().setTitle("Complete order");
+        final View rootView = inflater.inflate(R.layout.summary_order, container, false);
+        getActivity().setTitle("Order");
+        final String idOrd = this.getArguments().getString("idOrder");
 
-        recyclerView = rootView.findViewById(R.id.recyclerViewOrderCompleted);
-        complete_btn = rootView.findViewById(R.id.confirm_btn);
+
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
+        DatabaseReference databaseRef = database.getReference("orders");
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(manager);
-        //click on complete order create order and delete cart objects
-        complete_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    fragment = null;
-                    Class fragmentClass;
-                    fragmentClass = HomeFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (Exception e) {
-                    Log.e("MAD", "editProfileClick: ", e);
-                }
 
-                ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.flContent, fragment, getString(R.string.title_Home))
-                        .addToBackStack("Home")
-                        .commit();
-                FirebaseDatabase db = FirebaseDatabase.getInstance();
-                final DatabaseReference dbRef = db.getReference("orders");
-                for(CartClass d: dishList){
-                    descr = descr+ " - " +d.getQuantity() + " x " + d.getTitle() ;
-
-                }
-                order.put("title","order");
-                order.put("idRest","toDo");
-                order.put("description",descr);
-                order.put("address",customerAddress.getText().toString());
-                order.put("Idcustomer",FirebaseAuth.getInstance().getCurrentUser().getUid());
-                order.put("date","toDo");
-                order.put("hour","toDo");
-                order.put("priceProd",String.valueOf(prodPrice));
-                order.put("priceShip",String.valueOf(shipPrice));
-                order.put("price",String.valueOf((prodPrice)+shipPrice));
-                order.put("state","Incoming");
-                dbRef.push().setValue(order);
-                databaseRef.removeValue();
-                Toast.makeText(getContext(), "ToDo: Completed!", Toast.LENGTH_SHORT).show();
-            }
-        });
         //populate the list of cart objects
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
                 for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
-                    dish.setId(dS.getKey());
-                    prodPrice = prodPrice + (Double.parseDouble(dish.getPrice())*Integer.parseInt(dish.getQuantity()));
-                    dishList.add(dish);
-                    productsPrice.setText(String.valueOf(prodPrice));
-                    totalPrice.setText(String.valueOf(prodPrice+shipPrice));
+                  if(dS.getKey()==idOrd){
+                      for(DataSnapshot d: dS.getChildren()){
+                          if(d.getKey().equals("address") ) {
+                              tv = getView().findViewById(R.id.summary_costumer_addr);
+
+                          }
+                          else if(d.getKey().equals("description")) {
+                              tv = getView().findViewById(R.id.summary_descr);
+                          }
+                          else if(d.getKey().equals("hour")) {
+                              tv = getView().findViewById(R.id.summary_hour);
+                          }
+                          else if(d.getKey().equals("date")) {
+                              tv = getView().findViewById(R.id.summary_data);
+                          }
+                          else if(d.getKey().equals("price")) {
+                              tv = getView().findViewById(R.id.summary_total_price);
+                          }
+                          else if(d.getKey().equals("priceProd")) {
+                              tv = getView().findViewById(R.id.summary_products_price);
+                          }
+                          else if(d.getKey().equals("priceShip")) {
+                              tv = getView().findViewById(R.id.summary_shipping_price);
+                          }
+                          else if(d.getKey().equals("state")) {
+                              tv = getView().findViewById(R.id.order_state);
+                          }
+                          else continue;
+                          tv.setText( d.getValue().toString());
+
+                      }
+                  }
                 }
+                tv=rootView.findViewById(R.id.order_id);
+                tv.setText(idOrd);
 
-
-
-                mAdapter = new CartDataAdapter(dishList);
-                recyclerView.setAdapter(mAdapter);
             }
 
             @Override
@@ -140,7 +124,7 @@ public class CompletedOrderFragment extends Fragment {
     }
     @Override
     public void onResume() {
-        customerAddress = getView().findViewById(R.id.costumer_address);
+        /*customerAddress = getView().findViewById(R.id.costumer_address);
         productsPrice = getView().findViewById(R.id.products_price);
         shippingPrice = getView().findViewById(R.id.shipping_price);
         totalPrice = getView().findViewById(R.id.total_price);
@@ -148,7 +132,7 @@ public class CompletedOrderFragment extends Fragment {
         customerAddress.setText(pref.getString("addressCustomer", getResources().getString(R.string.es_street)));
         productsPrice.setText(pref.getString("prodPrice","18"));
         shippingPrice.setText(pref.getString("shipPrice","2.5"));
-        totalPrice.setText(pref.getString("totPrice","20.5"));
+        totalPrice.setText(pref.getString("totPrice","20.5"));*/
 
         super.onResume();
     }

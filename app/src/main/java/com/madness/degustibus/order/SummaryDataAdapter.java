@@ -1,22 +1,23 @@
 package com.madness.degustibus.order;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madness.degustibus.R;
 
 import java.util.ArrayList;
 
-public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuViewHolder> {
+public class SummaryDataAdapter extends RecyclerView.Adapter<SummaryDataAdapter.MenuViewHolder> {
 
-    private ArrayList<MenuClass> dishList;
+    private ArrayList<CartClass> dishList;
 
 
     public interface ItemClickListener {
@@ -24,33 +25,27 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     }
 
 
-    public MenuDataAdapter(ArrayList<MenuClass> dishes) {
+    public SummaryDataAdapter(ArrayList<CartClass> dishes) {
+
         this.dishList = dishes;
     }
 
     @NonNull
     @Override
-    public MenuDataAdapter.MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SummaryDataAdapter.MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.menu_listitem, parent, false);
+                .inflate(R.layout.cart_listitem, parent, false);
 
 
-        return new MenuDataAdapter.MenuViewHolder(itemView);
+        return new SummaryDataAdapter.MenuViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MenuDataAdapter.MenuViewHolder holder, int position) {
-        MenuClass menu = dishList.get(position);
+    public void onBindViewHolder(@NonNull SummaryDataAdapter.MenuViewHolder holder, int position) {
+        CartClass menu = dishList.get(position);
         holder.title.setText(menu.getTitle());
-        holder.description.setText(menu.getDescription());
         holder.price.setText(menu.getPrice());
         holder.quantity.setText(menu.getQuantity());
-        if (menu.getPic() == null) {
-            // Set default image
-            holder.image.setImageResource(R.drawable.dish_image);
-        } else {
-            holder.image.setImageURI(Uri.parse(menu.getPic()));
-        }
     }
 
     @Override
@@ -59,30 +54,33 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     }
 
     public void remove(int position) {
-        dishList.remove(position);
-        notifyItemRemoved(position);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart/" + dishList.get(position).getId());
+        databaseRef.removeValue();
+        //dishList.remove(position);
+        //notifyItemRemoved(position);
+        dishList.clear();
     }
 
-    public MenuClass getMenuClass(int position) {
+    public CartClass getCartClass(int position) {
         return dishList.get(position);
     }
 
-    public MenuClass getDish(int position) {
+    public CartClass getDish(int position) {
         return dishList.get(position);
     }
 
-    public void add(int position, MenuClass menuClass) {
-        dishList.add(position, menuClass);
+    public void add(int position, CartClass cartClass) {
+        dishList.add(position, cartClass);
         notifyItemInserted(position);
     }
 
-    public ArrayList<MenuClass> getList() {
+    public ArrayList<CartClass> getList() {
         return dishList;
     }
 
     public class MenuViewHolder extends RecyclerView.ViewHolder{
-        private TextView title, description, price, quantity;
-        private ImageView image;
+        private TextView title, price, quantity;
         private Button buttonPlus;
         private Button buttonMinus;
 
@@ -90,10 +88,8 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
 
             super(view);
             title = view.findViewById(R.id.title);
-            description = view.findViewById(R.id.description);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
-            image = view.findViewById(R.id.imageView);
             buttonMinus = view.findViewById(R.id.buttonMinus);
 
             if (Integer.parseInt(quantity.getText().toString())==0){
@@ -104,13 +100,15 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
-                        if(Integer.parseInt(quantity.getText().toString())!= 0){
-                            int n =Integer.parseInt(quantity.getText().toString());
-                            n --;
-                            quantity.setText(String.valueOf(n));
-                            dish.setQuantity(String.valueOf(n));
+                        int n =Integer.parseInt(quantity.getText().toString());
+                        n --;
+                        quantity.setText(String.valueOf(n));
+                        dish.setQuantity(String.valueOf(n));
+                        if((Integer.parseInt(quantity.getText().toString())+1)==1){
+
+                            remove(clickPosition);
                         }
                     }
                 }
@@ -120,7 +118,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonPlus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;
