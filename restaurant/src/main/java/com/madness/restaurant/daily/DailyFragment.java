@@ -3,6 +3,7 @@ package com.madness.restaurant.daily;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,10 +12,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +56,7 @@ public class DailyFragment extends Fragment {
     private int addedposition = 0;
     private boolean added = true;
     private int mColumnCount = 1;
+    private FirebaseRecyclerAdapter adapter;
 
     public DailyFragment() {
         // Required empty public constructor();
@@ -92,9 +97,12 @@ public class DailyFragment extends Fragment {
         // TODO add progress bar, also in the layout
         //rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
-        databaseReference.child("Offers").addChildEventListener(new ChildEventListener() {
+       /* ChildEventListener listener = databaseReference.child("Offers").addChildEventListener(new ChildEventListener() {
+            int counter = 0;
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                counter++;
+                Log.d("MAD", counter + " onChildAdded:" + dataSnapshot.getKey() + " string " + s);
                 getAllOffers(dataSnapshot);
                 //TODO manade the progress bar
                 // rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -119,7 +127,39 @@ public class DailyFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
+
+        Query query = databaseReference.child("Offers");
+
+        FirebaseRecyclerOptions<DailyClass> options =
+                new FirebaseRecyclerOptions.Builder<DailyClass>()
+                        .setQuery(query, DailyClass.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
+
+
+            @Override
+            public DailyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                // Create a new instance of the ViewHolder, in this case we are using a custom
+                // layout called R.layout.message for each item
+                View view = LayoutInflater.from(parent.getContext()).
+                        inflate(R.layout.dailyoffer_listitem, parent, false);
+
+                return new DailyHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull DailyHolder holder, int position, @NonNull DailyClass model) {
+                holder.dish.setText(model.getDish());
+                holder.type.setText(model.getType());
+                holder.avail.setText(model.getAvail());
+                holder.price.setText(model.getPrice());
+            }
+
+        };
+
+        recyclerView.setAdapter(adapter);
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
@@ -129,13 +169,6 @@ public class DailyFragment extends Fragment {
                 swipeController.onDraw(c);
             }
         });
-
-        /*recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });*/
 
         // set swipe controller
         swipeController = new SwipeController((new SwipeControllerActions() {
@@ -208,13 +241,11 @@ public class DailyFragment extends Fragment {
     }
     private void getAllOffers(DataSnapshot dataSnapshot) {
         DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
-
         dailyList.add(new DailyClass(dailyClass.getDish(),
                 dailyClass.getType(),dailyClass.getAvail(),
                 dailyClass.getPrice(),dailyClass.getPic(),
                 dailyClass.getRestaurant(),
                 dailyClass.getIdentifier()));
-
         mAdapter = new DailyDataAdapter(getContext(),dailyList);
         recyclerView.setAdapter(mAdapter);
 
@@ -229,5 +260,17 @@ public class DailyFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
         mAdapter = new DailyDataAdapter(getContext(), dailyList);
         recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 }
