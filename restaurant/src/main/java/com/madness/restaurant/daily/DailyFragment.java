@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +50,7 @@ public class DailyFragment extends Fragment {
     private SharedPreferences.Editor editor;
     private SwipeController swipeController;
     private FirebaseRecyclerAdapter adapter;
+    private FirebaseUser user;
 
     public DailyFragment() {
         // Required empty public constructor();
@@ -69,6 +72,7 @@ public class DailyFragment extends Fragment {
         super.onCreate(savedInstanceState);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -86,7 +90,7 @@ public class DailyFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-        final Query query = databaseReference.child("offers");
+        final Query query = databaseReference.child("offers").child(user.getUid());
 
         FirebaseRecyclerOptions<DailyClass> options =
                 new FirebaseRecyclerOptions.Builder<DailyClass>()
@@ -114,7 +118,7 @@ public class DailyFragment extends Fragment {
                 holder.price.setText(model.getPrice());
 
                 Glide.with(holder.pic.getContext())
-                        .load("http://inthecheesefactory.com/uploads/source/glidepicasso/cover.jpg")
+                        .load(model.getPic())
                         .placeholder(R.drawable.dish_image)
                         .into(holder.pic);
             }
@@ -143,7 +147,11 @@ public class DailyFragment extends Fragment {
             @Override
             public void onRightClicked(int position) {
                 databaseReference = db.getReference();
-                Query removeQuery = databaseReference.child("offers").orderByChild("identifier").equalTo(adapter.getRef(position).getKey());
+                Query removeQuery = databaseReference.child("offers")
+                        .child(user.getUid())
+                        .orderByChild("identifier")
+                        .equalTo(adapter.getRef(position).getKey());
+
                 removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

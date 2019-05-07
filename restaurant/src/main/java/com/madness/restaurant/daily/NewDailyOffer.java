@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -222,6 +223,25 @@ public class NewDailyOffer extends Fragment {
         });
     }
 
+    private String getPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        return pref.getString("photoDish", null);
+    }
+
+    private void setPrefPhoto(String cameraFilePath) {
+        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("photoDish", cameraFilePath);
+        editor.apply();
+    }
+
+    private void delPrefPhoto() {
+        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove("photoDish");
+        editor.apply();
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user captures an Image
         if (resultCode == Activity.RESULT_OK) {
@@ -247,7 +267,7 @@ public class NewDailyOffer extends Fragment {
                     mImageUri = data.getData();
                     setPrefPhoto(mImageUri.toString());
                     //img.setImageURI(selectedImage);
-                    Picasso.with(getContext()).load(mImageUri).into(img);
+                    Glide.with(getContext()).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -262,70 +282,55 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
-    private String getFileExtension(Uri uri) {
+    // TODO remove it
+   /* private String getFileExtension(Uri uri) {
         ContentResolver cR = getContext().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
+    }*/
 
     private void storeOnFirebase() {
-        if (mImageUri != null) {
-            StorageReference fileReference = storageReference.child(System.currentTimeMillis() +
-                    "." + getFileExtension(mImageUri));
+        if(id.equals("null")){  // -- NEW ELEMENT --
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            FirebaseUser user = firebaseAuth.getCurrentUser();                          // retrieve the restaurant user profile
+            DatabaseReference newItem = databaseReference.child(user.getUid()).push();  // generate a new key in /offers/{uID}
 
+            StorageReference fileReference = storageReference.child(user.getUid()).child(newItem.getKey());  // generate a new child in /
+
+
+            // store the picture into firestore
             fileReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                            DailyClass daily = new DailyClass(dishname.getText().toString(), desc.getText().toString(), avail.getText().toString(), price.getText().toString(), taskSnapshot.getStorage().getDownloadUrl().toString(), user.getUid(), id);
-                            databaseReference.child(id).updateChildren(map);
+                            Log.d("MAD", "onSuccess!");
                         }
-                    });
-        } else {
-            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            Map<String, Object> map = new HashMap<>();
+                    }
+            );
 
-            String uploadId;
+            // create a new daily class container
+            DailyClass dailyClass = new DailyClass(
+                    dishname.getText().toString(),  // dishname from textview
+                    desc.getText().toString(),      // desc from textview
+                    avail.getText().toString(),     // avail from textviev
+                    price.getText().toString(),     // price from textview
+                    fileReference.toString(),       // url from previous storage on firestore
+                    user.getUid(),                  // TODO REMOVE IT
+                    newItem.getKey()                // unique key already generated with `push()`
+            );
 
-            if (pref.getString("dishIdentifier", null) != null) {
-                uploadId = pref.getString("dishIdentifier", null);
-            } else {
-                uploadId = databaseReference.push().getKey();
-            }
+            newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("MAD", "Success!");
+                }
+            });
 
-            map.put("dish", dishname.getText().toString());
-            map.put("type", desc.getText().toString());
-            map.put("avail", avail.getText().toString());
-            map.put("price", price.getText().toString());
-            map.put("pic", "no photo");
-            map.put("restaurant", user.getUid());
-            map.put("identifier", uploadId);
-            databaseReference.child(uploadId).updateChildren(map);
+        }else{  // -- UPDATE --
+
         }
-    }
 
-    private String getPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        return pref.getString("photoDish", null);
-    }
 
-    private void setPrefPhoto(String cameraFilePath) {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("photoDish", cameraFilePath);
-        editor.apply();
-    }
-
-    private void delPrefPhoto() {
-        SharedPreferences pref = getActivity().getSharedPreferences("photoDish", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.remove("photoDish");
-        editor.apply();
     }
 
     @Override
