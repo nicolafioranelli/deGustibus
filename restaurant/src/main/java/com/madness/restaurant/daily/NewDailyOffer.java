@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -130,7 +129,7 @@ public class NewDailyOffer extends Fragment {
          * and the view is populated with the canonical strings else they are downloaded from firebase.
          */
         Bundle bundle = getArguments();
-        if(bundle.getString("id").equals("null")) {
+        if (bundle.getString("id").equals("null")) {
             dishname.setText(getResources().getString(R.string.frDaily_defName));
             desc.setText(getResources().getString(R.string.frDaily_defDesc));
             avail.setText(String.valueOf(0));
@@ -356,39 +355,27 @@ public class NewDailyOffer extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadFromFirebase(String id){
-            //String identifier = pref.getString("dishIdentifier",null);
-            Query query = databaseReference.orderByChild("identifier").equalTo(id);
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                            DailyClass d = snapshot.getValue(DailyClass.class);
-                            dishname.setText(d.getDish());
-                            desc.setText(d.getType());
-                            avail.setText(d.getAvail());
-                            price.setText(d.getPrice());
-                        }
+    private void loadFromFirebase(String id) {
+        Query query = databaseReference.orderByChild("identifier").equalTo(id);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        DailyClass d = snapshot.getValue(DailyClass.class);
+                        dishname.setText(d.getDish());
+                        desc.setText(d.getType());
+                        avail.setText(d.getAvail());
+                        price.setText(d.getPrice());
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-    }
-
-    private void loadBundle(Bundle bundle) {
-        dishname.setText(bundle.getString("dish"));
-        desc.setText(bundle.getString("descDish"));
-        avail.setText(bundle.getString("avail"));
-        price.setText(bundle.getString("price"));
-        if (bundle.getString("photoDish") != null) {
-            img.setImageURI(Uri.parse(bundle.getString("photoDish")));
-        }
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("MAD", "onCancelled: ", databaseError.toException());
+            }
+        });
     }
 
     /* -- Methods for permissions --
