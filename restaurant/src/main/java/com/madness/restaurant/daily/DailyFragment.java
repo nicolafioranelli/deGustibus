@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
@@ -117,9 +118,8 @@ public class DailyFragment extends Fragment {
                 holder.avail.setText(model.getAvail());
                 holder.price.setText(model.getPrice());
 
-                Glide.with(holder.pic.getContext())
+                GlideApp.with(holder.pic.getContext())
                         .load(model.getPic())
-                        .placeholder(R.drawable.dish_image)
                         .into(holder.pic);
             }
 

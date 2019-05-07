@@ -73,6 +73,7 @@ public class NewDailyOffer extends Fragment {
     private SharedPreferences.Editor editor;
     private NewDailyOfferListener listener;
     private String id;
+    private String imageUrl;
 
     private Uri mImageUri;
     private StorageReference storageReference;
@@ -271,7 +272,6 @@ public class NewDailyOffer extends Fragment {
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.d("MAD", "onActivityResult: CANCELED");
             try {
                 File photoToCancel = new File(getPrefPhoto());
                 photoToCancel.delete();
@@ -292,11 +292,11 @@ public class NewDailyOffer extends Fragment {
     private void storeOnFirebase() {
         if(id.equals("null")){  // -- NEW ELEMENT --
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-            FirebaseUser user = firebaseAuth.getCurrentUser();                          // retrieve the restaurant user profile
+            final FirebaseUser user = firebaseAuth.getCurrentUser();                          // retrieve the restaurant user profile
             DatabaseReference newItem = databaseReference.child(user.getUid()).push();  // generate a new key in /offers/{uID}
 
-            StorageReference fileReference = storageReference.child(user.getUid()).child(newItem.getKey());  // generate a new child in /
-
+            final String newItemKey = newItem.getKey();
+            final StorageReference fileReference = storageReference.child(user.getUid()).child(newItem.getKey());  // generate a new child in /
 
             // store the picture into firestore
             fileReference.putFile(mImageUri)
@@ -304,27 +304,37 @@ public class NewDailyOffer extends Fragment {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Log.d("MAD", "onSuccess!");
+                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    imageUrl = uri.toString();
+                                    DatabaseReference newItem = databaseReference.child(user.getUid()).push();  // generate a new key in /offers/{uID}
+
+                                    // create a new daily class container
+                                    DailyClass dailyClass = new DailyClass(
+                                            dishname.getText().toString(),  // dishname from textview
+                                            desc.getText().toString(),      // desc from textview
+                                            avail.getText().toString(),     // avail from textviev
+                                            price.getText().toString(),     // price from textview
+                                            imageUrl,       // url from previous storage on firestore
+                                            user.getUid(),                  // TODO REMOVE IT
+                                            newItemKey                // unique key already generated with `push()`
+                                    );
+
+                                    newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("MAD", "Success!");
+                                        }
+                                    });
+
+                                }
+                            });
                         }
                     }
             );
 
-            // create a new daily class container
-            DailyClass dailyClass = new DailyClass(
-                    dishname.getText().toString(),  // dishname from textview
-                    desc.getText().toString(),      // desc from textview
-                    avail.getText().toString(),     // avail from textviev
-                    price.getText().toString(),     // price from textview
-                    fileReference.toString(),       // url from previous storage on firestore
-                    user.getUid(),                  // TODO REMOVE IT
-                    newItem.getKey()                // unique key already generated with `push()`
-            );
 
-            newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d("MAD", "Success!");
-                }
-            });
 
         }else{  // -- UPDATE --
 

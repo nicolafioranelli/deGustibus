@@ -181,7 +181,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void addDailyOffer(String identifier) {
-
         try {
             fragment = null;
             Class fragmentClass;
