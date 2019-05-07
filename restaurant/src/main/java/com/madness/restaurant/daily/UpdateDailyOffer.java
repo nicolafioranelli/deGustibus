@@ -57,7 +57,7 @@ import java.util.Map;
  * implemented. The functioning is similar to the EditProfile Fragment.
  */
 
-public class NewDailyOffer extends Fragment {
+public class UpdateDailyOffer extends Fragment {
 
     /* Views */
     private EditText dishname;
@@ -76,7 +76,7 @@ public class NewDailyOffer extends Fragment {
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
-    public NewDailyOffer() {
+    public UpdateDailyOffer() {
         // Required empty public constructor
     }
 
@@ -129,9 +129,12 @@ public class NewDailyOffer extends Fragment {
 
         if (savedInstanceState != null) {
             loadBundle(savedInstanceState);
+        } else {
+            if(pref.contains("dishIdentifier")){
+                loadFromFirebase();
+            }else
+                loadSharedPrefs();
         }
-
-        loadFromFirebase();
 
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override

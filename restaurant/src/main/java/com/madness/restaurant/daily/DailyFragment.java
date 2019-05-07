@@ -3,6 +3,7 @@ package com.madness.restaurant.daily;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +30,9 @@ import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The DailyFragment class is in charge of presenting a ListItem View where will be displayed
@@ -45,6 +48,7 @@ public class DailyFragment extends Fragment {
     private RecyclerView recyclerView;
     private DailyDataAdapter mAdapter;
     private LinearLayoutManager linearLayoutManager;
+    private FirebaseDatabase db;
     private DatabaseReference databaseReference;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -86,13 +90,15 @@ public class DailyFragment extends Fragment {
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
 
         dailyList = new ArrayList<DailyClass>();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        db = FirebaseDatabase.getInstance();
+        //db.setPersistenceEnabled(true); // TODO check it (is it necessary?)
+        databaseReference = db.getReference();
         recyclerView = rootView.findViewById(R.id.dishes);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-        Query query = databaseReference.child("Offers");
+        final Query query = databaseReference.child("offers");
 
         FirebaseRecyclerOptions<DailyClass> options =
                 new FirebaseRecyclerOptions.Builder<DailyClass>()
@@ -100,13 +106,16 @@ public class DailyFragment extends Fragment {
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
+
+            @NonNull
             @Override
-            public DailyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public DailyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item
-                View view = LayoutInflater.from(parent.getContext()).
-                        inflate(R.layout.dailyoffer_listitem, parent, false);
+                View view = LayoutInflater.from(viewGroup.getContext()).
+                        inflate(R.layout.dailyoffer_listitem, viewGroup, false);
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+
                 return new DailyHolder(view);
             }
 
@@ -135,22 +144,42 @@ public class DailyFragment extends Fragment {
         swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
-
-                // TODO search for a better way to pass data between fragments
-                editor.putString("dish", dailyList.get(position).getDish());
+                // TODO use `Bundle` https://stackoverflow.com/questions/16036572/how-to-pass-values-between-fragments
+                /*editor.putString("dish", dailyList.get(position).getDish());
                 editor.putString("descDish", dailyList.get(position).getType());
                 editor.putString("avail", dailyList.get(position).getAvail());
                 editor.putString("price", dailyList.get(position).getPrice());
                 editor.putString("photoDish", dailyList.get(position).getPic());
                 editor.putString("dishIdentifier", dailyList.get(position).getIdentifier());
-                editor.apply();
+                editor.apply();*/
                 listener.addDailyOffer();
+
+
+                databaseReference = db.getReference();
+                Query query1 = databaseReference.child("offers").orderByChild("identifier");
+                query1.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            Uri uri = Uri.parse(singleSnapshot.getRef().toString());
+                            editor.putString("dishIdentifier", uri.getLastPathSegment());
+                            editor.apply();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 super.onLeftClicked(position);
             }
 
             @Override
             public void onRightClicked(int position) {
-                databaseReference = FirebaseDatabase.getInstance().getReference();
+                databaseReference = db.getReference();
                 Query removeQuery = databaseReference.child("offers").orderByChild("identifier");
                 removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -194,18 +223,6 @@ public class DailyFragment extends Fragment {
                 listener.addDailyOffer();
             }
         });
-    }
-
-    private void removeOffer(DataSnapshot dataSnapshot) {
-        DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
-        for (int i = 0; i < dailyList.size(); i++) {
-            if (dailyList.get(i).getIdentifier().equals(dailyClass.getIdentifier())) {
-                dailyList.remove(i);
-            }
-        }
-        mAdapter.notifyDataSetChanged();
-        mAdapter = new DailyDataAdapter(getContext(), dailyList);
-        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
