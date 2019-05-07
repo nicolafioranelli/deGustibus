@@ -1,6 +1,7 @@
 package com.madness.degustibus.notifications;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
 
 import java.util.ArrayList;
@@ -20,17 +27,19 @@ public class NotificationsFragment extends Fragment {
     ArrayList<NotificationsClass> notificationList = new ArrayList<>();
     private RecyclerView recyclerView;
     private NotificationsDataAdapter mAdapter;
+    private  NotificationsClass notif;
+    private ArrayList<NotificationsClass> notifList= new ArrayList<>();
 
     public NotificationsFragment() {
         // Required empty public constructor
-        fakeConstructor();
+       // fakeConstructor();
     }
 
     /* Here is set the content to be shown, this method will be removed from the following lab */
-    private void fakeConstructor() {
+   /* private void fakeConstructor() {
         NotificationsClass notif1 = new NotificationsClass("Pizza Express", "Order completed! - #2537 Nicola Fioranelli - Deliveryman: #123 - Scheduled delivery: 20.45", "01/05/2019", "19.55");
         this.notificationList.add(notif1);
-    }
+    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,29 +56,53 @@ public class NotificationsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
         getActivity().setTitle(getString(R.string.title_Notifications));
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
-        mAdapter = new NotificationsDataAdapter(notificationList);
+        recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
          */
-        if (mAdapter.getItemCount() == 0) {
-            recyclerView.setVisibility(View.GONE);
 
-            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-            linearLayout.setVisibility(View.VISIBLE);
-        } else {
-            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-            linearLayout.setVisibility(View.INVISIBLE);
 
-            recyclerView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(mAdapter);
-            LinearLayoutManager manager = new LinearLayoutManager(getContext());
-            recyclerView.setLayoutManager(manager);
-        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //this method is called once with the initial value and again whenever data at this location is updated
+                for(DataSnapshot dS : dataSnapshot.getChildren()){
+                    notif = new NotificationsClass(dS.getValue(NotificationsClass.class).getTitle(),dS.getValue(NotificationsClass.class).getDescription(),null,null,dS.getValue(NotificationsClass.class).getPrice());
+                    System.out.println("quaaa" +dS.toString() + "notif = " + notif.title + notif.getDescription() + notif.price );
+                    notifList.add(notif);
+                }
+
+
+
+                mAdapter = new NotificationsDataAdapter(notifList);
+                recyclerView.setAdapter(mAdapter);
+                if (mAdapter.getItemCount() == 0) {
+                    recyclerView.setVisibility(View.GONE);
+
+                    LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
+                    linearLayout.setVisibility(View.VISIBLE);
+                } else {
+                    LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
+                    linearLayout.setVisibility(View.INVISIBLE);
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView.setAdapter(mAdapter);
+                    LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                    recyclerView.setLayoutManager(manager);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         return rootView;
     }
 
@@ -92,7 +125,7 @@ public class NotificationsFragment extends Fragment {
         Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
         if( fragment instanceof NotificationsFragment ) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_notifications, (ViewGroup) getView().getParent(), false);
-            recyclerView = rootView.findViewById(R.id.recyclerView);
+            recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
             if (recyclerView.getVisibility() == View.VISIBLE) {
                 outState.putParcelableArrayList("Notifications", new ArrayList<>(mAdapter.getList()));
             }

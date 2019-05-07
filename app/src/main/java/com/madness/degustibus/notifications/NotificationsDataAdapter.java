@@ -34,6 +34,7 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
         holder.date.setText(notifications.getDate());
         holder.description.setText(notifications.getDescription());
         holder.hour.setText(notifications.getHour());
+        holder.price.setText(notifications.getPrice());
     }
 
     @Override
@@ -60,7 +61,7 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
     }
 
     public class NotificationsViewHolder extends RecyclerView.ViewHolder {
-        private TextView title, date, description, hour;
+        private TextView title, date, description, hour,price;
 
         public NotificationsViewHolder(View view) {
             super(view);
@@ -68,6 +69,7 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
             date = view.findViewById(R.id.date);
             description = view.findViewById(R.id.description);
             hour = view.findViewById(R.id.hour);
+            price = view.findViewById(R.id.not_price);
         }
     }
 }

@@ -21,22 +21,25 @@ public class CartClass implements Parcelable {
     String dishname;
     String price;
     String quantity;
+    String id ;
     private int identifier;
 
     protected CartClass(Parcel in) {
         dishname = in.readString();
         price = in.readString();
         quantity = in.readString();
+        id = null;
     }
 
     public CartClass(String title, String price, String quantity) {
         this.dishname = title;
         this.price = price;
         this.quantity = quantity;
+        id = null;
     }
 
     public CartClass(){
-
+        // Required empty public constructor
     }
 
     @Override
@@ -44,11 +47,20 @@ public class CartClass implements Parcelable {
         dest.writeString(dishname);
         dest.writeString(price);
         dest.writeString(quantity);
+        id = null;
     }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

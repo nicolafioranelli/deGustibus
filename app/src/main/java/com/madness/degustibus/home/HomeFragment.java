@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         getActivity().setTitle(getString(R.string.title_Home));
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
         mAdapter = new HomeDataAdapter(restaurantList);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
@@ -113,7 +113,7 @@ public class HomeFragment extends Fragment {
         Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
         if( fragment instanceof HomeFragment ) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_home, (ViewGroup) getView().getParent(), false);
-            recyclerView = rootView.findViewById(R.id.recyclerView);
+            recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
             if (recyclerView.getVisibility() == View.VISIBLE) {
                 outState.putParcelableArrayList("Restaurant", new ArrayList<>(mAdapter.getList()));
             }

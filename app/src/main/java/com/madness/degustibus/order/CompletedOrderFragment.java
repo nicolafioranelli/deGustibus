@@ -43,8 +43,12 @@ public class CompletedOrderFragment extends Fragment {
     private Button complete_btn;
     private Fragment fragment;
     ArrayList<CartClass> dishList = new ArrayList<>();
-    HashMap<String,String> orders;
+    HashMap<String,String> order=new HashMap<>();
     CartClass dish;
+    String descr = "";
+    double prodPrice= 0.0;
+    double shipPrice= 2.5;
+    double totPrice = 0.0;
     private RecyclerView recyclerView;
     private CartDataAdapter mAdapter;
     private SharedPreferences pref;
@@ -52,9 +56,7 @@ public class CompletedOrderFragment extends Fragment {
 
     public CompletedOrderFragment() {
         // Required empty public constructor
-        /*fakeConstructor();*/
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +69,7 @@ public class CompletedOrderFragment extends Fragment {
         complete_btn = rootView.findViewById(R.id.confirm_btn);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
+        final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
 
@@ -87,6 +89,17 @@ public class CompletedOrderFragment extends Fragment {
                         .replace(R.id.flContent, fragment, getString(R.string.title_Home))
                         .addToBackStack("Home")
                         .commit();
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                final DatabaseReference dbRef = db.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
+                for(CartClass d: dishList){
+                    descr = descr+ " - " +d.getQuantity() + " x " + d.getTitle() ;
+
+                }
+                order.put("title","order");
+                order.put("description",descr);
+                order.put("price",String.valueOf((prodPrice)+shipPrice));
+                dbRef.push().setValue(order);
+                databaseRef.removeValue();
                 Toast.makeText(getContext(), "ToDo: Completed!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -96,10 +109,14 @@ public class CompletedOrderFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
                 for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    System.out.println("prova" + dS + "-" + dS.getValue().getClass());
                     dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
+                    dish.setId(dS.getKey());
+                    prodPrice = prodPrice + (Double.parseDouble(dish.getPrice())*Integer.parseInt(dish.getQuantity()));
                     dishList.add(dish);
+                    productsPrice.setText(String.valueOf(prodPrice));
+                    totalPrice.setText(String.valueOf(prodPrice+shipPrice));
                 }
+
 
 
                 mAdapter = new CartDataAdapter(dishList);
@@ -135,16 +152,6 @@ public class CompletedOrderFragment extends Fragment {
         setCartDataAdapter();
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
-
-    /*private void fakeConstructor() {
-        menuClass dish = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "3.50 €", "2", null);
-        this.dishList.add(dish);
-        dish = new MenuClass("Pizza diavola", "Base impasto integrale, pomodoro, mozzarella, basilico", "5.50 €", "1", null);
-        this.dishList.add(dish);
-        dish = new MenuClass("Pizza patatine", "Base impasto integrale, pomodoro, mozzarella, basilico", "5.50 €", "1", null);
-        this.dishList.add(dish);
-
-    }*/
 
     private void setCartDataAdapter() {
         mAdapter = new CartDataAdapter(dishList);

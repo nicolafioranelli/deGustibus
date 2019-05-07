@@ -1,7 +1,6 @@
 package com.madness.degustibus.order;
 
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,7 +57,7 @@ public class OrderFragment extends Fragment{
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
         mAdapter = new MenuDataAdapter(dishList);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
@@ -100,14 +99,10 @@ public class OrderFragment extends Fragment{
                     for(MenuClass dish: mAdapter.getList()){
 
                         if(dish.quantity != "0"){
-                            databaseRef.child("prova2").setValue("prova2");
                             order.put("dishname",dish.title);
                             order.put("price",dish.price);
                             order.put("quantity",dish.quantity);
                             databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").push().setValue(order);
-                        }
-                        else{
-                            databaseRef.child("prova3").setValue("prova2");
                         }
                     }
                 } catch (Exception e) {
@@ -126,9 +121,9 @@ public class OrderFragment extends Fragment{
     /* Here is set the content to be shown, this method will be removed from the following lab */
     private void fakeConstructor() {
 
-        MenuClass dish1 = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "0", null);
+        MenuClass dish1 = new MenuClass("Pizza Margherita", "Base impasto integrale, pomodoro, mozzarella, basilico", "4.50", "0", null);
         this.dishList.add(dish1);
-        dish1 = new MenuClass("Pizza patatine", "Base impasto integrale, pomodoro, mozzarella, basilico", "8,60 €", "0", null);
+        dish1 = new MenuClass("Pizza patatine", "Base impasto integrale, pomodoro, mozzarella, basilico", "5.50", "0", null);
         this.dishList.add(dish1);
     }
 
@@ -164,7 +159,7 @@ public class OrderFragment extends Fragment{
         Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
         if( fragment instanceof OrderFragment) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_order, (ViewGroup) getView().getParent(), false);
-            recyclerView = rootView.findViewById(R.id.recyclerView);
+            recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
             if (recyclerView.getVisibility() == View.VISIBLE) {
                 outState.putParcelableArrayList("Menu", new ArrayList<>(mAdapter.getList()));
             }
