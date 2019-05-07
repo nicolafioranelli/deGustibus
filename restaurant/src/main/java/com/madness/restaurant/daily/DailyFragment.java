@@ -3,7 +3,6 @@ package com.madness.restaurant.daily;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,8 +18,6 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -94,41 +91,7 @@ public class DailyFragment extends Fragment {
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        // TODO add progress bar, also in the layout
-        //rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-
-       /* ChildEventListener listener = databaseReference.child("Offers").addChildEventListener(new ChildEventListener() {
-            int counter = 0;
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                counter++;
-                Log.d("MAD", counter + " onChildAdded:" + dataSnapshot.getKey() + " string " + s);
-                getAllOffers(dataSnapshot);
-                //TODO manade the progress bar
-                // rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                getAllOffers(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                removeOffer(dataSnapshot);
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         Query query = databaseReference.child("Offers");
 
         FirebaseRecyclerOptions<DailyClass> options =
@@ -137,15 +100,13 @@ public class DailyFragment extends Fragment {
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
-
-
             @Override
             public DailyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item
                 View view = LayoutInflater.from(parent.getContext()).
                         inflate(R.layout.dailyoffer_listitem, parent, false);
-
+                rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 return new DailyHolder(view);
             }
 
@@ -190,11 +151,12 @@ public class DailyFragment extends Fragment {
             @Override
             public void onRightClicked(int position) {
                 databaseReference = FirebaseDatabase.getInstance().getReference();
-                Query removeQuery = databaseReference.child("Offers").orderByChild("identifier").equalTo(dailyList.get(position).getIdentifier());
+                Query removeQuery = databaseReference.child("offers").orderByChild("identifier");
                 removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+                        Log.d("MAD", "onDataChange: " + dataSnapshot);
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
                             singleSnapshot.getRef().removeValue();
                         }
                     }
@@ -234,22 +196,6 @@ public class DailyFragment extends Fragment {
         });
     }
 
-
-    /* Here is defined the interface for the HomeActivity in order to manage the click */
-    public interface DailyListener {
-        void addDailyOffer();
-    }
-    private void getAllOffers(DataSnapshot dataSnapshot) {
-        DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
-        dailyList.add(new DailyClass(dailyClass.getDish(),
-                dailyClass.getType(),dailyClass.getAvail(),
-                dailyClass.getPrice(),dailyClass.getPic(),
-                dailyClass.getRestaurant(),
-                dailyClass.getIdentifier()));
-        mAdapter = new DailyDataAdapter(getContext(),dailyList);
-        recyclerView.setAdapter(mAdapter);
-
-    }
     private void removeOffer(DataSnapshot dataSnapshot) {
         DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
         for (int i = 0; i < dailyList.size(); i++) {
@@ -272,5 +218,10 @@ public class DailyFragment extends Fragment {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    /* Here is defined the interface for the HomeActivity in order to manage the click */
+    public interface DailyListener {
+        void addDailyOffer();
     }
 }

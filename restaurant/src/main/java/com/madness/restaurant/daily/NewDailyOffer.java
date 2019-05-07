@@ -31,14 +31,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
@@ -96,8 +94,8 @@ public class NewDailyOffer extends Fragment {
         setHasOptionsMenu(true);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
-        storageReference= FirebaseStorage.getInstance().getReference("Offers");
-        databaseReference= FirebaseDatabase.getInstance().getReference("Offers");
+        storageReference = FirebaseStorage.getInstance().getReference("offers");
+        databaseReference = FirebaseDatabase.getInstance().getReference("offers");
     }
 
     /* Set the title and inflate view */
@@ -252,15 +250,16 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
-    private String getFileExtension(Uri uri){
-        ContentResolver cR=getContext().getContentResolver();
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContext().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
-    private void storeOnFirebase(){
-        if(mImageUri!=null){
-            StorageReference fileReference = storageReference.child(System.currentTimeMillis()+
-                    "."+getFileExtension(mImageUri));
+
+    private void storeOnFirebase() {
+        if (mImageUri != null) {
+            StorageReference fileReference = storageReference.child(System.currentTimeMillis() +
+                    "." + getFileExtension(mImageUri));
 
             fileReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -271,11 +270,10 @@ public class NewDailyOffer extends Fragment {
 
                             Map<String, Object> map = new HashMap<>();
                             String uploadId;
-                            if(pref.getString("dishIdentifier", null)!=null){
-                                uploadId=pref.getString("dishIdentifier", null);
-                            }
-                            else {
-                                uploadId =databaseReference.push().getKey();
+                            if (pref.getString("dishIdentifier", null) != null) {
+                                uploadId = pref.getString("dishIdentifier", null);
+                            } else {
+                                uploadId = databaseReference.push().getKey();
                             }
                             map.put("dish", dishname.getText().toString());
                             map.put("type", desc.getText().toString());
@@ -287,20 +285,17 @@ public class NewDailyOffer extends Fragment {
                             databaseReference.child(uploadId).updateChildren(map);
                         }
                     });
-        }
-        else{
+        } else {
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
             FirebaseUser user = firebaseAuth.getCurrentUser();
-
             Map<String, Object> map = new HashMap<>();
 
             String uploadId;
 
-            if(pref.getString("dishIdentifier", null)!=null){
-                uploadId=pref.getString("dishIdentifier", null);
-            }
-            else {
-                uploadId =databaseReference.push().getKey();
+            if (pref.getString("dishIdentifier", null) != null) {
+                uploadId = pref.getString("dishIdentifier", null);
+            } else {
+                uploadId = databaseReference.push().getKey();
             }
 
             map.put("dish", dishname.getText().toString());
@@ -309,7 +304,7 @@ public class NewDailyOffer extends Fragment {
             map.put("price", price.getText().toString());
             map.put("pic", "no photo");
             map.put("restaurant", user.getUid());
-            map.put("identifier",uploadId);
+            map.put("identifier", uploadId);
             databaseReference.child(uploadId).updateChildren(map);
         }
     }
@@ -338,8 +333,6 @@ public class NewDailyOffer extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-
-
             storeOnFirebase();
 
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();

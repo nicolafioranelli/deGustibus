@@ -34,22 +34,11 @@ public class DailyDataAdapter extends RecyclerView.Adapter<DailyHolder> {
         holder.type.setText(dailyClasses.get(position).getType());
         holder.avail.setText(dailyClasses.get(position).getAvail());
         holder.price.setText(dailyClasses.get(position).getPrice());
-        //holder.pic.setText(dailyClasses.get(position).getPic());
-        if (daily.getPic() == null) {
-            //default pic
-            holder.pic.setImageResource(R.drawable.dish_image);
-        } else {
-            holder.pic.setImageURI(Uri.parse(daily.getPic()));
-        }
+        // TODO: implement picture
+        holder.pic.setImageResource(R.drawable.dish_image);
+
     }
-    public void remove(int position) {
-        dailyClasses.remove(position);
-        notifyItemRemoved(position);
-    }
-    public void add(int position, DailyClass daily) {
-        dailyClasses.add(position, daily);
-        notifyItemInserted(position);
-    }
+
     @Override
     public int getItemCount() {
         return this.dailyClasses.size();
