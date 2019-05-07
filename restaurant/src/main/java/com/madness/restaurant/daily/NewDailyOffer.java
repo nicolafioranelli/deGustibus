@@ -71,6 +71,7 @@ public class NewDailyOffer extends Fragment {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private NewDailyOfferListener listener;
+    private String id;
 
     private Uri mImageUri;
     private StorageReference storageReference;
@@ -96,8 +97,6 @@ public class NewDailyOffer extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         storageReference = FirebaseStorage.getInstance().getReference("offers");
         databaseReference = FirebaseDatabase.getInstance().getReference("offers");
     }
@@ -129,7 +128,8 @@ public class NewDailyOffer extends Fragment {
          * and the view is populated with the canonical strings else they are downloaded from firebase.
          */
         Bundle bundle = getArguments();
-        if (bundle.getString("id").equals("null")) {
+        id = bundle.getString("id");
+        if (id.equals("null")) {
             dishname.setText(getResources().getString(R.string.frDaily_defName));
             desc.setText(getResources().getString(R.string.frDaily_defDesc));
             avail.setText(String.valueOf(0));
@@ -280,21 +280,8 @@ public class NewDailyOffer extends Fragment {
                             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                             FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                            Map<String, Object> map = new HashMap<>();
-                            String uploadId;
-                            if (pref.getString("dishIdentifier", null) != null) {
-                                uploadId = pref.getString("dishIdentifier", null);
-                            } else {
-                                uploadId = databaseReference.push().getKey();
-                            }
-                            map.put("dish", dishname.getText().toString());
-                            map.put("type", desc.getText().toString());
-                            map.put("avail", avail.getText().toString());
-                            map.put("price", price.getText().toString());
-                            map.put("pic", taskSnapshot.getStorage().getDownloadUrl().toString());
-                            map.put("restaurant", user.getUid());
-                            map.put("identifier", uploadId);
-                            databaseReference.child(uploadId).updateChildren(map);
+                            DailyClass daily = new DailyClass(dishname.getText().toString(), desc.getText().toString(), avail.getText().toString(), price.getText().toString(), taskSnapshot.getStorage().getDownloadUrl().toString(), user.getUid(), id);
+                            databaseReference.child(id).updateChildren(map);
                         }
                     });
         } else {
