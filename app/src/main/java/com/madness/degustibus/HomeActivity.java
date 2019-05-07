@@ -34,6 +34,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madness.degustibus.auth.LoginActivity;
+import com.madness.degustibus.daily.DailyFragment;
 import com.madness.degustibus.home.HomeFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
@@ -51,7 +52,7 @@ import java.util.Map;
  */
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener, DailyFragment.DailyListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -168,6 +169,26 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
+            case R.id.nav_offers:
+                try {
+                    fragmentClass = DailyFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Offers").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_order:
+                try {
+                    fragmentClass = OrderFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Order").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.nav_settings:
                 try {
                     fragmentClass = SettingsFragment.class;
@@ -217,6 +238,8 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             } else if (fragment instanceof CompletedOrderFragment) {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            } else if (fragment instanceof DailyFragment) {
+                navigationView.getMenu().findItem(R.id.nav_offers).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
@@ -224,5 +247,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-
+    @Override
+    public void addOfferOnReservations() {
+    }
 }

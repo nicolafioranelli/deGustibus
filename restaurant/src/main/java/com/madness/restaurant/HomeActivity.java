@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.madness.restaurant.auth.LoginActivity;
-import com.madness.restaurant.daily.DailyFragment2;
+import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.profile.EditProfile;
@@ -37,7 +37,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment2.DailyListener,
+        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
         NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
 
     Toolbar toolbar;
@@ -70,7 +70,7 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -145,7 +145,7 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
             } else if (fragment instanceof EditProfile) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if (fragment instanceof DailyFragment2) {
+            } else if (fragment instanceof DailyFragment) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
             } else if (fragment instanceof NewDailyOffer) {
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
@@ -178,7 +178,6 @@ public class HomeActivity extends AppCompatActivity
         ft.addToBackStack("RESERVATION");
         ft.commit();
     }
-
 
     @Override
     public void addDailyOffer() {
@@ -248,7 +247,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.nav_daily:
                 try {
-                    fragmentClass = DailyFragment2.class;
+                    fragmentClass = DailyFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").addToBackStack("HOME").commit();
@@ -314,13 +313,12 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-
     @Override
-    public void onSubmitDish() {
-        DailyFragment2 dailyFragment = (DailyFragment2)
+    public void onSubmitDish() {/*
+        DailyFragment dailyFragment = (DailyFragment)
                 getSupportFragmentManager().findFragmentByTag("DAILY");
         if (dailyFragment != null) {
             dailyFragment.addOnDaily();
-        }
+        }*/
     }
 }

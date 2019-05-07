@@ -79,4 +79,5 @@
     <string name="title_Notifications">Notifiche</string>
     <string name="btn_login">ACCEDI</string>
     <string name="btn_reset_password">nuova Password</string>
+    <string name="image_not_saved">Image not saved</string>
 </resources>

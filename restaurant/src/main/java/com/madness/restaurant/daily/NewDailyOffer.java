@@ -8,11 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,17 +29,25 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The NewDailyOffer Fragment is in charge of managing addition and editing of a new daily plate.
@@ -64,21 +70,9 @@ public class NewDailyOffer extends Fragment {
     private SharedPreferences.Editor editor;
     private NewDailyOfferListener listener;
 
-    //Folder path for Firebase Storage
-    String m_StoragePath = "All_Image_Uploads/";
-
-    //Root Database name for firebase database
-    String mDataBasePath= "Offers";
-
-    //Creating URI
-    Uri mFilePathUri;
-
-    //Creating StorageReference and Database reference
-    StorageReference mStorageReference;
-    DatabaseReference mDatabaseReference;
-
-    //ProgressBar
-    ProgressBar progressBar;
+    private Uri mImageUri;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
 
     public NewDailyOffer() {
         // Required empty public constructor
@@ -102,6 +96,8 @@ public class NewDailyOffer extends Fragment {
         setHasOptionsMenu(true);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
+        storageReference= FirebaseStorage.getInstance().getReference("Offers");
+        databaseReference= FirebaseDatabase.getInstance().getReference("Offers");
     }
 
     /* Set the title and inflate view */
@@ -221,22 +217,27 @@ public class NewDailyOffer extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
+                    mImageUri = Uri.parse(getPrefPhoto());
                     //img = getView().findViewById(R.id.imageviewfordish);
-                    img.setImageURI(photo);
-                    setPrefPhoto(photo.toString());
-                    mFilePathUri=photo;
-                    try{
-                        Bitmap bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),photo);
-                    }
-                    catch(Exception e){
-                        Toast.makeText(getContext(), "Not Saved correctly", Toast.LENGTH_SHORT).show();
-                    }
+                    Picasso.with(getContext()).load(mImageUri).into(img);
+                    //img.setImageURI(photo);
+                    setPrefPhoto(mImageUri.toString());
+
+                        /*
+                    StorageReference filePath= storageReference.child("Offers").child(photo.getLastPathSegment());
+                    filePath.putFile(photo).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        }
+                    });*/
+
                     break;
                 case 1:
-                    Uri selectedImage = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
+                    mImageUri = data.getData();
+                    setPrefPhoto(mImageUri.toString());
+                    //img.setImageURI(selectedImage);
+                    Picasso.with(getContext()).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -248,6 +249,68 @@ public class NewDailyOffer extends Fragment {
                 Log.e("MAD", "onActivityResult: ", e);
             }
             delPrefPhoto();
+        }
+    }
+
+    private String getFileExtension(Uri uri){
+        ContentResolver cR=getContext().getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+    private void storeOnFirebase(){
+        if(mImageUri!=null){
+            StorageReference fileReference = storageReference.child(System.currentTimeMillis()+
+                    "."+getFileExtension(mImageUri));
+
+            fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                            Map<String, Object> map = new HashMap<>();
+                            String uploadId;
+                            if(pref.getString("dishIdentifier", null)!=null){
+                                uploadId=pref.getString("dishIdentifier", null);
+                            }
+                            else {
+                                uploadId =databaseReference.push().getKey();
+                            }
+                            map.put("dish", dishname.getText().toString());
+                            map.put("type", desc.getText().toString());
+                            map.put("avail", avail.getText().toString());
+                            map.put("price", price.getText().toString());
+                            map.put("pic", taskSnapshot.getStorage().getDownloadUrl().toString());
+                            map.put("restaurant", user.getUid());
+                            map.put("identifier", uploadId);
+                            databaseReference.child(uploadId).updateChildren(map);
+                        }
+                    });
+        }
+        else{
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+            Map<String, Object> map = new HashMap<>();
+
+            String uploadId;
+
+            if(pref.getString("dishIdentifier", null)!=null){
+                uploadId=pref.getString("dishIdentifier", null);
+            }
+            else {
+                uploadId =databaseReference.push().getKey();
+            }
+
+            map.put("dish", dishname.getText().toString());
+            map.put("type", desc.getText().toString());
+            map.put("avail", avail.getText().toString());
+            map.put("price", price.getText().toString());
+            map.put("pic", "no photo");
+            map.put("restaurant", user.getUid());
+            map.put("identifier",uploadId);
+            databaseReference.child(uploadId).updateChildren(map);
         }
     }
 
@@ -276,19 +339,8 @@ public class NewDailyOffer extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
 
-            //TODO: missing save function!
-            editor.putString("dish", dishname.getText().toString());
-            editor.putString("descDish", desc.getText().toString());
-            editor.putString("avail",avail.getText().toString());
-            editor.putString("price",price.getText().toString());
-            if (getPrefPhoto()!=null) {
-                editor.putString("photoDish", getPrefPhoto());
-            }
-            editor.apply();
-            delPrefPhoto();
-            
-            //uploadDataOnFirebase();
-            listener.onSubmitDish();
+
+            storeOnFirebase();
 
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
@@ -297,26 +349,7 @@ public class NewDailyOffer extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-    /*
-    private void uploadDataOnFirebase() {
-        if(mFilePathUri!= null){
-            StorageReference storageReference2nd= mStorageReference.child(m_StoragePath + System.currentTimeMillis() + "." + getFileExtension(mFilePathUri));
-            storageReference2nd.putFile(mFilePathUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                        }
-                    })
-        }
-    }
-*/
-    //method to get the selected image file from path uri
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver=getContext().getContentResolver();
-        MimeTypeMap mimeTypeMap= MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-    }
 
     private void loadSharedPrefs() {
         dishname.setText(pref.getString("dish", getResources().getString(R.string.frDaily_defName)));

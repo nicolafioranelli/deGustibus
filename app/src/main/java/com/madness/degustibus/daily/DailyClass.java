@@ -1,4 +1,4 @@
-package com.madness.restaurant.daily;
+package com.madness.degustibus.daily;
 
 import android.os.Parcel;
 import android.os.Parcelable;
