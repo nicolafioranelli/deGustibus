@@ -24,8 +24,6 @@ import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
@@ -38,7 +36,7 @@ import com.madness.restaurant.reservations.ReservationFragment;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
         ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
-        NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
+        NewReservationFragment.NewReservationListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -315,14 +313,5 @@ public class HomeActivity extends AppCompatActivity
         if (reservationFragment != null) {
             reservationFragment.addOnReservation();
         }
-    }
-
-    @Override
-    public void onSubmitDish() {/*
-        DailyFragment dailyFragment = (DailyFragment)
-                getSupportFragmentManager().findFragmentByTag("DAILY");
-        if (dailyFragment != null) {
-            dailyFragment.addOnDaily();
-        }*/
     }
 }

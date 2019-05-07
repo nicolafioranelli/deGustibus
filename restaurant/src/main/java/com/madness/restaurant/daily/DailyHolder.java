@@ -18,12 +18,12 @@ public class DailyHolder extends RecyclerView.ViewHolder {
 
     private List<DailyClass> dailyObject;
 
-    public DailyHolder(final View itemView){
+    public DailyHolder(final View itemView) {
         super(itemView);
-            pic = itemView.findViewById(R.id.dish_icon);
-            dish = itemView.findViewById(R.id.dish_name);
-            type = itemView.findViewById(R.id.dish_type);
-            avail = itemView.findViewById(R.id.dish_quantity);
-            price = itemView.findViewById(R.id.dish_price);
+        pic = itemView.findViewById(R.id.dish_icon);
+        dish = itemView.findViewById(R.id.dish_name);
+        type = itemView.findViewById(R.id.dish_type);
+        avail = itemView.findViewById(R.id.dish_quantity);
+        price = itemView.findViewById(R.id.dish_price);
     }
 }

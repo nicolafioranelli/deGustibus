@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,9 +29,6 @@ import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The DailyFragment class is in charge of presenting a ListItem View where will be displayed
@@ -120,6 +116,7 @@ public class DailyFragment extends Fragment {
 
                 GlideApp.with(holder.pic.getContext())
                         .load(model.getPic())
+                        .placeholder(R.drawable.dish_image)
                         .into(holder.pic);
             }
 

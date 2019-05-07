@@ -1,8 +1,5 @@
 package com.madness.restaurant.daily;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class DailyClass {
 
     private String dish;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,6 +11,17 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp">
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/progress_horizontal"
+            style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignParentBottom="true"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:mpb_progressStyle="horizontal"
+            app:mpb_useIntrinsicPadding="false" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,8 +36,7 @@
                 android:layout_height="250dp"
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                android:src="@drawable/dish_image" />
+                android:paddingBottom="16dp" />
         </LinearLayout>
 
         <TextView
