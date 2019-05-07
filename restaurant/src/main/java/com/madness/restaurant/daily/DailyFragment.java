@@ -28,6 +28,7 @@ import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The DailyFragment class is in charge of presenting a ListItem View where will be displayed
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 public class DailyFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    ArrayList<DailyClass> dailyList = new ArrayList<>();
+    private List<DailyClass> dailyList;
     private DailyListener listener;
     private RecyclerView recyclerView;
     private DailyDataAdapter mAdapter;
@@ -56,21 +57,6 @@ public class DailyFragment extends Fragment {
         // Required empty public constructor();
     }
 
-    /* Here is set the content to be shown, this method will be removed from the following lab */
-    private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella", "10", "20", null);
-        this.dailyList.add(daily);
-
-        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù", "10", "15", null);
-        this.dailyList.add(daily1);
-
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio", "10", "20", null);
-        this.dailyList.add(daily2);
-    }
-
-    /* Here is set the Adapter */
-    private void setDailyDataAdapter() {mAdapter = new DailyDataAdapter(getContext(),dailyList);}
-
     /* The onAttach method registers the listener */
     @Override
     public void onAttach(Context context) {
@@ -87,7 +73,6 @@ public class DailyFragment extends Fragment {
         super.onCreate(savedInstanceState);
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
-        //setDailyDataAdapter();
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -95,19 +80,24 @@ public class DailyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_dailyoffers, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_dailyoffers, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
 
-        recyclerView = rootView.findViewById(R.id.dishes);
+        dailyList = new ArrayList<DailyClass>();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        recyclerView = rootView.findViewById(R.id.dishes);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        // TODO add progress bar, also in the layout
+        //rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
         databaseReference.child("Offers").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 getAllOffers(dataSnapshot);
+                //TODO manade the progress bar
+                // rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
 
             @Override
@@ -130,6 +120,9 @@ public class DailyFragment extends Fragment {
 
             }
         });
+
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
@@ -137,12 +130,19 @@ public class DailyFragment extends Fragment {
             }
         });
 
+        /*recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });*/
+
         // set swipe controller
         swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
-            public void onLeftClicked(int position) {/*
-                added = false;
-                replaced = position + 1;*/
+            public void onLeftClicked(int position) {
+
+                // TODO search for a better way to pass data between fragments
                 editor.putString("dish", dailyList.get(position).getDish());
                 editor.putString("descDish", dailyList.get(position).getType());
                 editor.putString("avail", dailyList.get(position).getAvail());
@@ -151,7 +151,6 @@ public class DailyFragment extends Fragment {
                 editor.putString("dishIdentifier", dailyList.get(position).getIdentifier());
                 editor.apply();
                 listener.addDailyOffer();
-                //Log.d("MAD", "onLeftClicked: left");
                 super.onLeftClicked(position);
             }
 
@@ -172,7 +171,6 @@ public class DailyFragment extends Fragment {
 
                     }
                 });
-                //Log.d("MAD", "onLeftClicked: right");
                 super.onRightClicked(position);
             }
         }), this.getContext());
@@ -191,7 +189,6 @@ public class DailyFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 added = true;
-                addedposition = mAdapter.getItemCount();
                 editor.putString("dish", getResources().getString(R.string.frDaily_defName));
                 editor.putString("descDish", getResources().getString(R.string.frDaily_defDesc));
                 editor.putString("avail", String.valueOf(0));
@@ -203,35 +200,7 @@ public class DailyFragment extends Fragment {
             }
         });
     }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-            setDailyDataAdapter();
-            recyclerView.setAdapter(mAdapter);
-    }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 
-    /*
-    public void addOnDaily() {
-        DailyClass dailyClass = new DailyClass(
-                pref.getString("dish", getResources().getString(R.string.reservation_customerNameEdit)),
-                pref.getString("descDish", "0"),
-                pref.getString("avail", "01/01/2019"),
-                pref.getString("price", "13:00"),
-                pref.getString("photoDish", getResources().getString(R.string.reservation_dishesOrderededit))
-        );
-        if (added)
-            mAdapter.add(addedposition, dailyClass);
-        if (!added) {
-            mAdapter.add(replaced, dailyClass);
-            mAdapter.remove(replaced - 1);
-            mAdapter.notifyItemRemoved(replaced - 1);
-            mAdapter.notifyItemRangeChanged(replaced - 1, mAdapter.getItemCount());
-        }
-    }*/
 
     /* Here is defined the interface for the HomeActivity in order to manage the click */
     public interface DailyListener {
@@ -239,11 +208,10 @@ public class DailyFragment extends Fragment {
     }
     private void getAllOffers(DataSnapshot dataSnapshot) {
         DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
-        if(dailyClass.getRestaurant().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-        dailyList.add(new DailyClass(dailyClass.getDish(), dailyClass.getType(), dailyClass.getAvail(), dailyClass.getPrice(), dailyClass.getPic()));
-        mAdapter = new DailyDataAdapter(getContext(), dailyList);
+        dailyList.add(new DailyClass(dailyClass.dish,dailyClass.type,dailyClass.avail,dailyClass.price,dailyClass.pic));
+        mAdapter = new DailyDataAdapter(getContext(),dailyList);
         recyclerView.setAdapter(mAdapter);
-        }
+
     }
     private void removeOffer(DataSnapshot dataSnapshot) {
         DailyClass dailyClass = dataSnapshot.getValue(DailyClass.class);
