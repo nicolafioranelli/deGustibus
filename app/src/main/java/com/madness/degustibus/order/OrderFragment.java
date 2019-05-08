@@ -26,8 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
@@ -47,8 +45,6 @@ public class OrderFragment extends Fragment{
     private MenuDataAdapter mAdapter;
     private Button confirm_btn;
     private Fragment fragment;
-    private FirebaseRecyclerAdapter adapter;
-    private LinearLayoutManager linearLayoutManager;
     HashMap<String,String> order=new HashMap<>();
 
     public OrderFragment() {
