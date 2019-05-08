@@ -19,6 +19,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +55,8 @@ public class CompletedOrderFragment extends Fragment {
     private RecyclerView recyclerView;
     private CartDataAdapter mAdapter;
     private SharedPreferences pref;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseRecyclerAdapter adapter;
 
 
     public CompletedOrderFragment() {
@@ -67,11 +72,12 @@ public class CompletedOrderFragment extends Fragment {
 
         recyclerView = rootView.findViewById(R.id.recyclerViewOrderCompleted);
         complete_btn = rootView.findViewById(R.id.confirm_btn);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(manager);
         //click on complete order create order and delete cart objects
         complete_btn.setOnClickListener(new View.OnClickListener() {
             @Override

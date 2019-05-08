@@ -20,12 +20,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.SnapshotHolder;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
@@ -46,6 +51,8 @@ public class OrderFragment extends Fragment{
     private Button confirm_btn;
     private Fragment fragment;
     HashMap<String,String> order=new HashMap<>();
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseRecyclerAdapter adapter;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -61,6 +68,10 @@ public class OrderFragment extends Fragment{
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
         recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
         databaseRef = FirebaseDatabase.getInstance().getReference();
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+
         mAdapter = new MenuDataAdapter(dishList);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
@@ -85,8 +96,6 @@ public class OrderFragment extends Fragment{
             recyclerView.setLayoutManager(manager);
         }
         */
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(manager);
 
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,9 +201,31 @@ public class OrderFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
     void populateList(){
+        //Id of resturant clicked
         final String rest = this.getArguments().getString("restId");
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseRef = database.getReference("offers");
+        Query query = database.getReference().child("offers");
+
+       /* FirebaseRecyclerOptions<MenuClass> options =
+                new FirebaseRecyclerOptions.Builder<MenuClass>()
+                .setQuery(query, new SnapshotParser<MenuClass>(){
+                    @NonNull
+                    @Override
+                    public MenuClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot dS : dataSnapshot.getChildren()){
+                            if(dS.getKey().equals(rest)){
+
+                                for(DataSnapshot d: dS.getChildren()){
+                                    dish = d.getValue(MenuClass.class);
+                                    dishList.add(new MenuClass(dish.getDish(), dish.getType(), dish.getAvail(), dish.getPrice(), dish.getPic()));
+                                    recyclerView.setAdapter(mAdapter);
+                                }
+                            }
+                        }
+                })
+                            .build();*/
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

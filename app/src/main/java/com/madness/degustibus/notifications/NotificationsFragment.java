@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +35,8 @@ public class NotificationsFragment extends Fragment implements NotificationsData
     private  NotificationsClass notif;
     private ArrayList<NotificationsClass> notifList= new ArrayList<>();
     private Fragment fragment;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseRecyclerAdapter adapter;
 
     public NotificationsFragment() {
         // Required empty public constructor
@@ -67,6 +72,10 @@ public class NotificationsFragment extends Fragment implements NotificationsData
 
         mAdapter = new NotificationsDataAdapter(notifList,this);
         recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
@@ -75,7 +84,7 @@ public class NotificationsFragment extends Fragment implements NotificationsData
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference databaseRef = database.getReference("orders");
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
