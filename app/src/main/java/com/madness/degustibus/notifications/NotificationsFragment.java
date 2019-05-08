@@ -25,42 +25,25 @@ import com.madness.degustibus.order.SummaryOrderFragment;
 
 import java.util.ArrayList;
 
-public class NotificationsFragment extends Fragment implements NotificationsDataAdapter.ItemClickListener{
+public class NotificationsFragment extends Fragment {
 
     ArrayList<NotificationsClass> notificationList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private NotificationsDataAdapter mAdapter;
-    private  NotificationsClass notif;
-    private ArrayList<NotificationsClass> notifList= new ArrayList<>();
     private Fragment fragment;
+    private NotificationsClass notif;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
     private DatabaseReference databaseRef;
 
     public NotificationsFragment() {
         // Required empty public constructor
-       // fakeConstructor();
     }
-
-    /* Here is set the content to be shown, this method will be removed from the following lab */
-   /* private void fakeConstructor() {
-        NotificationsClass notif1 = new NotificationsClass("Pizza Express", "Order completed! - #2537 Nicola Fioranelli - Deliveryman: #123 - Scheduled delivery: 20.45", "01/05/2019", "19.55");
-        this.notificationList.add(notif1);
-    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setNotificationsDataAdapter();
-        mAdapter = new NotificationsDataAdapter(notifList,this);
-
-
     }
 
-    /* Here is set the Adapter */
-    private void setNotificationsDataAdapter() {
-        mAdapter = new NotificationsDataAdapter(notificationList,this);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,41 +63,6 @@ public class NotificationsFragment extends Fragment implements NotificationsData
          */
         populateList();
 
-        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseRef = database.getReference("orders");
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        databaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //this method is called once with the initial value and again whenever data at this location is updated
-                for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    notif = new NotificationsClass(dS.getValue(NotificationsClass.class).getTitle(),dS.getValue(NotificationsClass.class).getDescription(),null,null,dS.getValue(NotificationsClass.class).getPrice(),dS.getKey());
-                    notifList.add(notif);
-                }
-
-
-
-
-                if (mAdapter.getItemCount() == 0) {
-                    recyclerView.setVisibility(View.GONE);
-
-                    LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-                    linearLayout.setVisibility(View.VISIBLE);
-                } else {
-                    LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-                    linearLayout.setVisibility(View.INVISIBLE);
-
-                    recyclerView.setVisibility(View.VISIBLE);
-                    recyclerView.setAdapter(mAdapter);
-                    LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                    recyclerView.setLayoutManager(manager);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
         return rootView;
     }
 
@@ -123,8 +71,6 @@ public class NotificationsFragment extends Fragment implements NotificationsData
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             notificationList = savedInstanceState.getParcelableArrayList("Notifications");
-            setNotificationsDataAdapter();
-            recyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -138,13 +84,10 @@ public class NotificationsFragment extends Fragment implements NotificationsData
         if( fragment instanceof NotificationsFragment ) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_notifications, (ViewGroup) getView().getParent(), false);
             recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
-            if (recyclerView.getVisibility() == View.VISIBLE) {
-                outState.putParcelableArrayList("Notifications", new ArrayList<>(mAdapter.getList()));
-            }
         }
     }
 
-    @Override
+    /*@Override
     public void onListItemClick(int clickedItemIndex) {
          notifList.get(clickedItemIndex);
         try {
@@ -168,7 +111,7 @@ public class NotificationsFragment extends Fragment implements NotificationsData
                 .addToBackStack("Home")
                 .commit();
 
-    }
+    }*/
     void populateList (){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference("orders");
@@ -192,6 +135,28 @@ public class NotificationsFragment extends Fragment implements NotificationsData
                 holder.description.setText(model.getDescription());
                 holder.hour.setText(model.getHour());
                 holder.price.setText(model.getPrice());
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String rest_id = getRef(position).getKey();
+                        try {
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("idOrder",rest_id);
+                            fragment = null;
+                            fragment = SummaryOrderFragment.class.newInstance();
+                            fragment.setArguments(bundle);
+
+                        } catch (Exception e) {
+                            Log.e("MAD", "editProfileClick: ", e);
+                        }
+
+                        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.flContent, fragment, " Order")
+                                .addToBackStack("HOME")
+                                .commit();
+                    }
+                });
             }
 
             @Override
@@ -208,5 +173,16 @@ public class NotificationsFragment extends Fragment implements NotificationsData
 
         recyclerView.setAdapter(adapter);
 
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 }
