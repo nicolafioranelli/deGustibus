@@ -33,4 +33,30 @@
         android:src="@drawable/ic_add"
         android:layout_margin="16dp" />
 
+    <LinearLayout
+        android:id="@+id/emptyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_nothing" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/err_reservations"
+            android:textSize="20dp"
+            android:theme="@style/FirebaseUI.Text.BodyText" />
+    </LinearLayout>
+
 </FrameLayout>

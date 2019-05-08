@@ -43,6 +43,7 @@ public class DailyFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private FirebaseDatabase db;
     private DatabaseReference databaseReference;
+    private ValueEventListener emptyListener;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private SwipeController swipeController;
@@ -95,7 +96,6 @@ public class DailyFragment extends Fragment {
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
-
             @NonNull
             @Override
             public DailyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -123,6 +123,23 @@ public class DailyFragment extends Fragment {
         };
 
         recyclerView.setAdapter(adapter);
+
+        /* Listener to check if the recycler view is empty */
+        emptyListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
@@ -194,6 +211,12 @@ public class DailyFragment extends Fragment {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseReference.removeEventListener(emptyListener);
     }
 
     /* Here is defined the interface for the HomeActivity in order to manage the click */

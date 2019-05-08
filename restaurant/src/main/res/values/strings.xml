@@ -115,4 +115,8 @@
     <string name="pass_ok">We have sent you instructions to reset your password!</string>
     <string name="pass_err">Failed to send reset email!</string>
     <string name="image_not_saved">Image not saved</string>
+
+    <string name="err_notification">Well done! You\'ve managed all the notifications!</string>
+    <string name="err_daily">Ops... nothing to show here! Please insert something in your daily menu</string>
+    <string name="err_reservations">Ops... nothing to show here!</string>
 </resources>

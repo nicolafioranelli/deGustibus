@@ -80,4 +80,7 @@
     <string name="btn_login">ACCEDI</string>
     <string name="btn_reset_password">nuova Password</string>
     <string name="image_not_saved">Image not saved</string>
+    <string name="err_notification">Ben fatto! Qua non c\'è più nulla da fare!</string>
+    <string name="err_daily">Ops... qua non c\'è nulla! Inserisci un nuovo piatto nell\'offerta del giorno! :)</string>
+    <string name="err_reservations">Ops... qua non c\'è nulla!</string>
 </resources>

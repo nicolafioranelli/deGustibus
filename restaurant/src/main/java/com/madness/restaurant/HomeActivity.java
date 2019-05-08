@@ -207,22 +207,6 @@ public class HomeActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
-    /* Inflate the menu: this adds items to the action bar */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    /* Handle clicks on action toolbar */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

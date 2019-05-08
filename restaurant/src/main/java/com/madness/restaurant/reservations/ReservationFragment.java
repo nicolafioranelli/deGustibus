@@ -40,6 +40,7 @@ public class ReservationFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private FirebaseDatabase db;
     private DatabaseReference databaseReference;
+    private ValueEventListener emptyListener;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private SwipeController swipeController;
@@ -121,6 +122,23 @@ public class ReservationFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
 
+        /* Listener to check if the recycler view is empty */
+        emptyListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -191,5 +209,11 @@ public class ReservationFragment extends Fragment {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseReference.removeEventListener(emptyListener);
     }
 }
