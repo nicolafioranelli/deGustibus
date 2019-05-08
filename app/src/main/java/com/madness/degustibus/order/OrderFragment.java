@@ -1,6 +1,7 @@
 package com.madness.degustibus.order;
 
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,17 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.SnapshotHolder;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
@@ -47,7 +45,7 @@ public class OrderFragment extends Fragment{
     MenuClass dish;
     DatabaseReference databaseRef;
     private RecyclerView recyclerView;
-    private MenuDataAdapter mAdapter;
+    //private MenuDataAdapter mAdapter;
     private Button confirm_btn;
     private Fragment fragment;
     HashMap<String,String> order=new HashMap<>();
@@ -66,13 +64,13 @@ public class OrderFragment extends Fragment{
         getActivity().setTitle("New order");
 
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
-        recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
+
+        recyclerView = rootView.findViewById(R.id.recyclerView);
         databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
 
-        mAdapter = new MenuDataAdapter(dishList);
+        //mAdapter = new MenuDataAdapter(dishList);
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
@@ -106,13 +104,13 @@ public class OrderFragment extends Fragment{
                     Class fragmentClass;
                     fragmentClass = CompletedOrderFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
-                    for(MenuClass dish: mAdapter.getList()){
+                    for(MenuClass dish: dishList){
 
-                        if(dish.avail != "0"){
+                        if(Integer.parseInt(dish.avail)>0){
                             order.put("dishname",dish.dish);
                             order.put("price",dish.price);
                             order.put("quantity",dish.avail);
-                            databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").push().setValue(order);
+                            FirebaseDatabase.getInstance().getReference().child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").push().setValue(order);
                         }
                     }
                 } catch (Exception e) {
@@ -134,21 +132,21 @@ public class OrderFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setMenuDataAdapter();
+       // setMenuDataAdapter();
     }
 
     /* Here is set the Adapter */
-    private void setMenuDataAdapter() {
+    /*private void setMenuDataAdapter() {
         mAdapter = new MenuDataAdapter(dishList);
-    }
+    }*/
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             dishList = savedInstanceState.getParcelableArrayList("Menu");
-            setMenuDataAdapter();
-            recyclerView.setAdapter(mAdapter);
+            //setMenuDataAdapter();
+            //recyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -161,9 +159,9 @@ public class OrderFragment extends Fragment{
         if( fragment instanceof OrderFragment) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_order, (ViewGroup) getView().getParent(), false);
             recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
-            if (recyclerView.getVisibility() == View.VISIBLE) {
+           /* if (recyclerView.getVisibility() == View.VISIBLE) {
                 outState.putParcelableArrayList("Menu", new ArrayList<>(mAdapter.getList()));
-            }
+            }*/
         }
         String piatto = "0";
         for(MenuClass dish: dishList){
@@ -202,31 +200,89 @@ public class OrderFragment extends Fragment{
     }
     void populateList(){
         //Id of resturant clicked
+
         final String rest = this.getArguments().getString("restId");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseRef = database.getReference("offers");
-        Query query = database.getReference().child("offers");
+        databaseRef = FirebaseDatabase.getInstance().getReference("offers/"+rest);
+        Query query = database.getReference().child("offers/"+rest);
 
-       /* FirebaseRecyclerOptions<MenuClass> options =
+        FirebaseRecyclerOptions<MenuClass> options =
                 new FirebaseRecyclerOptions.Builder<MenuClass>()
-                .setQuery(query, new SnapshotParser<MenuClass>(){
+                .setQuery(query, new SnapshotParser<MenuClass>() {
                     @NonNull
                     @Override
                     public MenuClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot dS : dataSnapshot.getChildren()){
-                            if(dS.getKey().equals(rest)){
+                         dish = new MenuClass(snapshot.getValue(MenuClass.class).getDish(),snapshot.getValue(MenuClass.class).getType(), snapshot.getValue(MenuClass.class).getAvail(), snapshot.getValue(MenuClass.class).getPrice(), snapshot.getValue(MenuClass.class).getPic());
+                        System.out.println("piatto :" +dish.dish + "id" + dish.identifier);
+                        dishList.add(dish);
+                        return dish;
+                    }
+                })
+                            .build();
+        adapter = new FirebaseRecyclerAdapter<MenuClass, MenuHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final MenuHolder holder, final int position, @NonNull MenuClass model) {
+                System.out.println("piatto :" +model.dish + "id" + model.identifier);
+                holder.title.setText(model.getDish());
+                holder.description.setText(model.getType());
+                holder.price.setText(model.getPrice());
+                holder.quantity.setText(model.getAvail());
+                if (model.getPic() == null) {
+                    // Set default image
+                    holder.image.setImageResource(R.drawable.dish_image);
+                } else {
+                    holder.image.setImageURI(Uri.parse(model.getPic()));
+                }
+                final Button buttonMinus = holder.itemView.findViewById(R.id.buttonMinus);
+                final Button buttonPlus = holder.itemView.findViewById(R.id.buttonPlus);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String dish_id = getRef(position).getKey();
 
-                                for(DataSnapshot d: dS.getChildren()){
-                                    dish = d.getValue(MenuClass.class);
-                                    dishList.add(new MenuClass(dish.getDish(), dish.getType(), dish.getAvail(), dish.getPrice(), dish.getPic()));
-                                    recyclerView.setAdapter(mAdapter);
+                        buttonMinus.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                if (v.getId() == R.id.buttonMinus) {
+                                    if(Integer.parseInt(holder.quantity.getText().toString())!= 0){
+                                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                                        n --;
+                                        holder.quantity.setText(String.valueOf(n));
+                                        dish.setAvail(String.valueOf(n));
+                                    }
                                 }
                             }
-                        }
-                })
-                            .build();*/
-        databaseRef.addValueEventListener(new ValueEventListener() {
+                        });
+                        buttonPlus.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                if (v.getId() == R.id.buttonPlus) {
+                                    int n =Integer.parseInt(holder.quantity.getText().toString());
+                                    n ++;
+                                    holder.quantity.setText(String.valueOf(n));
+                                    dish.setAvail(String.valueOf(n));
+                                }
+                            }
+                        });
+
+
+                    }
+                });
+
+            }
+
+            @Override
+            public MenuHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_listitem, parent, false);
+                return new MenuHolder(view);
+            }
+        };
+        recyclerView.setAdapter(adapter);
+
+
+       /* databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
@@ -244,7 +300,18 @@ public class OrderFragment extends Fragment{
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
-        });
+        });*/
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
 }

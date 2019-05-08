@@ -1,5 +1,6 @@
 package com.madness.degustibus.home;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,16 +18,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.R;
+import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.order.OrderFragment;
 
 import java.util.ArrayList;
@@ -35,14 +36,15 @@ import java.util.ArrayList;
  * The HomeFragment inflates the layout for the homepage of the application.
  */
 
-public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickListener{
+public class HomeFragment extends Fragment{
 
     ArrayList<HomeClass> restaurantList = new ArrayList<>();
     HomeClass rest;
     private RecyclerView recyclerView;
-    private HomeDataAdapter mAdapter;
     private DatabaseReference databaseRef;
     private Fragment fragment;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseRecyclerAdapter adapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -53,13 +55,13 @@ public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setHomeDataAdapter();
+        //setHomeDataAdapter();
     }
 
     /* Here is set the Adapter */
-    private void setHomeDataAdapter() {
-        mAdapter = new HomeDataAdapter(restaurantList,this);
-    }
+   /* private void setHomeDataAdapter() {
+        mAdapter = new (restaurantList,this);
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,8 +71,9 @@ public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickL
         getActivity().setTitle(getString(R.string.title_Home));
 
         recyclerView = rootView.findViewById(R.id.recyclerViewHome);
-        mAdapter = new HomeDataAdapter(restaurantList,this
-        );
+        databaseRef = FirebaseDatabase.getInstance().getReference();
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
         populateList();
         return rootView;
     }
@@ -80,8 +83,7 @@ public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickL
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             restaurantList = savedInstanceState.getParcelableArrayList("Restaurant");
-            setHomeDataAdapter();
-            recyclerView.setAdapter(mAdapter);
+            recyclerView.setAdapter(adapter);
         }
     }
 
@@ -95,9 +97,6 @@ public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickL
         if( fragment instanceof HomeFragment ) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_home, (ViewGroup) getView().getParent(), false);
             recyclerView = rootView.findViewById(R.id.recyclerViewHome);
-            if (recyclerView.getVisibility() == View.VISIBLE) {
-                outState.putParcelableArrayList("Restaurant", new ArrayList<>(mAdapter.getList()));
-            }
         }
     }
 
@@ -131,66 +130,82 @@ public class HomeFragment extends Fragment implements HomeDataAdapter.ItemClickL
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onListItemClick(int clickedItemIndex) {
-        restaurantList.get(clickedItemIndex);
-        try {
-
-            Bundle bundle = new Bundle();
-            bundle.putString("restId",restaurantList.get(clickedItemIndex).getId());
-            fragment = null;
-            fragment = OrderFragment.class.newInstance();
-            fragment.setArguments(bundle);
-
-            int i=0;
-
-
-        } catch (Exception e) {
-            Log.e("MAD", "editProfileClick: ", e);
-        }
-
-        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
-                .replace(R.id.flContent, fragment, " Order")
-                .addToBackStack("Home")
-                .commit();
-    }
     //method to popultate list
     void populateList (){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference("restaurants");
-        databaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //this method is called once with the initial value and again whenever data at this location is updated
-                for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    rest = new HomeClass(dS.getValue(HomeClass.class).getName(),dS.getValue(HomeClass.class).getAddress(),dS.getValue(HomeClass.class).getDesc(),dS.getValue(HomeClass.class).getPic(),dS.getKey());
-                    restaurantList.add(rest);
-                    recyclerView.setAdapter(mAdapter);
-                }
-                 /* Here is checked if there are elements to be displayed, in case nothing can be shown an
-                 icon is set as visible and the other elements of the fragment are set invisible.
-                 */
-                if (mAdapter.getItemCount() == 0) {
-                    recyclerView.setVisibility(View.GONE);
+        Query query = FirebaseDatabase.getInstance().getReference().child("restaurants");
 
-                    LinearLayout linearLayout = getView().findViewById(R.id.emptyLayout);
-                    linearLayout.setVisibility(View.VISIBLE);
-                    LinearLayout linearLayout1 = getView().findViewById(R.id.fabLayout);
-                    linearLayout1.setVisibility(View.INVISIBLE);
+        FirebaseRecyclerOptions<HomeClass> options =
+                new FirebaseRecyclerOptions.Builder<HomeClass>()
+                        .setQuery(query, new SnapshotParser<HomeClass>() {
+                            @NonNull
+                            @Override
+                            public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                   return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(),snapshot.getValue(HomeClass.class).getAddress(),snapshot.getValue(HomeClass.class).getDesc(),snapshot.getValue(HomeClass.class).getPic(),snapshot.getKey());
+                            }
+                        })
+                        .build();
+        adapter = new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull HomeClass model) {
+                //HomeClass restaurant = restaurantList.get(position);
+                holder.title.setText(model.getName());
+                holder.subtitle.setText(model.getAddress());
+                holder.description.setText(model.getDesc());
+                if (model.getPic() == null) {
+                    // Set default image
+                    holder.image.setImageResource(R.drawable.restaurant);
                 } else {
-                    LinearLayout linearLayout = getView().findViewById(R.id.emptyLayout);
-                    linearLayout.setVisibility(View.INVISIBLE);
-                    LinearLayout linearLayout1 = getView().findViewById(R.id.fabLayout);
-                    linearLayout1.setVisibility(View.VISIBLE);
-
-                    recyclerView.setVisibility(View.VISIBLE);
-                    recyclerView.setAdapter(mAdapter);
-                    LinearLayoutManager manager = new LinearLayoutManager(getContext());
-                    recyclerView.setLayoutManager(manager);
+                    holder.image.setImageURI(Uri.parse(model.getPic()));
                 }
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String rest_id = getRef(position).getKey();
+                        try {
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("restId",rest_id);
+                            fragment = null;
+                            fragment = OrderFragment.class.newInstance();
+                            fragment.setArguments(bundle);
+
+                        } catch (Exception e) {
+                            Log.e("MAD", "editProfileClick: ", e);
+                        }
+
+                        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.flContent, fragment, " Order")
+                                .addToBackStack("HOME")
+                                .commit();
+                    }
+                });
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public HomeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.restaurants_listitem, parent, false);
+
+                HomeHolder hold = new HomeHolder(view);
+                return hold;
+
             }
-        });
+
+        };
+
+        recyclerView.setAdapter(adapter);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 }

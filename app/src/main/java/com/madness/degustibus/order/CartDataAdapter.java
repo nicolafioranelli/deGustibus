@@ -1,6 +1,5 @@
 package com.madness.degustibus.order;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -85,7 +84,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
         public MenuViewHolder (View view) {
 
             super(view);
-            title = view.findViewById(R.id.title);
+            title = view.findViewById(R.id.rest_title);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
             buttonMinus = view.findViewById(R.id.buttonMinus);

@@ -72,11 +72,11 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
 
         public NotificationsViewHolder(View view) {
             super(view);
-            title = view.findViewById(R.id.title);
+            title = view.findViewById(R.id.rest_title);
             date = view.findViewById(R.id.date);
-            description = view.findViewById(R.id.description);
+            description = view.findViewById(R.id.rest_description);
             hour = view.findViewById(R.id.hour);
-            price = view.findViewById(R.id.not_price);
+           // price = view.findViewById(R.id.not_price);
             view.setOnClickListener(this);
         }
 

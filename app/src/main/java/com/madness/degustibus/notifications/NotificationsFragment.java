@@ -12,16 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
 import com.madness.degustibus.R;
 import com.madness.degustibus.order.SummaryOrderFragment;
 
@@ -37,6 +35,7 @@ public class NotificationsFragment extends Fragment implements NotificationsData
     private Fragment fragment;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
+    private DatabaseReference databaseRef;
 
     public NotificationsFragment() {
         // Required empty public constructor
@@ -70,21 +69,20 @@ public class NotificationsFragment extends Fragment implements NotificationsData
         final View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
         getActivity().setTitle(getString(R.string.title_Notifications));
 
-        mAdapter = new NotificationsDataAdapter(notifList,this);
+        //mAdapter = new NotificationsDataAdapter(notifList,this);
         recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
+        databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-
 
         /* Here is checked if there are elements to be displayed, in case nothing can be shown an
         icon is set as visible and the other elements of the fragment are set invisible.
          */
+        populateList();
 
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference databaseRef = database.getReference("orders");
-
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -116,7 +114,7 @@ public class NotificationsFragment extends Fragment implements NotificationsData
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
         return rootView;
     }
 
@@ -169,6 +167,46 @@ public class NotificationsFragment extends Fragment implements NotificationsData
                 .replace(R.id.flContent, fragment, " Order")
                 .addToBackStack("Home")
                 .commit();
+
+    }
+    void populateList (){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        databaseRef = FirebaseDatabase.getInstance().getReference("orders");
+        Query query = FirebaseDatabase.getInstance().getReference().child("orders");
+
+        FirebaseRecyclerOptions<NotificationsClass> options =
+                new FirebaseRecyclerOptions.Builder<NotificationsClass>()
+                        .setQuery(query, new SnapshotParser<NotificationsClass>() {
+                            @NonNull
+                            @Override
+                            public NotificationsClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                return notif = new NotificationsClass(snapshot.getValue(NotificationsClass.class).getTitle(),snapshot.getValue(NotificationsClass.class).getDescription(),null,null,snapshot.getValue(NotificationsClass.class).getPrice(),snapshot.getKey());
+                            }
+                        })
+                        .build();
+        adapter = new FirebaseRecyclerAdapter<NotificationsClass, NotificationHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull NotificationHolder holder, final int position, @NonNull NotificationsClass model) {
+                holder.title.setText(model.getTitle());
+                holder.date.setText(model.getDate());
+                holder.description.setText(model.getDescription());
+                holder.hour.setText(model.getHour());
+                holder.price.setText(model.getPrice());
+            }
+
+            @Override
+            public NotificationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.notifications_listitem, parent, false);
+
+                NotificationHolder hold = new NotificationHolder(view);
+                return hold;
+
+            }
+
+        };
+
+        recyclerView.setAdapter(adapter);
 
     }
 }
