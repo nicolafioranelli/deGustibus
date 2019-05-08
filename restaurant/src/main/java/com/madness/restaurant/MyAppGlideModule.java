@@ -5,10 +5,7 @@ import com.bumptech.glide.module.AppGlideModule;
 
 @GlideModule
 public class MyAppGlideModule extends AppGlideModule {
-    /*@Override
-    public void registerComponents(Context context, Registry registry) {
-        // Register FirebaseImageLoader to handle StorageReference
-        registry.append(StorageReference.class, InputStream.class,
-                new FirebaseImageLoader.Factory());
-    }*/
+
+    //requires empty body
+
 }

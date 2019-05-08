@@ -116,7 +116,10 @@
     <string name="pass_err">Failed to send reset email!</string>
     <string name="image_not_saved">Image not saved</string>
 
+    <string name="welcome">Welcome back!</string>
+
     <string name="err_notification">Well done! You\'ve managed all the notifications!</string>
-    <string name="err_daily">Ops... nothing to show here! Please insert something in your daily menu</string>
-    <string name="err_reservations">Ops... nothing to show here!</string>
+    <string name="err_daily">Ops&#8230; nothing to show here! Please insert something in your daily menu&#8230;</string>
+    <string name="err_reservations">Ops&#8230; nothing to show here!</string>
+    <string name="err_connection">It seems you\'re not connected! Please enable your Internet connection&#8230;</string>
 </resources>

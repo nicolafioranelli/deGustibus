@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private static final int RC_SIGN_IN = 9001;
     GoogleApiClient mGoogleApiClient;
+    FirebaseAuth firebaseAuth;
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
@@ -56,7 +57,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private SignInButton signInButton;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

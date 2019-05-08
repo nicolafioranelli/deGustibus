@@ -34,7 +34,6 @@
                 android:ellipsize="end"
                 android:maxEms="25"
                 android:maxLines="1"
-                android:text="TextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 tools:text="@tools:sample/lorem" />
 
@@ -46,7 +45,6 @@
                 android:ellipsize="end"
                 android:maxEms="25"
                 android:maxLines="1"
-                android:text="TextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
                 tools:text="@tools:sample/lorem" />
 
@@ -66,7 +64,6 @@
                     android:id="@+id/dish_quantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
                     tools:text="@tools:sample/us_zipcodes" />
             </LinearLayout>
 
@@ -85,7 +82,6 @@
                     android:id="@+id/dish_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
                     tools:text="@string/frDaily_price" />
             </LinearLayout>
         </LinearLayout>

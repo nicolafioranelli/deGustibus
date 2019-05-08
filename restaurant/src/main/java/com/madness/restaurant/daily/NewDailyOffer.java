@@ -255,7 +255,6 @@ public class NewDailyOffer extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                   @Override
                                                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                      Log.d("MAD", "onSuccess!");
                                                       fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                           @Override
                                                           public void onSuccess(Uri uri) {
@@ -275,7 +274,7 @@ public class NewDailyOffer extends Fragment {
                                                               newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                   @Override
                                                                   public void onSuccess(Void aVoid) {
-                                                                      Log.d("MAD", "Success!");
+                                                                      // Ok!
                                                                   }
                                                               });
 
@@ -300,7 +299,7 @@ public class NewDailyOffer extends Fragment {
                 newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("MAD", "Success!");
+                        //  Ok!
                     }
                 });
             }
@@ -314,7 +313,6 @@ public class NewDailyOffer extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                   @Override
                                                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                      Log.d("MAD", "onSuccess!");
                                                       fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                           @Override
                                                           public void onSuccess(Uri uri) {
@@ -334,7 +332,7 @@ public class NewDailyOffer extends Fragment {
                                                               updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                   @Override
                                                                   public void onSuccess(Void aVoid) {
-                                                                      Log.d("MAD", "Success!");
+                                                                      //Ok!
                                                                   }
                                                               });
 
@@ -358,7 +356,7 @@ public class NewDailyOffer extends Fragment {
                 updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("MAD", "Success!");
+                        // Ok!
                     }
                 });
             }
@@ -417,7 +415,6 @@ public class NewDailyOffer extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
-            Log.d("MAD", "onCreate: permission granted");
             //Create an Intent with action as ACTION_PICK
             Intent intent = new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
@@ -463,7 +460,6 @@ public class NewDailyOffer extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d("MAD", "onRequestPermissionsResult: HERE");
         switch (requestCode) {
             case 20: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

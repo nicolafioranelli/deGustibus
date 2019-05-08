@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".reservations.NewReservationFragment"
-    android:padding="@dimen/space8">
+    android:padding="@dimen/space8"
+    tools:context=".reservations.NewReservationFragment">
+
     <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -16,8 +17,8 @@
 
             <TextView
                 android:id="@+id/tv_edit_customerName"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/reservation_customerName"
                 android:theme="@style/TextView" />
 
@@ -25,16 +26,16 @@
                 android:id="@+id/et_edit_customerName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
+                android:autofillHints="@string/reservation_customerNameEdit"
                 android:hint="@string/reservation_customerNameEdit"
-                android:autofillHints="@string/reservation_customerNameEdit" />
+                android:inputType="textPersonName" />
 
             <TextView
                 android:id="@+id/tv_edit_customerSeats"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/reservation_portions"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
 
             <EditText
                 android:id="@+id/et_edit_customerSeats"
@@ -45,8 +46,8 @@
 
             <TextView
                 android:id="@+id/tv_edit_dishesOrdered"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/reservation_dishesOrdered"
                 android:theme="@style/TextView" />
 
@@ -54,15 +55,15 @@
                 android:id="@+id/et_edit_dishesOrdered"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/reservation_customerNameEdit"
                 android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:hint="@string/reservation_customerNameEdit"/>
+                android:maxLines="4" />
             <!-- date picker -->
 
             <TextView
                 android:id="@+id/tv_edit_reservationDesc"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/reservation_reservationDesc"
                 android:theme="@style/TextView" />
 
@@ -70,9 +71,9 @@
                 android:id="@+id/et_edit_reservationDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/reservation_customerNameEdit"
                 android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:hint="@string/reservation_customerNameEdit"/>
+                android:maxLines="4" />
 
 
             <LinearLayout
@@ -86,6 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -93,12 +95,13 @@
                         android:text="@string/reservation_date"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_lunchday"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:theme="@style/TextView"/>
+                        android:theme="@style/TextView" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -107,6 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -114,12 +118,13 @@
                         android:text="@string/reservation_time"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_lunchtime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:theme="@style/TextView"/>
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
             <!-- date picker -->

@@ -83,4 +83,6 @@
     <string name="err_notification">Ben fatto! Qua non c\'è più nulla da fare!</string>
     <string name="err_daily">Ops... qua non c\'è nulla! Inserisci un nuovo piatto nell\'offerta del giorno! :)</string>
     <string name="err_reservations">Ops... qua non c\'è nulla!</string>
+    <string name="err_connection">Sembra che tu non sia connesso! Attiva la tua connessione a Internet...</string>
+    <string name="welcome">Bentornato!</string>
 </resources>

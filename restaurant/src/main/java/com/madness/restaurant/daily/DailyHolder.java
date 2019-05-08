@@ -7,8 +7,6 @@ import android.widget.TextView;
 
 import com.madness.restaurant.R;
 
-import java.util.List;
-
 public class DailyHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = DailyHolder.class.getSimpleName();

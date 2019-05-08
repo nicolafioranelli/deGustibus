@@ -162,7 +162,7 @@ public class NewReservationFragment extends Fragment {
                         name.setText(d.getFullname());
                         orderDishes.setText(d.getDish());
                         portions.setText(d.getPortions());
-                        String datetime[] = d.getDatetime().split("\t");
+                        String[] datetime = d.getDatetime().split("\t");
                         time.setText(datetime[1]);
                         day.setText(datetime[0]);
                     }

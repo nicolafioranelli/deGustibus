@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,9 +19,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:showDividers="end"
+                android:divider="@drawable/divider_drawable"
                 android:orientation="vertical"
-                android:divider="@drawable/divider_drawable">
+                android:showDividers="end">
+
                 <ImageView
                     android:id="@+id/imageview"
                     android:layout_width="250dp"
@@ -31,262 +30,301 @@
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:src="@drawable/user_profile"/>
+                    android:src="@drawable/user_profile" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_showD_fullName"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_name"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <TextView
                 android:id="@+id/tv_show_fullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:theme="@style/TextViewShow" />
 
             <TextView
                 android:id="@+id/tv_showD_desc"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_desc"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <TextView
                 android:id="@+id/tv_show_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"
-                android:maxLines="4"/>
+                android:maxLines="4"
+                android:theme="@style/TextViewShow" />
 
             <TextView
                 android:id="@+id/tv_showD_email"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_email"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <TextView
                 android:id="@+id/tv_show_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"
-                android:maxLines="4"/>
+                android:maxLines="4"
+                android:theme="@style/TextViewShow" />
 
             <TextView
                 android:id="@+id/tv_showD_phone"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_phone"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <TextView
                 android:id="@+id/tv_show_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:theme="@style/TextViewShow" />
 
             <TextView
                 android:id="@+id/tv_showD_address"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_address"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <TextView
                 android:id="@+id/tv_show_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow"/>
+                android:theme="@style/TextViewShow" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_monday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_monday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_mondayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/Separator1"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_mondayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_tuesday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_tuesday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_tuesdayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/Separator2"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_tuesdayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_wednesday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_wednesday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_wednesdayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_wednesdayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_thursday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_thursday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_thursdayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_thursdayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_friday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_friday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_fridayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_fridayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_saturday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_saturday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_saturdayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/Separator6"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_saturdayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_showD_sunday"
-                    android:layout_height="match_parent"
                     android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:text="@string/frProfile_sunday"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_sundayOpen"
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:layout_height="match_parent"
+                    android:theme="@style/TextView" />
+
                 <TextView
-                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="-"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
+
                 <TextView
                     android:id="@+id/tv_show_sundayClose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/TextView"/>
+                    android:theme="@style/TextView" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

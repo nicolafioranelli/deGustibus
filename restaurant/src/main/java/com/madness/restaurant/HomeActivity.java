@@ -2,7 +2,10 @@ package com.madness.restaurant;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,10 +23,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
@@ -32,6 +42,9 @@ import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
 import com.madness.restaurant.reservations.NewReservationFragment;
 import com.madness.restaurant.reservations.ReservationFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
@@ -67,8 +80,6 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -77,6 +88,25 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    userName.setText(objectMap.get("name").toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         fragmentManager = getSupportFragmentManager();
 
         /* Instantiate home fragment */
@@ -155,6 +185,10 @@ public class HomeActivity extends AppCompatActivity
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
+        }
+
+        if (!isNetworkAvailable(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -291,6 +325,22 @@ public class HomeActivity extends AppCompatActivity
         if (editRes != null) {
             editRes.setDate(year, month, dayOfMonth);
         }
+    }
+
+    /* Check if connection is enabled! */
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+            if (networkInfo != null && networkInfo.isConnected()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

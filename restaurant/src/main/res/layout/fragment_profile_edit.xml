@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,9 +19,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:showDividers="end"
+                android:divider="@drawable/divider_drawable"
                 android:orientation="vertical"
-                android:divider="@drawable/divider_drawable">
+                android:showDividers="end">
+
                 <ImageView
                     android:id="@+id/imageviewedit"
                     android:layout_width="250dp"
@@ -30,70 +30,75 @@
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:src="@drawable/user_profile"/>
+                    android:src="@drawable/user_profile" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_edit_fullName"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_name"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <EditText
                 android:id="@+id/et_edit_fullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"/>
+                android:inputType="textPersonName" />
 
             <TextView
                 android:id="@+id/tv_edit_desc"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_desc"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <EditText
                 android:id="@+id/et_edit_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:maxLines="4"
-                android:scrollbars="vertical"/>
+                android:scrollbars="vertical" />
 
             <TextView
                 android:id="@+id/tv_edit_email"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_email"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <EditText
                 android:id="@+id/et_edit_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress" />
 
             <TextView
                 android:id="@+id/tv_edit_phone"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_phone"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <EditText
                 android:id="@+id/et_edit_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone"/>
+                android:inputType="phone" />
 
             <TextView
                 android:id="@+id/tv_edit_address"
-                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/frProfile_address"
-                android:theme="@style/TextView"/>
+                android:theme="@style/TextView" />
+
             <EditText
                 android:id="@+id/et_edit_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPostalAddress"/>
+                android:inputType="textPostalAddress" />
 
             <TextView
                 android:id="@+id/tv_edit_defDay"
@@ -121,14 +126,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_defaultOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/defaultCloseLinearLayout"
                     android:layout_width="150dp"
@@ -142,13 +149,14 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_defaultClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -158,6 +166,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_monday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -177,14 +186,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_mondayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/mondayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -198,12 +209,13 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_mondayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -213,6 +225,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_tuesday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -232,14 +245,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_tuesdayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/tuesdayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -253,12 +268,13 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_tuesdayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -268,6 +284,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_wednesday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -287,14 +304,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_wednesdayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/wednesdayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -308,12 +327,13 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_wednesdayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -323,6 +343,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_thursday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -342,14 +363,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_thursdayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/thursdayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -363,12 +386,13 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_thursdayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -378,6 +402,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_friday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -397,14 +422,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_fridayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/fridayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -418,14 +445,16 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_fridayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
+
             <TextView
                 android:id="@+id/tv_edit_saturday"
                 android:layout_width="100dp"
@@ -452,14 +481,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_saturdayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/saturdayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -473,20 +504,23 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_saturdayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
+
             <TextView
                 android:id="@+id/tv_edit_sunday"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:text="@string/frProfile_sunday"
                 android:theme="@style/TextView" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -506,14 +540,16 @@
                         android:text="@string/frProfile_open"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_sundayOpen"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
-                        android:theme="@style/TextView"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/sundayCloseLinearLayout"
                     android:layout_width="150dp"
@@ -527,12 +563,13 @@
                         android:text="@string/frProfile_close"
                         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
                         android:theme="@style/TextView" />
+
                     <TextView
                         android:id="@+id/et_edit_sundayClose"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:theme="@style/TextView"
-                        android:gravity="center_horizontal"/>
+                        android:gravity="center_horizontal"
+                        android:theme="@style/TextView" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

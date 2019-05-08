@@ -47,10 +47,6 @@ public class ReservationFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
 
-    public interface ReservationListener {
-        public void addReservation(String identifier);
-    }
-
     public ReservationFragment() {
         // Required empty public constructor
     }
@@ -58,7 +54,7 @@ public class ReservationFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof ReservationListener) {
+        if (context instanceof ReservationListener) {
             listener = (ReservationListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement ReservationListener");
@@ -72,7 +68,6 @@ public class ReservationFragment extends Fragment {
         editor = pref.edit();
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
-
 
     /* During the creation of the view the title is set and layout is generated */
     @Override
@@ -215,5 +210,9 @@ public class ReservationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         databaseReference.removeEventListener(emptyListener);
+    }
+
+    public interface ReservationListener {
+        void addReservation(String identifier);
     }
 }

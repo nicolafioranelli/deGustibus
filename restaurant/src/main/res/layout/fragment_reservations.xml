@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".reservations.ReservationFragment">
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
@@ -11,7 +11,6 @@
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_alignParentBottom="true"
         android:indeterminate="true"
         android:visibility="invisible"
         app:mpb_progressStyle="horizontal"
@@ -30,8 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add" />
 
     <LinearLayout
         android:id="@+id/emptyLayout"

@@ -2,14 +2,11 @@ package com.madness.restaurant.profile;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,15 +31,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madness.restaurant.BuildConfig;
@@ -143,9 +135,9 @@ public class EditProfile extends Fragment {
         img = getView().findViewById(R.id.imageviewedit);
         //loadFromDatabase();
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             loadBundle(savedInstanceState);
-        }else{
+        } else {
             loadSharedPrefs();
         }
         takeTimeTextViews();
@@ -594,7 +586,6 @@ public class EditProfile extends Fragment {
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.d("MAD", "onActivityResult: CANCELED");
             try {
                 File photoToCancel = new File(getPrefPhoto());
                 photoToCancel.delete();
