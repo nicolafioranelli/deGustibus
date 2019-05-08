@@ -122,9 +122,9 @@
 
             <Button
                 android:id="@+id/buttonMinus"
-                style="@style/Widget.AppCompat.ButtonBar"
-                android:layout_width="35dp"
-                android:layout_height="20dp"
+                style="@style/FirebaseUI.Button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginLeft="@dimen/fab_margin"
                 android:enabled="true"
                 android:text="-"
@@ -138,12 +138,13 @@
 
             <Button
                 android:id="@+id/buttonPlus"
-                style="@style/Widget.AppCompat.ButtonBar"
-                android:layout_width="30dp"
-                android:layout_height="20dp"
+                style="@style/FirebaseUI.Button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="@dimen/fab_margin"
                 android:enabled="true"
-                android:text="+" />
+                android:text="+"
+                />
         </LinearLayout>
 
     </LinearLayout>
