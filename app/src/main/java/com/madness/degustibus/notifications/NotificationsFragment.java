@@ -32,6 +32,8 @@ public class NotificationsFragment extends Fragment implements NotificationsData
     private  NotificationsClass notif;
     private ArrayList<NotificationsClass> notifList= new ArrayList<>();
     private Fragment fragment;
+    private FirebaseRecyclerAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
 
     public NotificationsFragment() {
         // Required empty public constructor

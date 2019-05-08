@@ -52,6 +52,8 @@ public class CompletedOrderFragment extends Fragment {
     private RecyclerView recyclerView;
     private CartDataAdapter mAdapter;
     private SharedPreferences pref;
+    private FirebaseRecyclerAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
 
 
     public CompletedOrderFragment() {

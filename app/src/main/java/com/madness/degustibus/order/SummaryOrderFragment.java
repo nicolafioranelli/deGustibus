@@ -36,21 +36,9 @@ import java.util.HashMap;
  */
 public class SummaryOrderFragment extends Fragment {
     private TextView tv;
-    private TextView productsPrice;
-    private TextView shippingPrice;
-    private TextView totalPrice;
-    private Button complete_btn;
-    private Fragment fragment;
-    ArrayList<CartClass> dishList = new ArrayList<>();
-    HashMap<String,String> order=new HashMap<>();
-    CartClass dish;
-    String descr = "";
-    double prodPrice= 0.0;
-    double shipPrice= 2.5;
-    double totPrice = 0.0;
-    private RecyclerView recyclerView;
-    private CartDataAdapter mAdapter;
-    private SharedPreferences pref;
+
+
+
 
 
     public SummaryOrderFragment() {
@@ -65,11 +53,8 @@ public class SummaryOrderFragment extends Fragment {
         getActivity().setTitle("Order");
         final String idOrd = this.getArguments().getString("idOrder");
 
-
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseRef = database.getReference("orders");
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
 
         //populate the list of cart objects
         databaseRef.addValueEventListener(new ValueEventListener() {
@@ -124,16 +109,6 @@ public class SummaryOrderFragment extends Fragment {
     }
     @Override
     public void onResume() {
-        /*customerAddress = getView().findViewById(R.id.costumer_address);
-        productsPrice = getView().findViewById(R.id.products_price);
-        shippingPrice = getView().findViewById(R.id.shipping_price);
-        totalPrice = getView().findViewById(R.id.total_price);
-
-        customerAddress.setText(pref.getString("addressCustomer", getResources().getString(R.string.es_street)));
-        productsPrice.setText(pref.getString("prodPrice","18"));
-        shippingPrice.setText(pref.getString("shipPrice","2.5"));
-        totalPrice.setText(pref.getString("totPrice","20.5"));*/
-
         super.onResume();
     }
 
@@ -141,12 +116,8 @@ public class SummaryOrderFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setCartDataAdapter();
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
 
-    private void setCartDataAdapter() {
-        mAdapter = new CartDataAdapter(dishList);
-    }
 
 }
