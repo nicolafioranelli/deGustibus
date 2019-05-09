@@ -42,7 +42,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     public void onBindViewHolder(@NonNull MenuDataAdapter.MenuViewHolder holder, int position) {
         Dish menu = dishList.get(position);
         holder.title.setText(menu.getDish());
-        holder.description.setText(menu.getDesc());
+        holder.description.setText(menu.type);
         holder.price.setText(menu.getPrice());
         holder.quantity.setText(menu.getAvail());
         if (menu.getPic() == null) {

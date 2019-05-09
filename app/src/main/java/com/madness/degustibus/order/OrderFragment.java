@@ -231,7 +231,7 @@ public class OrderFragment extends Fragment{
                 final Integer maxAvail = Integer.parseInt(model.getAvail());
 
                 holder.title.setText(model.getDish());
-                holder.description.setText(model.getDesc());
+                holder.description.setText(model.type);
                 holder.price.setText(model.getPrice() + " €");
                 holder.quantity.setText("0");
 

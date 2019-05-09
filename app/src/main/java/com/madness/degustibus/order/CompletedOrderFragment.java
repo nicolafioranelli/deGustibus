@@ -169,16 +169,16 @@ public class CompletedOrderFragment extends Fragment {
 
                             final int n;
                             FirebaseDatabase.getInstance().getReference()
-                                    .child("offfers")
+                                    .child("offers")
                                     .child(dish.getRestaurant())
                                     .child(dish.getIdentifier())
                                     .child("avail").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    dish.setAvail(
-                                            dataSnapshot.getValue(Integer.class)
-                                            - dish.getQuantity()
-                                    );
+                                    dish.setAvail(String.valueOf(
+                                            Integer.parseInt(dataSnapshot.getValue(String.class))
+                                            - dish.quantity
+                                    ));
                                 }
 
                                 @Override
@@ -186,16 +186,17 @@ public class CompletedOrderFragment extends Fragment {
 
                             });
 
+                            // TODO check it
                             FirebaseDatabase.getInstance().getReference()
                                     .child("offers")
                                     .child(dish.getRestaurant())
                                     .child(dish.getIdentifier())
                                     .child("avail").setValue(dish.getAvail());
 
-                            reservation.getDescription()
-                                    .concat(String.valueOf(dish.getQuantity()))
+                            reservation.setDescription(String.valueOf(dish.getQuantity())
                                     .concat("x ")
-                                    .concat(dish.getDish());
+                                    .concat(dish.getDish())
+                            );
                         }
                     }
 
@@ -265,7 +266,7 @@ public class CompletedOrderFragment extends Fragment {
                 holder.title.setText(model.getDish());
                 holder.price.setText(model.getPrice() + " €");
                 holder.quantity.setText(String.valueOf(model.getQuantity()));
-                totalAmount += model.getPrice() * model.getQuantity();
+                totalAmount += Float.parseFloat(model.price) * model.quantity;
                 totalAmountTextView.setText(String.valueOf(totalAmount));
 
                 // set button plus
@@ -278,7 +279,7 @@ public class CompletedOrderFragment extends Fragment {
                             n ++;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
-                            totalAmount += model.getPrice();
+                            totalAmount += Float.parseFloat(model.getPrice());
                             totalAmountTextView.setText(String.valueOf(totalAmount));
                         }
 
@@ -295,7 +296,7 @@ public class CompletedOrderFragment extends Fragment {
                             n --;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
-                            totalAmount -= model.getPrice();
+                            totalAmount -= Float.parseFloat(model.getPrice());
                             totalAmountTextView.setText(String.valueOf(totalAmount));
                         }
                     }
