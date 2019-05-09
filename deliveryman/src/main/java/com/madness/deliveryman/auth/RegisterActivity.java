@@ -83,14 +83,14 @@ public class RegisterActivity extends AppCompatActivity {
                         .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                Toast.makeText(RegisterActivity.this, getString(R.string.reg_compl), Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and home activity will be launched.
                                 if (!task.isSuccessful()) {
                                     Toast.makeText(RegisterActivity.this, getString(R.string.err_reg),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
+                                    Toast.makeText(RegisterActivity.this, getString(R.string.reg_compl), Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.GONE);
                                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                                     finish();
                                 }

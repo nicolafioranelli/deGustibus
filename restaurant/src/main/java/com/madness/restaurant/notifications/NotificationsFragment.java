@@ -56,6 +56,18 @@ public class NotificationsFragment extends Fragment {
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Query query = databaseReference.child("notifications").child(user.getUid());
 
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println(dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         FirebaseRecyclerOptions<NotificationsClass> options =
                 new FirebaseRecyclerOptions.Builder<NotificationsClass>()
                         .setQuery(query, NotificationsClass.class)
@@ -68,7 +80,7 @@ public class NotificationsFragment extends Fragment {
                 holder.description.setText(model.getDescription());
                 holder.date.setText(model.getDate());
 
-                /* Sets a click listener on the corresponding delete button of the notification */
+                // Sets a click listener on the corresponding delete button of the notification
                 holder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

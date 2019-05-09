@@ -2,17 +2,17 @@ package com.madness.restaurant.notifications;
 
 public class NotificationsClass {
 
-    private String type;
-    private String description;
     private String date;
+    private String description;
+    private String type;
 
     public NotificationsClass() {
     }
 
-    public NotificationsClass(String type, String description, String date) {
-        this.type = type;
-        this.description = description;
+    public NotificationsClass(String date, String description, String type) {
         this.date = date;
+        this.description = description;
+        this.type = type;
     }
 
     public String getType() {

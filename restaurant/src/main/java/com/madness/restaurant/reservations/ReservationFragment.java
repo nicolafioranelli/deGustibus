@@ -134,6 +134,10 @@ public class ReservationFragment extends Fragment {
                     holder.status.setText(R.string.status_elaboration);
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
+                } else if (model.getStatus().equals("delivering")) {
+                    holder.status.setText(getString(R.string.status_deliverying));
+                } else if (model.getStatus().equals("elaboration")) {
+                    holder.status.setText(R.string.status_elaboration);
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
@@ -212,7 +216,7 @@ public class ReservationFragment extends Fragment {
                                 Date date = new Date();
                                 newNotification.put("date", dateFormat.format(date));
 
-                                databaseReference.child("notifications").child(objectMap.get("customerID").toString()).updateChildren(newNotification);
+                                databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
                             }
                         }
 
@@ -289,7 +293,7 @@ public class ReservationFragment extends Fragment {
                                         Date date = new Date();
                                         newNotification.put("date", dateFormat.format(date));
 
-                                        databaseReference.child("notifications").child(objectMap.get("customerID").toString()).updateChildren(newNotification);
+                                        databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
                                     }
                                 }
 
@@ -333,7 +337,7 @@ public class ReservationFragment extends Fragment {
                     Date date = new Date();
                     newNotification.put("date", dateFormat.format(date));
 
-                    databaseReference.child("notifications").child(customerID).updateChildren(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    databaseReference.child("notifications").child(customerID).push().setValue(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             /* Send notification to rider */
@@ -344,7 +348,7 @@ public class ReservationFragment extends Fragment {
                             Date date = new Date();
                             notificationRider.put("date", dateFormat.format(date));
 
-                            databaseReference.child("notifications").child(riderID).updateChildren(notificationRider);
+                            databaseReference.child("notifications").child(riderID).push().setValue(notificationRider);
                         }
                     });
                 }

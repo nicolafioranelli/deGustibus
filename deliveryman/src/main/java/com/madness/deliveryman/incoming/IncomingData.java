@@ -2,93 +2,71 @@ package com.madness.deliveryman.incoming;
 
 public class IncomingData {
 
-    private String Idcustomer;
-    private String CostumerName;
-    private String address;
-    private String CostumerPhone;
-    private String date;
+    private String customerID;
+    private String restaurantID;
+    private String deliverymanID;
+    private String deliveryDate;
+    private String deliveryHour;
     private String description;
-    private String hour;
-    private String idRest;
-    private String RestName;
-    private String RestAddress;
-    private String price;
-    private String priceProd;
-    private String priceShip;
-    private String state;
-    private String title;
+    private String totalPrice;
+    private String customerAddress;
+    private String restaurantAddress;
+    private String status;
 
     public IncomingData() {
     }
 
-    public IncomingData(String idcustomer, String address, String date, String description, String hour, String idRest, String price, String priceProd, String priceShip, String state, String title) {
-        Idcustomer = idcustomer;
-        this.address = address;
-        this.date = date;
+    public IncomingData(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
+        this.customerID = customerID;
+        this.restaurantID = restaurantID;
+        this.deliverymanID = deliverymanID;
+        this.deliveryDate = deliveryDate;
+        this.deliveryHour = deliveryHour;
         this.description = description;
-        this.hour = hour;
-        this.idRest = idRest;
-        this.price = price;
-        this.priceProd = priceProd;
-        this.priceShip = priceShip;
-        this.state = state;
-        this.title = title;
+        this.totalPrice = totalPrice;
+        this.customerAddress = customerAddress;
+        this.restaurantAddress = restaurantAddress;
+        this.status = status;
     }
 
-    public String getCostumerName() {
-        return CostumerName;
+    public String getCustomerID() {
+        return customerID;
     }
 
-    public void setCostumerName(String costumerName) {
-        CostumerName = costumerName;
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
     }
 
-    public String getCostumerPhone() {
-        return CostumerPhone;
+    public String getRestaurantID() {
+        return restaurantID;
     }
 
-    public void setCostumerPhone(String costumerPhone) {
-        CostumerPhone = costumerPhone;
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
     }
 
-    public String getRestName() {
-        return RestName;
+    public String getDeliverymanID() {
+        return deliverymanID;
     }
 
-    public void setRestName(String restName) {
-        RestName = restName;
+    public void setDeliverymanID(String deliverymanID) {
+        this.deliverymanID = deliverymanID;
     }
 
-    public String getRestAddress() {
-        return RestAddress;
+    public String getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setRestAddress(String restAddress) {
-        RestAddress = restAddress;
+    public void setDeliveryDate(String deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
-    public String getIdcustomer() {
-        return Idcustomer;
+    public String getDeliveryHour() {
+        return deliveryHour;
     }
 
-    public void setIdcustomer(String idcustomer) {
-        Idcustomer = idcustomer;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void setDeliveryHour(String deliveryHour) {
+        this.deliveryHour = deliveryHour;
     }
 
     public String getDescription() {
@@ -99,59 +77,35 @@ public class IncomingData {
         this.description = description;
     }
 
-    public String getHour() {
-        return hour;
+    public String getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setHour(String hour) {
-        this.hour = hour;
+    public void setTotalPrice(String totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
-    public String getIdRest() {
-        return idRest;
+    public String getCustomerAddress() {
+        return customerAddress;
     }
 
-    public void setIdRest(String idRest) {
-        this.idRest = idRest;
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
     }
 
-    public String getPrice() {
-        return price;
+    public String getRestaurantAddress() {
+        return restaurantAddress;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setRestaurantAddress(String restaurantAddress) {
+        this.restaurantAddress = restaurantAddress;
     }
 
-    public String getPriceProd() {
-        return priceProd;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPriceProd(String priceProd) {
-        this.priceProd = priceProd;
-    }
-
-    public String getPriceShip() {
-        return priceShip;
-    }
-
-    public void setPriceShip(String priceShip) {
-        this.priceShip = priceShip;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

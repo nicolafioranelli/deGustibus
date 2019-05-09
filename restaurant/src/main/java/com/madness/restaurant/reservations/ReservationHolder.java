@@ -10,7 +10,6 @@ import com.madness.restaurant.daily.DailyHolder;
 
 public class ReservationHolder extends RecyclerView.ViewHolder {
 
-    private static final String TAG = DailyHolder.class.getSimpleName();
     public TextView status, customer, description, date, hour, price;
     public Button button, refuse;
 

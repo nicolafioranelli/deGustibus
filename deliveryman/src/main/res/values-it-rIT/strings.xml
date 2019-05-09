@@ -48,5 +48,47 @@
     <string name="title_Completed">Ordini completati</string>
     <string name="title_Edit">Modifica</string>
     <string name="title_Incoming">Da consegnare</string>
-    <string name="notifications_done">Ben fatto! Qua non c\\\'è più nulla da fare :)</string>
+    <string name="notifications_done">Ben fatto! Qua non c\'è più nulla da fare :)</string>
+
+    <string name="resStatus">Stato:\u0020</string>
+    <string name="resAccept">Accetta</string>
+    <string name="resRefuse">Rifiuta</string>
+    <string name="resOrder">Ordine</string>
+    <string name="resDate">"Data:\u0020"</string>
+    <string name="resHour">"Ora:\u0020"</string>
+    <string name="resTotal">"Totale:\u0020"</string>
+    <string name="resCustAddress">Indirizzo cliente:\u0020</string>
+    <string name="resRestaurant">Ristorante:\u0020</string>
+    <string name="resRestAddress">Indirizzo ristorante:\u0020</string>
+    <string name="resCustomer">Cliente:\u0020</string>
+
+    <string name="status_new">nuovo ordine</string>
+    <string name="status_incoming">da consegnare</string>
+    <string name="status_elaboration">in elaborazione</string>
+    <string name="status_refused">rifiutato</string>
+    <string name="status_delivering">in consegna</string>
+    <string name="status_done">consegnato</string>
+
+    <string name="typeNot_new">Nuovo ordine</string>
+    <string name="typeNot_refused">Ordine rifutato</string>
+    <string name="typeNot_incoming">Nuova consegna</string>
+    <string name="typeNot_accepted">Ordine accettato</string>
+    <string name="typeNot_deliverying">In consegna</string>
+    <string name="typeNot_done">Consegnato</string>
+    <string name="typeNot_noRider">Nessun fattorino</string>
+    <string name="desc1">"Oh no! Sembra che il tuo ordine sia stato rifiutato da "</string>
+    <string name="desc2">" perchè non risulta disponibile alcun fattorino al momento!"</string>
+    <string name="desc3">Il tuo ordine #</string>
+    <string name="desc4">" sia stato accettato da "</string>
+    <string name="desc5">C\'è un nuovo ordine (#</string>
+    <string name="desc6">) in attesa di essere consegnato. Verifica le tue nuove consegne.</string>
+    <string name="buttonDeliver">Consegna</string>
+    <string name="buttonPick">Ritira</string>
+    <string name="desc7">"Il tuo ordine è stato accettato da "</string>
+    <string name="desc8">"Il tuo ordine sarà consegnato da "</string>
+    <string name="desc9">" è stato consegnato!"</string>
+
+    <string name="err_reservations">Ops&#8230; qua non c\'è nulla!</string>
+    <string name="err_connection">Sembra che tu non sia connesso! Attiva la tua connessione a Internet...</string>
+    <string name="welcome">Bentornato!</string>
 </resources>
