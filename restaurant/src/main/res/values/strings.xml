@@ -144,15 +144,11 @@
     <string name="resStatus">"Status: "</string>
     <string name="resAccept">Accept</string>
     <string name="resRefuse">Refuse</string>
-    <string name="resCustomer">Customer:</string>
+    <string name="resCustomer">Customer: </string>
     <string name="resOrder">Order</string>
-    <string name="resDate">Date:</string>
+    <string name="resDate">Date: </string>
     <string name="resHour">"Hour: "</string>
-    <string name="resTotal">Total:</string>
+    <string name="resTotal">Total: </string>
 
-    <!-- Status -->
-
-
-    <!-- Notifications -->
 
 </resources>

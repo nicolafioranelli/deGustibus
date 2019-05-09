@@ -80,4 +80,45 @@
 
     <!-- Empty Layouts -->
     <string name="notifications_done">Well done! You\'ve managed all the notifications!</string>
+
+    <string name="resStatus">"Status: "</string>
+    <string name="resAccept">Accept</string>
+    <string name="resRefuse">Refuse</string>
+    <string name="resOrder">Order</string>
+    <string name="resDate">Date:</string>
+    <string name="resHour">"Hour: "</string>
+    <string name="resTotal">"Total: "</string>
+    <string name="resCustAddress">"Customer Address: "</string>
+    <string name="resRestaurant">"Restaurant: "</string>
+    <string name="resRestAddress">"Restaurant Address: "</string>
+    <string name="resCustomer">"Customer: "</string>
+
+    <string name="status_new">new order</string>
+    <string name="status_incoming">incoming</string>
+    <string name="status_elaboration">elaboration</string>
+    <string name="status_refused">refused</string>
+    <string name="status_delivering">delivering</string>
+    <string name="status_done">delivered</string>
+
+    <string name="typeNot_new">New order</string>
+    <string name="typeNot_refused">Refused order</string>
+    <string name="typeNot_incoming">Incoming order</string>
+    <string name="typeNot_accepted">Order accepted</string>
+    <string name="typeNot_deliverying">Delivering order</string>
+    <string name="typeNot_done">Delivered</string>
+    <string name="typeNot_noRider">No rider available</string>
+    <string name="desc1">Oh no! It seems your order has been refused by</string>
+    <string name="desc2">" because no rider is currently available!"</string>
+    <string name="desc3">Your order #</string>
+    <string name="desc4">has been confirmed by</string>
+    <string name="desc5">You have received a new order #</string>
+    <string name="desc6">to be delivered. \\nCheck details in your incoming box.</string>
+    <string name="desc7">Your order has been accepted by </string>
+    <string name="desc8">Your order will be delivered by </string>
+    <string name="desc9"> has been delivered!</string>
+
+    <string name="err_reservations">Ops&#8230; nothing to show here!</string>
+    
+    <string name="buttonPick">Pick up</string>
+    <string name="buttonDeliver">Deliver</string>
 </resources>

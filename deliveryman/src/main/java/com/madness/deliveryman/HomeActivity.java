@@ -141,16 +141,6 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
-            case R.id.nav_completed:
-                try {
-                    fragmentClass = CompletedFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Completed").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
             case R.id.nav_profile:
                 try {
                     fragmentClass = ProfileFragment.class;
@@ -204,8 +194,6 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
             } else if (fragment instanceof EditProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
-            } else if (fragment instanceof CompletedFragment) {
-                navigationView.getMenu().findItem(R.id.nav_completed).setChecked(true);
             } else if (fragment instanceof IncomingFragment) {
                 navigationView.getMenu().findItem(R.id.nav_incoming).setChecked(true);
             } else if (fragment instanceof NotificationsFragment) {
