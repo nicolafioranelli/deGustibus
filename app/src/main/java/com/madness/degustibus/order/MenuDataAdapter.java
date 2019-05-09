@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuViewHolder> {
 
-    private ArrayList<MenuClass> dishList;
+    private ArrayList<Dish> dishList;
 
 
     public interface ItemClickListener {
@@ -24,7 +24,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     }
 
 
-    public MenuDataAdapter(ArrayList<MenuClass> dishes) {
+    public MenuDataAdapter(ArrayList<Dish> dishes) {
         this.dishList = dishes;
     }
 
@@ -40,7 +40,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
 
     @Override
     public void onBindViewHolder(@NonNull MenuDataAdapter.MenuViewHolder holder, int position) {
-        MenuClass menu = dishList.get(position);
+        Dish menu = dishList.get(position);
         holder.title.setText(menu.getDish());
         holder.description.setText(menu.getType());
         holder.price.setText(menu.getPrice());
@@ -63,20 +63,20 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
         notifyItemRemoved(position);
     }
 
-    public MenuClass getMenuClass(int position) {
+    public Dish getMenuClass(int position) {
         return dishList.get(position);
     }
 
-    public MenuClass getDish(int position) {
+    public Dish getDish(int position) {
         return dishList.get(position);
     }
 
-    public void add(int position, MenuClass menuClass) {
+    public void add(int position, Dish menuClass) {
         dishList.add(position, menuClass);
         notifyItemInserted(position);
     }
 
-    public ArrayList<MenuClass> getList() {
+    public ArrayList<Dish> getList() {
         return dishList;
     }
 
@@ -104,7 +104,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    Dish dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
                         if(Integer.parseInt(quantity.getText().toString())!= 0){
                             int n =Integer.parseInt(quantity.getText().toString());
@@ -120,7 +120,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
-                    MenuClass dish = getDish(clickPosition);
+                    Dish dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonPlus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;

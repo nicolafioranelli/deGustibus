@@ -19,9 +19,9 @@ public class MenuHolder extends RecyclerView.ViewHolder {
     public Button buttonPlus;
     public Button buttonMinus;
 
-    private ArrayList<MenuClass> dishList;
+    private ArrayList<Dish> dishList;
 
-    public MenuClass getDish(int position) {
+    public Dish getDish(int position) {
         return dishList.get(position);
     }
 

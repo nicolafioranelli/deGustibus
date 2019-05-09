@@ -3,17 +3,17 @@ package com.madness.degustibus.order;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MenuClass implements Parcelable {
+public class Dish implements Parcelable {
 
-    public static final Creator<MenuClass> CREATOR = new Creator<MenuClass>() {
+    public static final Creator<Dish> CREATOR = new Creator<Dish>() {
         @Override
-        public MenuClass createFromParcel(Parcel in) {
-            return new MenuClass(in);
+        public Dish createFromParcel(Parcel in) {
+            return new Dish(in);
         }
 
         @Override
-        public MenuClass[] newArray(int size) {
-            return new MenuClass[size];
+        public Dish[] newArray(int size) {
+            return new Dish[size];
         }
     };
     String dish;
@@ -22,8 +22,9 @@ public class MenuClass implements Parcelable {
     String price;
     String pic;
     String restaurant;
+    int quantity;
 
-    public MenuClass() {
+    public Dish() {
     }
 
     public String getIdentifier() {
@@ -45,7 +46,7 @@ public class MenuClass implements Parcelable {
     }
 
 
-    protected MenuClass(Parcel in) {
+    protected Dish(Parcel in) {
         pic = in.readString();
         dish = in.readString();
         type = in.readString();
@@ -53,7 +54,7 @@ public class MenuClass implements Parcelable {
         price = in.readString();
     }
 
-    public MenuClass(String dish, String type, String avail, String price, String pic) {
+    public Dish(String dish, String type, String avail, String price, String pic) {
         this.dish = dish;
         this.type = type;
         this.avail = avail;
@@ -114,4 +115,8 @@ public class MenuClass implements Parcelable {
     public void setPic(String pic) {
         this.pic = pic;
     }
+
+    public int getQuantity() { return quantity; }
+
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 }

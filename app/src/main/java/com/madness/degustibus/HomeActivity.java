@@ -22,6 +22,8 @@ import com.madness.degustibus.home.HomeFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
 
+import java.util.ArrayList;
+
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
  * if a user is already authenticated and in case no one is found, it redirects to the Login Activity
@@ -29,7 +31,9 @@ import com.madness.degustibus.order.OrderFragment;
  */
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        ProfileFragment.ProfileListener,
+        OrderFragment.NewOrderInterface {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -199,5 +203,10 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
         }
+    }
+
+    @Override
+    public void goToCart(String userIdentifier) {
+        // TODO fill it
     }
 }
