@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -40,7 +39,6 @@ import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
-import com.madness.restaurant.reservations.NewReservationFragment;
 import com.madness.restaurant.reservations.ReservationFragment;
 
 import java.util.HashMap;
@@ -48,7 +46,7 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener {
+        ProfileFragment.ProfileListener, DailyFragment.DailyListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -91,21 +89,23 @@ public class HomeActivity extends AppCompatActivity
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    userName.setText(objectMap.get("name").toString());
+        if(user!=null) {
+            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+            databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                        userName.setText(objectMap.get("name").toString());
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
 
         fragmentManager = getSupportFragmentManager();
 
@@ -178,8 +178,6 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
             } else if (fragment instanceof ReservationFragment) {
                 navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
-            } else if (fragment instanceof NewReservationFragment) {
-                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
             } else {
@@ -190,28 +188,6 @@ public class HomeActivity extends AppCompatActivity
         if (!isNetworkAvailable(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void addReservation(String identifier) {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = NewReservationFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "onItemClicked: ", e);
-        }
-
-        Bundle args = new Bundle();
-        args.putString("id", identifier);
-        fragment.setArguments(args);
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "AddReservation");
-        ft.addToBackStack("RESERVATION");
-        ft.commit();
     }
 
     @Override
@@ -309,22 +285,18 @@ public class HomeActivity extends AppCompatActivity
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         EditProfile editFrag = (EditProfile)
                 getSupportFragmentManager().findFragmentByTag("EditP");
-        NewReservationFragment editRes = (NewReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("AddReservation");
         if (editFrag != null) {
             editFrag.setHourAndMinute(hourOfDay, minute);
-        } else if (editRes != null) {
-            editRes.setHourAndMinute(hourOfDay, minute);
         }
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        NewReservationFragment editRes = (NewReservationFragment)
+        /*NewReservationFragment editRes = (NewReservationFragment)
                 getSupportFragmentManager().findFragmentByTag("AddReservation");
         if (editRes != null) {
             editRes.setDate(year, month, dayOfMonth);
-        }
+        }*/
     }
 
     /* Check if connection is enabled! */

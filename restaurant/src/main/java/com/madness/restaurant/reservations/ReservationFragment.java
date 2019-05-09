@@ -29,20 +29,23 @@ import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 
 /**
  * ReservationFragment class
  */
 public class ReservationFragment extends Fragment {
 
-    private ReservationListener listener;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseDatabase db;
     private DatabaseReference databaseReference;
     private ValueEventListener emptyListener;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
     private SwipeController swipeController;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
@@ -52,20 +55,8 @@ public class ReservationFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ReservationListener) {
-            listener = (ReservationListener) context;
-        } else {
-            throw new ClassCastException(context.toString() + "must implement ReservationListener");
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
@@ -84,7 +75,7 @@ public class ReservationFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-        final Query query = databaseReference.child("reservations").child(user.getUid());
+        final Query query = databaseReference.child("orders").orderByChild("restaurantID").equalTo(user.getUid());
 
         FirebaseRecyclerOptions<ReservationClass> options =
                 new FirebaseRecyclerOptions.Builder<ReservationClass>()
@@ -105,16 +96,48 @@ public class ReservationFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull ReservationHolder holder, int position, @NonNull ReservationClass model) {
-                holder.fullname.setText(model.getFullname());
-                holder.identifier.setText(model.getIdentifier());
-                holder.dish.setText(model.getDish());
-                holder.portions.setText(model.getPortions());
-                holder.datetime.setText(model.getDatetime());
+            protected void onBindViewHolder(@NonNull final ReservationHolder holder, final int position, @NonNull ReservationClass model) {
+                /* Set the name of the customer */
+                databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            String customerName = objectMap.get("name").toString();
+                            holder.customer.setText(customerName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                holder.description.setText(model.getDescription());
+                holder.price.setText(model.getTotalPrice());
+                holder.date.setText(model.getDeliveryDate());
+                holder.hour.setText(model.getDeliveryHour());
+                holder.status.setText(model.getStatus());
+                if(model.getStatus().equals("new")) {
+                    holder.refuse.setVisibility(View.VISIBLE);
+                    holder.button.setVisibility(View.VISIBLE);
+                    holder.refuse.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            refuse(position);
+                        }
+                    });
+                    holder.button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            accept(position);
+                        }
+                    });
+                }
             }
 
         };
-
         recyclerView.setAdapter(adapter);
 
         /* Listener to check if the recycler view is empty */
@@ -134,6 +157,7 @@ public class ReservationFragment extends Fragment {
             }
         });
 
+        /*
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -177,7 +201,7 @@ public class ReservationFragment extends Fragment {
         }), this.getContext());
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(recyclerView);
+        itemTouchhelper.attachToRecyclerView(recyclerView);*/
         return rootView;
     }
 
@@ -185,13 +209,6 @@ public class ReservationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FloatingActionButton resFb = getActivity().findViewById(R.id.resFab);
-        resFb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.addReservation("null");
-            }
-        });
     }
 
     @Override
@@ -212,7 +229,80 @@ public class ReservationFragment extends Fragment {
         databaseReference.removeEventListener(emptyListener);
     }
 
-    public interface ReservationListener {
-        void addReservation(String identifier);
+    private void refuse(final int position) {
+        Query refuseQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
+
+        refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    objectMap.put("status", "refused");
+                    databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void accept(final int position) {
+        Query selectDeliveryman = databaseReference.child("riders").limitToFirst(1);
+
+        selectDeliveryman.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    /* Rider selection */
+                    String temp = null;
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        temp = snapshot.getKey();
+
+                    }
+                    final String riderID = temp;
+
+                    Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
+                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            objectMap.put("status", "incoming");
+                            objectMap.put("riderID", riderID);
+                            databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                } else {
+                    /* No riders available error */
+                    Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
+
+                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            objectMap.put("status", "no rider available");
+                            databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

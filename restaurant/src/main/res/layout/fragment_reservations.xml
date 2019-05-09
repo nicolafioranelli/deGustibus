@@ -24,14 +24,6 @@
         android:scrollbars="vertical"
         tools:listitem="@layout/reservation_listitem" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/resFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add" />
-
     <LinearLayout
         android:id="@+id/emptyLayout"
         android:layout_width="match_parent"
