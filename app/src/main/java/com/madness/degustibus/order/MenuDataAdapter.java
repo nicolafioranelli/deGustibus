@@ -89,11 +89,11 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
         public MenuViewHolder (View view) {
 
             super(view);
-            title = view.findViewById(R.id.title);
-            description = view.findViewById(R.id.description);
+            title = view.findViewById(R.id.rest_title);
+            description = view.findViewById(R.id.rest_description);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
-            image = view.findViewById(R.id.imageView);
+            image = view.findViewById(R.id.rest_imageView);
             buttonMinus = view.findViewById(R.id.buttonMinus);
 
             if (Integer.parseInt(quantity.getText().toString())==0){

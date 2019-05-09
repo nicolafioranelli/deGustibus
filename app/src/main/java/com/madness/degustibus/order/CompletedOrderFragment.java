@@ -14,11 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -27,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
 import com.madness.degustibus.home.HomeFragment;
@@ -72,12 +70,12 @@ public class CompletedOrderFragment extends Fragment {
 
         recyclerView = rootView.findViewById(R.id.recyclerViewOrderCompleted);
         complete_btn = rootView.findViewById(R.id.confirm_btn);
+        final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
         //click on complete order create order and delete cart objects
         complete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,35 +111,12 @@ public class CompletedOrderFragment extends Fragment {
                 order.put("price",String.valueOf((prodPrice)+shipPrice));
                 order.put("state","Incoming");
                 dbRef.push().setValue(order);
-                databaseRef.removeValue();
+                databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").removeValue();
                 Toast.makeText(getContext(), "ToDo: Completed!", Toast.LENGTH_SHORT).show();
             }
         });
         //populate the list of cart objects
-        databaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //this method is called once with the initial value and again whenever data at this location is updated
-                for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
-                    dish.setId(dS.getKey());
-                    prodPrice = prodPrice + (Double.parseDouble(dish.getPrice())*Integer.parseInt(dish.getQuantity()));
-                    dishList.add(dish);
-                    productsPrice.setText(String.valueOf(prodPrice));
-                    totalPrice.setText(String.valueOf(prodPrice+shipPrice));
-                }
-
-
-
-                mAdapter = new CartDataAdapter(dishList);
-                recyclerView.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        populateList();
         return rootView;
     }
     @Override
@@ -169,6 +144,72 @@ public class CompletedOrderFragment extends Fragment {
 
     private void setCartDataAdapter() {
         mAdapter = new CartDataAdapter(dishList);
+    }
+
+    void populateList(){
+         DatabaseReference dbR = FirebaseDatabase.getInstance().getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
+        Query query = FirebaseDatabase.getInstance().getReference().child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
+
+        FirebaseRecyclerOptions<CartClass> options =
+                new FirebaseRecyclerOptions.Builder<CartClass>()
+                        .setQuery(query, CartClass.class)
+                        .build();
+        adapter = new FirebaseRecyclerAdapter<CartClass, CartHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull CartHolder holder, int position, @NonNull CartClass model) {
+                CartClass menu = dishList.get(position);
+                holder.title.setText(menu.getTitle());
+                holder.price.setText(menu.getPrice());
+                holder.quantity.setText(menu.getQuantity());
+
+            }
+
+            @Override
+            public CartHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_listitem, parent, false);
+                return new CartHolder(view);
+
+            }
+
+        };
+        recyclerView.setAdapter(adapter);
+        dbR.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //this method is called once with the initial value and again whenever data at this location is updated
+                for(DataSnapshot dS : dataSnapshot.getChildren()){
+                    dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
+                    dish.setId(dS.getKey());
+                    prodPrice = prodPrice + (Double.parseDouble(dish.getPrice())*Integer.parseInt(dish.getQuantity()));
+                    dishList.add(dish);
+                    productsPrice.setText(String.valueOf(prodPrice));
+                    totalPrice.setText(String.valueOf(prodPrice+shipPrice));
+                }
+
+
+
+                mAdapter = new CartDataAdapter(dishList);
+                recyclerView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
 }
