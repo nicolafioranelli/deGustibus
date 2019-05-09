@@ -118,7 +118,9 @@
     <string name="desc9"> has been delivered!</string>
 
     <string name="err_reservations">Ops&#8230; nothing to show here!</string>
-    
+    <string name="err_connection">It seems you\'re not connected! Please enable your Internet connection&#8230;</string>
+    <string name="welcome">Welcome back!</string>
+
     <string name="buttonPick">Pick up</string>
     <string name="buttonDeliver">Deliver</string>
 </resources>

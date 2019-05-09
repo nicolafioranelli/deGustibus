@@ -135,9 +135,9 @@ public class ReservationFragment extends Fragment {
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
                 } else if (model.getStatus().equals("delivering")) {
-
+                    holder.status.setText(getString(R.string.status_deliverying));
                 } else if (model.getStatus().equals("elaboration")) {
-
+                    holder.status.setText(R.string.status_elaboration);
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }

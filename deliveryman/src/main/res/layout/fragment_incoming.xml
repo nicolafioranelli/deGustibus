@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".incoming.IncomingFragment">
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progress_horizontal"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="4dp"
+        android:layout_alignParentBottom="true"
         android:indeterminate="true"
         android:visibility="invisible"
-        android:id="@+id/progress_horizontal"
         app:mpb_progressStyle="horizontal"
-        app:mpb_useIntrinsicPadding="false"
-        android:layout_alignParentBottom="true"
-        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+        app:mpb_useIntrinsicPadding="false" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="12dp"
         android:orientation="vertical"
-        android:scrollbars="none"/>
+        android:scrollbars="none" />
 
     <LinearLayout
         android:id="@+id/emptyLayout"

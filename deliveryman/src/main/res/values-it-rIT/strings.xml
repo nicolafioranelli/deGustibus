@@ -48,7 +48,7 @@
     <string name="title_Completed">Ordini completati</string>
     <string name="title_Edit">Modifica</string>
     <string name="title_Incoming">Da consegnare</string>
-    <string name="notifications_done">Ben fatto! Qua non c\\\'è più nulla da fare :)</string>
+    <string name="notifications_done">Ben fatto! Qua non c\'è più nulla da fare :)</string>
 
     <string name="resStatus">Stato:\u0020</string>
     <string name="resAccept">Accetta</string>
@@ -88,5 +88,7 @@
     <string name="desc8">"Il tuo ordine sarà consegnato da "</string>
     <string name="desc9">" è stato consegnato!"</string>
 
-    <string name="err_reservations">Ops... qua non c\'è nulla!</string>
+    <string name="err_reservations">Ops&#8230; qua non c\'è nulla!</string>
+    <string name="err_connection">Sembra che tu non sia connesso! Attiva la tua connessione a Internet...</string>
+    <string name="welcome">Bentornato!</string>
 </resources>

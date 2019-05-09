@@ -388,7 +388,7 @@ public class IncomingFragment extends Fragment {
                     final Map<String, Object> newNotification = new HashMap<String, Object>();
                     newNotification.put("type", getString(R.string.typeNot_done));
 
-                    newNotification.put("description", getString(R.string.desc3) + adapter.getRef(position).getKey().substring(1,6) + getString(R.string.desc9));
+                    newNotification.put("description", getString(R.string.desc3) + adapter.getRef(position).getKey().substring(1, 6) + getString(R.string.desc9));
 
                     DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
