@@ -73,6 +73,8 @@ public class OrderFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle("New order");
 
+        dishList = new ArrayList<>();
+
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
@@ -85,6 +87,16 @@ public class OrderFragment extends Fragment{
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // at first clear the cart clear the db
+                FirebaseDatabase.getInstance().getReference()
+                        .child("customers")
+                        .child(user.getUid())
+                        .child("cart")
+                        .removeValue();
+
+
+
                 // store the selected dishes in the cart of the user
                 for(Dish dish: dishList){             // for each dish in the dailyoffer
                     if(dish.quantity > 0){         // keep only the selected ones
@@ -98,23 +110,10 @@ public class OrderFragment extends Fragment{
                         Map<String, Object> cartItem = new HashMap<>();
                         cartItem.put(dish.identifier,dish);
 
-                        // we use `updateChildren()` since the user can easily
-                        // update the selected quantity overwriting the previous
-                        // cart item in the database. In addition it avoids duplicated elements
-                        // in the db
-
                         FirebaseDatabase.getInstance().getReference()
                                 .child("customers")
                                 .child(user.getUid())
                                 .child("cart").updateChildren(cartItem);
-                    }else{
-
-                        // it could appen that the data was previously stored,
-                        // if so remove the item
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("customers")
-                                .child(user.getUid())
-                                .child("cart").child(dish.identifier).removeValue();
                     }
                 }
                 newOrderInterface.goToCart(user.getUid());
@@ -129,7 +128,6 @@ public class OrderFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dishList = new ArrayList<>();
         setHasOptionsMenu(true);
     }
 

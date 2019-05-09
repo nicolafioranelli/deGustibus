@@ -223,7 +223,7 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, "Complete offer");
-        //ft.addToBackStack("DAILY"); // TODO change it
+        ft.addToBackStack("COMPLETEOFFER"); // TODO change it
         ft.commit();
     }
 }

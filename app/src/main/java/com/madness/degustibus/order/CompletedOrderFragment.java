@@ -162,45 +162,6 @@ public class CompletedOrderFragment extends Fragment {
             }
         });
 
-        // TODO change it
-        /*complete_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    fragment = null;
-                    Class fragmentClass;
-                    fragmentClass = HomeFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (Exception e) {
-                    Log.e("MAD", "editProfileClick: ", e);
-                }
-
-                ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.flContent, fragment, getString(R.string.title_Home))
-                        .addToBackStack("Home")
-                        .commit();
-                FirebaseDatabase db = FirebaseDatabase.getInstance();
-                final DatabaseReference dbRef = db.getReference("orders");
-                for(CartClass d: dishList){
-                    descr = descr+ " - " +d.getQuantity() + " x " + d.getTitle() ;
-
-                }
-                order.put("title","order");
-                order.put("idRest","toDo");
-                order.put("description",descr);
-                order.put("address",customerAddress.getText().toString());
-                order.put("Idcustomer",FirebaseAuth.getInstance().getCurrentUser().getUid());
-                order.put("date","toDo");
-                order.put("hour","toDo");
-                order.put("priceProd",String.valueOf(prodPrice));
-                order.put("priceShip",String.valueOf(shipPrice));
-                order.put("price",String.valueOf((prodPrice)+shipPrice));
-                order.put("state","Incoming");
-                dbRef.push().setValue(order);
-                databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").removeValue();
-                Toast.makeText(getContext(), "ToDo: Completed!", Toast.LENGTH_SHORT).show();
-            }
-        });*/
         //populate the list of cart objects
         loadFromFirebase();
         return rootView;
@@ -345,6 +306,8 @@ public class CompletedOrderFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
+
 
 
 }

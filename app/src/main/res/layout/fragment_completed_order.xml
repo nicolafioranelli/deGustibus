@@ -113,11 +113,11 @@
     <Button
         android:id="@+id/confirm_btn"
         style="@style/FirebaseUI.Button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="32dp"
         android:paddingLeft="24dp"
         android:paddingTop="4dp"
         android:paddingRight="24dp"
@@ -131,9 +131,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <TextView
         android:id="@+id/setDate"
-        style="@style/FirebaseUI.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -151,11 +150,11 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/total_price_title"
         app:layout_constraintEnd_toStartOf="@+id/setTime"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@tools:sample/date/ddmmyy" />
 
-    <Button
+    <TextView
         android:id="@+id/setTime"
-        style="@style/FirebaseUI.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -172,7 +171,8 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/total_price_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/setDate" />
+        app:layout_constraintStart_toEndOf="@+id/setDate"
+        tools:text="@tools:sample/date/hhmm" />
 
 
 
