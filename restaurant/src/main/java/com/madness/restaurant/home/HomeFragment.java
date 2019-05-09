@@ -63,6 +63,9 @@ public class HomeFragment extends Fragment {
                         userName.setText(objectMap.get("name").toString());
                         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                         rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                    } else {
+                        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                        rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
                     }
                 }
 
