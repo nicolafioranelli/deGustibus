@@ -16,6 +16,24 @@ public class IncomingData {
     private String priceProd;
     private String priceShip;
     private String state;
+    private String title;
+
+    public IncomingData() {
+    }
+
+    public IncomingData(String idcustomer, String address, String date, String description, String hour, String idRest, String price, String priceProd, String priceShip, String state, String title) {
+        Idcustomer = idcustomer;
+        this.address = address;
+        this.date = date;
+        this.description = description;
+        this.hour = hour;
+        this.idRest = idRest;
+        this.price = price;
+        this.priceProd = priceProd;
+        this.priceShip = priceShip;
+        this.state = state;
+        this.title = title;
+    }
 
     public String getCostumerName() {
         return CostumerName;
@@ -47,24 +65,6 @@ public class IncomingData {
 
     public void setRestAddress(String restAddress) {
         RestAddress = restAddress;
-    }
-
-
-    public IncomingData() {
-    }
-
-    public IncomingData(String idcustomer, String address, String date, String description, String hour, String idRest, String price, String priceProd, String priceShip, String state, String title) {
-        Idcustomer = idcustomer;
-        this.address = address;
-        this.date = date;
-        this.description = description;
-        this.hour = hour;
-        this.idRest = idRest;
-        this.price = price;
-        this.priceProd = priceProd;
-        this.priceShip = priceShip;
-        this.state = state;
-        this.title = title;
     }
 
     public String getIdcustomer() {
@@ -154,6 +154,4 @@ public class IncomingData {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    private String title;
 }

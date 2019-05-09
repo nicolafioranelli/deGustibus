@@ -6,8 +6,6 @@ import android.widget.TextView;
 
 import com.madness.deliveryman.R;
 
-import java.util.List;
-
 public class IncomingHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = IncomingHolder.class.getSimpleName();
@@ -19,7 +17,6 @@ public class IncomingHolder extends RecyclerView.ViewHolder {
     public TextView date;
     public TextView hour;
 
-
     public IncomingHolder(final View itemView) {
         super(itemView);
         restaurantName = itemView.findViewById(R.id.restaurateur);
@@ -29,6 +26,5 @@ public class IncomingHolder extends RecyclerView.ViewHolder {
         customerPhone = itemView.findViewById(R.id.costumerPhone);
         date = itemView.findViewById(R.id.date);
         hour = itemView.findViewById(R.id.hour);
-
     }
 }

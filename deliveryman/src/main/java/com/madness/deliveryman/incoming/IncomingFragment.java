@@ -1,7 +1,5 @@
 package com.madness.deliveryman.incoming;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +16,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,17 +26,11 @@ import com.madness.deliveryman.R;
 import com.madness.deliveryman.swipe.SwipeController;
 import com.madness.deliveryman.swipe.SwipeControllerActions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class IncomingFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private FirebaseDatabase db;
     private DatabaseReference databaseReference;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
     private SwipeController swipeController;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
@@ -49,14 +39,12 @@ public class IncomingFragment extends Fragment {
         // Required empty public constructor();
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
+
     /* During the creation of the view the title is set and layout is generated */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,8 +53,7 @@ public class IncomingFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_incoming, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Incoming));
 
-        db = FirebaseDatabase.getInstance();
-        databaseReference = db.getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         recyclerView = rootView.findViewById(R.id.task_list);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -120,7 +107,6 @@ public class IncomingFragment extends Fragment {
         swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
-                databaseReference = db.getReference();
                 Query removeQuery = databaseReference.child("orders")
                         .child(user.getUid())
                         .orderByChild("identifier")

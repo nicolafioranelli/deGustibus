@@ -1,7 +1,6 @@
 package com.madness.restaurant.daily;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,8 +43,6 @@ public class DailyFragment extends Fragment {
     private FirebaseDatabase db;
     private DatabaseReference databaseReference;
     private ValueEventListener emptyListener;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
     private SwipeController swipeController;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
@@ -68,8 +65,6 @@ public class DailyFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
