@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.madness.deliveryman.R;
 import java.util.List;
 
-public class IncomingAdapter extends RecyclerView.Adapter<IncomingHolder> {
+public class IncomingAdapter/* extends RecyclerView.Adapter<IncomingHolder>*/ {/*
     protected Context context;
     private List<IncomingData> incomingData;
 
@@ -37,5 +37,5 @@ public class IncomingAdapter extends RecyclerView.Adapter<IncomingHolder> {
     @Override
     public int getItemCount() {
         return this.incomingData.size();
-    }
+    }*/
 }

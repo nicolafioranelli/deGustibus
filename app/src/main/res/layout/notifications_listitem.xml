@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/rest_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -24,7 +24,7 @@
             android:textSize="13dp" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/rest_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -55,6 +55,18 @@
                 android:layout_margin="8dp"
                 android:text="@string/Hour"
                 android:textSize="12dp"/>
+
+            <TextView
+                android:id="@+id/not_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:text="Prezzo"
+                android:gravity="end"
+                android:textSize="12dp"/>
+
+
         </LinearLayout>
 
     </LinearLayout>

@@ -11,20 +11,22 @@ import java.util.List;
 public class IncomingHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = IncomingHolder.class.getSimpleName();
-    public TextView restaurateur;
-    public TextView customer;
-    public TextView address;
+    public TextView restaurantName;
+    public TextView restaurantAddress;
+    public TextView customerName;
+    public TextView customerAddress;
+    public TextView customerPhone;
     public TextView date;
     public TextView hour;
 
-    private List<IncomingData> incomingObject;
 
-    public IncomingHolder(final View itemView, final List<IncomingData> incomingObject) {
+    public IncomingHolder(final View itemView) {
         super(itemView);
-        this.incomingObject = incomingObject;
-        restaurateur = itemView.findViewById(R.id.restaurateur);
-        customer = itemView.findViewById(R.id.customer);
-        address = itemView.findViewById(R.id.address);
+        restaurantName = itemView.findViewById(R.id.restaurateur);
+        restaurantAddress = itemView.findViewById(R.id.restaurateurAddress);
+        customerName = itemView.findViewById(R.id.customer);
+        customerAddress = itemView.findViewById(R.id.address);
+        customerPhone = itemView.findViewById(R.id.costumerPhone);
         date = itemView.findViewById(R.id.date);
         hour = itemView.findViewById(R.id.hour);
 

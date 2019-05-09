@@ -11,8 +11,6 @@
     <!-- Menu Titles -->
     <string name="menu_home" translatable="false">Home</string>
     <string name="menu_profile">Profile</string>
-    <string name="menu_offers">Offers</string>
-    <string name="menu_orders">Orders</string>
     <string name="menu_settings">Settings</string>
 
     <!-- Settings -->
@@ -33,7 +31,7 @@
     <string name="frProfile_defName" translatable="false">Mario Rossi</string>
     <string name="frProfile_defEmail" translatable="false">mario.rossi@polito.it</string>
     <string name="frProfile_defDesc">Love pizza and pasta.</string>
-    <string name="frProfile_defPhone" translatable="false">011 5685222</string>
+    <string name="frProfile_defPhone" translatable="false">012 3456789</string>
     <string name="frProfile_defAddr" translatable="false">Corso Duca degli Abruzzi, 24</string>
 
     <!-- Utils -->
@@ -88,16 +86,8 @@
     <string name="es_text" translatable="false">Lorem ipsum dolor sit amet, orci volutpat pede, at et ratione eleifend, nulla ipsum nascetur nulla, tincidunt a odio cras elementum, sapien nulla amet.</string>
     <string name="btn_new_reservation">NEW RESERVATION</string>
     <string name="btn_or">OR</string>
-
-
-
-    <!-- Daily Fragment -->
-    <string name="title_Daily">Daily Offer</string>
-    <string name="frDaily_avail">Availability:&#160;</string>
-    <string name="frDaily_price">Price:&#160;</string>
-    <string name="frDaily_dishName">Dish name</string>
-    <string name="frDaily_desc">Description</string>
-
-    <string name="frDaily_defName">Pizza</string>
-    <string name="frDaily_defDesc">Sausage Pizza, gluten free, no lactose</string>
+    <string name="nameSearch">Restaurant Name</string>
+    <string name="addressSearch">Restaurant Address</string>
+    <string name="reservation_date">Date</string>
+    <string name="reservation_time">Time</string>
 </resources>

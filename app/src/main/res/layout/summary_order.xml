@@ -16,73 +16,105 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="@dimen/fab_margin"
-            android:orientation="vertical"
-            android:weightSum="100">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/summary"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="match_parent"
                 android:text="Summary"
+                android:layout_marginBottom="@dimen/fab_margin"
                 android:textAlignment="center"
                 android:textAllCaps="true"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/order_list_title"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:text="Ordini"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/order_id_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:layout_height="match_parent"
+                    android:text="ordine id#"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/order_id"
+                    android:layout_width="0dp"
+                    android:layout_weight="75"
+                    android:layout_height="match_parent"
+                    android:text="id oridne"
+                    android:textAllCaps="true" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/rest_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="restaurant name" />
+
+            <TextView
+                android:id="@+id/summary_descr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="descrizione" />
+
+            <TextView
+                android:id="@+id/summary_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:text="Dettagli di consegna"
                 android:textAllCaps="true" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewOrderCompleted"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
-                android:scrollbars="vertical"
-                tools:listitem="@layout/menu_listitem">
-
-            </android.support.v7.widget.RecyclerView>
-
             <TextView
-                android:id="@+id/costumer_address_title"
+                android:id="@+id/summary_costumer_addr"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:text="indirizzo di consegna"
-                android:textAllCaps="true" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="indirizzo di consegna" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:orientation="horizontal"
 
-                <EditText
-                    android:id="@+id/costumer_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPostalAddress" />
+                android:weightSum="100">
 
+                <TextView
+                    android:id="@+id/summary_data"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:layout_height="match_parent"
+                    android:text="data"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/summary_hour"
+                    android:layout_width="0dp"
+                    android:layout_weight="75"
+                    android:layout_height="match_parent"
+                    android:text="hour"
+                    android:textAllCaps="true" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/orders_price_title"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/fab_margin"
-                android:layout_weight="3"
-                android:text="Prezzo"
+                android:text="Dettaglio dei costi"
                 android:textAllCaps="true" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:weightSum="100">
 
@@ -93,20 +125,20 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/Products_price_title"
+                        android:id="@+id/Summary_prod_price_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Products"
                         android:textAlignment="viewStart" />
 
                     <TextView
-                        android:id="@+id/shipping_price_title"
+                        android:id="@+id/Summary_shipping_price_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="shipping" />
 
                     <TextView
-                        android:id="@+id/total_price_title"
+                        android:id="@+id/Summary_total_price_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="TOTAL" />
@@ -120,19 +152,19 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/products_price"
+                        android:id="@+id/summary_products_price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="1" />
 
                     <TextView
-                        android:id="@+id/shipping_price"
+                        android:id="@+id/summary_shipping_price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="1" />
 
                     <TextView
-                        android:id="@+id/total_price"
+                        android:id="@+id/summary_total_price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="1" />
@@ -165,63 +197,13 @@
 
             </LinearLayout>
 
-
-            <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="2">
-
-            <LinearLayout
-                android:id="@+id/lunchDayLinearLayout"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/order_state"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/reservation_date"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
-                    android:theme="@style/TextView" />
-                <TextView
-                    android:id="@+id/et_edit_lunchday"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/TextView"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/lunchTimeLinearLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/reservation_time"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
-                    android:theme="@style/TextView" />
-                <TextView
-                    android:id="@+id/et_edit_lunchtime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:theme="@style/TextView"/>
-            </LinearLayout>
-        </LinearLayout>
-
-            <Button
-                android:id="@+id/confirm_btn"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
                 android:layout_marginTop="@dimen/fab_margin"
-                android:background="#F44336"
-                android:text="Conferma Ordine " />
+                android:layout_gravity="center"
+                android:text="stato ordine" />
 
         </LinearLayout>
 

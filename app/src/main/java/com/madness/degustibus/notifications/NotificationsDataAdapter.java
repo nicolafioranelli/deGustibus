@@ -14,9 +14,16 @@ import java.util.ArrayList;
 public class NotificationsDataAdapter extends RecyclerView.Adapter<NotificationsDataAdapter.NotificationsViewHolder> {
 
     private ArrayList<NotificationsClass> notificationsList;
+    final private ItemClickListener mOnClickListener;
 
-    public NotificationsDataAdapter(ArrayList<NotificationsClass> notifications) {
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+
+    public NotificationsDataAdapter(ArrayList<NotificationsClass> notifications, ItemClickListener listener) {
         this.notificationsList = notifications;
+        mOnClickListener = listener;
     }
 
     @NonNull
@@ -34,6 +41,7 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
         holder.date.setText(notifications.getDate());
         holder.description.setText(notifications.getDescription());
         holder.hour.setText(notifications.getHour());
+        holder.price.setText(notifications.getPrice());
     }
 
     @Override
@@ -59,15 +67,23 @@ public class NotificationsDataAdapter extends RecyclerView.Adapter<Notifications
         return notificationsList;
     }
 
-    public class NotificationsViewHolder extends RecyclerView.ViewHolder {
-        private TextView title, date, description, hour;
+    public class NotificationsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView title, date, description, hour,price;
 
         public NotificationsViewHolder(View view) {
             super(view);
-            title = view.findViewById(R.id.title);
+            title = view.findViewById(R.id.rest_title);
             date = view.findViewById(R.id.date);
-            description = view.findViewById(R.id.description);
+            description = view.findViewById(R.id.rest_description);
             hour = view.findViewById(R.id.hour);
+           // price = view.findViewById(R.id.not_price);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }

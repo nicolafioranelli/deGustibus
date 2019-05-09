@@ -27,7 +27,7 @@
                     android:layout_margin="8dp">
 
                     <ImageView
-                        android:id="@+id/imageView"
+                        android:id="@+id/rest_imageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -37,7 +37,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/title"
+                    android:id="@+id/rest_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -46,7 +46,7 @@
                     android:textSize="22dp" />
 
                 <TextView
-                    android:id="@+id/subtitle"
+                    android:id="@+id/rest_subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
