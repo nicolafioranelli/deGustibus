@@ -1,4 +1,4 @@
-package com.madness.degustibus.profile;
+package com.madness.degustibus;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,10 +32,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.madness.degustibus.BuildConfig;
-import com.madness.degustibus.R;
 import com.madness.degustibus.auth.LoginActivity;
 
 import java.io.File;
@@ -66,7 +62,7 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
         editor = pref.edit();
         setHasOptionsMenu(true);
     }
@@ -406,9 +402,7 @@ public class EditProfileFragment extends Fragment {
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", address.getText().toString());
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
+        map.put("photo", getPrefPhoto());
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("customers").child(user.getUid()).updateChildren(map);

@@ -18,8 +18,10 @@ public class NotificationsClass implements Parcelable {
     };
     String title;
     String description;
-    String date;
-    String hour;
+    String date = null;
+    String hour = null;
+    String price;
+    String idOrder;
     private int identifier;
 
     protected NotificationsClass(Parcel in) {
@@ -27,13 +29,20 @@ public class NotificationsClass implements Parcelable {
         date = in.readString();
         description = in.readString();
         hour = in.readString();
+        price = in.readString();
+        idOrder = in.readString();
     }
 
-    public NotificationsClass(String title, String description, String date, String hour) {
+    public NotificationsClass(String title, String description, String date, String hour,String price,String order) {
         this.title = title;
         this.date = date;
         this.description = description;
         this.hour = hour;
+        this.price = price;
+        this.idOrder = order;
+    }
+    public NotificationsClass(){
+        //Required empty class
     }
 
     @Override
@@ -42,11 +51,29 @@ public class NotificationsClass implements Parcelable {
         dest.writeString(date);
         dest.writeString(description);
         dest.writeString(hour);
+        dest.writeString(price);
+        dest.writeString(idOrder);
     }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public String getIdOrder() {
+        return idOrder;
+    }
+
+    public void setIdOrder(String idOrder) {
+        this.idOrder = idOrder;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getTitle() {

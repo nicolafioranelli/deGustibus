@@ -1,11 +1,6 @@
 package com.madness.degustibus;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -19,31 +14,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.madness.degustibus.auth.LoginActivity;
-import com.madness.degustibus.daily.DailyFragment;
 import com.madness.degustibus.home.HomeFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
-import com.madness.degustibus.profile.EditProfileFragment;
-import com.madness.degustibus.profile.ProfileFragment;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
@@ -52,7 +29,7 @@ import java.util.Map;
  */
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener, DailyFragment.DailyListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -169,26 +146,6 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
-            case R.id.nav_offers:
-                try {
-                    fragmentClass = DailyFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Offers").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.nav_order:
-                try {
-                    fragmentClass = OrderFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Order").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
             case R.id.nav_settings:
                 try {
                     fragmentClass = SettingsFragment.class;
@@ -238,16 +195,9 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             } else if (fragment instanceof CompletedOrderFragment) {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
-            } else if (fragment instanceof DailyFragment) {
-                navigationView.getMenu().findItem(R.id.nav_offers).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
         }
-    }
-
-
-    @Override
-    public void addOfferOnReservations() {
     }
 }

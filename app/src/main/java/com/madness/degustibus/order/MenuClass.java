@@ -16,36 +16,58 @@ public class MenuClass implements Parcelable {
             return new MenuClass[size];
         }
     };
-    String title;
-    String description;
+    String dish;
+    String type;
+    String avail;
     String price;
-    String quantity;
     String pic;
-    private int identifier;
+    String restaurant;
 
-    protected MenuClass(Parcel in) {
-        title = in.readString();
-        description = in.readString();
-        price = in.readString();
-        quantity = in.readString();
-        pic = in.readString();
+    public MenuClass() {
     }
 
-    public MenuClass(String title, String description, String price, String quantity, String pic) {
-        this.title = title;
-        this.description = description;
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String idenifier) {
+        this.identifier = idenifier;
+    }
+
+    String identifier;
+
+    public String getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(String restaurant) {
+        this.restaurant = restaurant;
+    }
+
+
+    protected MenuClass(Parcel in) {
+        pic = in.readString();
+        dish = in.readString();
+        type = in.readString();
+        avail = in.readString();
+        price = in.readString();
+    }
+
+    public MenuClass(String dish, String type, String avail, String price, String pic) {
+        this.dish = dish;
+        this.type = type;
+        this.avail = avail;
         this.price = price;
-        this.quantity = quantity;
         this.pic = pic;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(description);
-        dest.writeString(price);
-        dest.writeString(quantity);
         dest.writeString(pic);
+        dest.writeString(dish);
+        dest.writeString(type);
+        dest.writeString(avail);
+        dest.writeString(price);
     }
 
     @Override
@@ -53,28 +75,28 @@ public class MenuClass implements Parcelable {
         return 0;
     }
 
-    public String getTitle() {
-        return title;
+    public String getDish() {
+        return dish;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setDish(String dish) {
+        this.dish = dish;
     }
 
-    public String getDescription() {
-        return description;
+    public String getType() {
+        return type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getPic() {
-        return pic;
+    public String getAvail() {
+        return avail;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
+    public void setAvail(String avail) {
+        this.avail = avail;
     }
 
     public String getPrice() {
@@ -85,20 +107,11 @@ public class MenuClass implements Parcelable {
         this.price = price;
     }
 
-    public String getQuantity() {
-        return quantity;
+    public String getPic() {
+        return pic;
     }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(int identifier) {
-        this.identifier = identifier;
+    public void setPic(String pic) {
+        this.pic = pic;
     }
 }
-

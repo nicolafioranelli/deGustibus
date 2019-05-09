@@ -18,8 +18,6 @@
     <string name="gallery">Seleziona dalla galleria</string>
     <string name="lbl_forgot_password">Password dimenticata?</string>
     <string name="menu_profile">Profilo</string>
-    <string name="menu_offers">Offerte</string>
-    <string name="menu_orders">Ordinazioni</string>
     <string name="menu_settings">Impostazioni</string>
     <string name="minimum_password">La password è troppo breve, inseriscine una di almeno 6 caratteri!</string>
     <string name="permission_denied">Per poter accedere a questa funzionalità, abilita i permessi richiesti!</string>
@@ -53,11 +51,6 @@
     <string name="Date">Data</string>
     <string name="Hour">Ora</string>
     <string name="btn_new_reservation">NUOVA PRENOTAZIONE</string>
-    <string name="frDaily_avail">Disponibilità:&#160;</string>
-    <string name="frDaily_price">Prezzo:&#160;</string>
-    <string name="frDaily_dishName">Nome del piatto</string>
-    <string name="frDaily_desc">Descrizione</string>
-    <string name="frDaily_defName">Pizza</string>
-    <string name="frDaily_defDesc">Pizza con salsiccia, senza glutine e lattosio.</string>
-    <string name="title_Daily">Offerte</string>
+    <string name="nameSearch">Nome Del Ristorante</string>
+    <string name="addressSearch">Indirizzo Del Ristorante</string>
 </resources>
