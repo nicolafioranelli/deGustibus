@@ -1,80 +1,40 @@
 package com.madness.degustibus.order;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
-public class Dish implements Parcelable {
+public class Dish {
 
-    public static final Creator<Dish> CREATOR = new Creator<Dish>() {
-        @Override
-        public Dish createFromParcel(Parcel in) {
-            return new Dish(in);
-        }
-
-        @Override
-        public Dish[] newArray(int size) {
-            return new Dish[size];
-        }
-    };
-    String dish;
-    String type;
-    String avail;
-    String price;
-    String pic;
-    String restaurant;
-    int quantity;
+    private String dish;
+    private String desc;
+    private int avail;
+    private float price;
+    private String pic;
+    private String restaurant;
+    private int quantity;
+    private String identifier;
 
     public Dish() {
+    }
+
+    public Dish(String dish, String desc, int avail, float price, String pic, String restaurant, int quantity, String identifier) {
+        this.dish = dish;
+        this.desc = desc;
+        this.avail = avail;
+        this.price = price;
+        this.pic = pic;
+        this.restaurant = restaurant;
+        this.quantity = quantity;
+        this.identifier = identifier;
     }
 
     public String getIdentifier() {
         return identifier;
     }
 
-    public void setIdentifier(String idenifier) {
-        this.identifier = idenifier;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
-    String identifier;
-
-    public String getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
-    }
-
-
-    protected Dish(Parcel in) {
-        pic = in.readString();
-        dish = in.readString();
-        type = in.readString();
-        avail = in.readString();
-        price = in.readString();
-    }
-
-    public Dish(String dish, String type, String avail, String price, String pic) {
-        this.dish = dish;
-        this.type = type;
-        this.avail = avail;
-        this.price = price;
-        this.pic = pic;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(pic);
-        dest.writeString(dish);
-        dest.writeString(type);
-        dest.writeString(avail);
-        dest.writeString(price);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     public String getDish() {
         return dish;
@@ -84,27 +44,27 @@ public class Dish implements Parcelable {
         this.dish = dish;
     }
 
-    public String getType() {
-        return type;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
-    public String getAvail() {
+    public int getAvail() {
         return avail;
     }
 
-    public void setAvail(String avail) {
+    public void setAvail(int avail) {
         this.avail = avail;
     }
 
-    public String getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -116,7 +76,19 @@ public class Dish implements Parcelable {
         this.pic = pic;
     }
 
-    public int getQuantity() { return quantity; }
+    public String getRestaurant() {
+        return restaurant;
+    }
 
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setRestaurant(String restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }

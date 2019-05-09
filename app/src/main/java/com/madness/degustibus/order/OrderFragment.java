@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -88,6 +89,8 @@ public class OrderFragment extends Fragment{
             @Override
             public void onClick(View v) {
 
+                int cart = 0;
+
                 // at first clear the cart clear the db
                 FirebaseDatabase.getInstance().getReference()
                         .child("customers")
@@ -114,9 +117,20 @@ public class OrderFragment extends Fragment{
                                 .child("customers")
                                 .child(user.getUid())
                                 .child("cart").updateChildren(cartItem);
+
+                        cart++;
                     }
                 }
-                newOrderInterface.goToCart(user.getUid());
+
+                // if at least one dish is selected call the checkout
+                if(cart > 0){
+                    newOrderInterface.goToCart(user.getUid());
+                }else{
+                    Toast.makeText(getContext(),
+                            "select at least one item!",    // TODO STRING
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
 
@@ -217,7 +231,7 @@ public class OrderFragment extends Fragment{
                 final Integer maxAvail = Integer.parseInt(model.getAvail());
 
                 holder.title.setText(model.getDish());
-                holder.description.setText(model.getType());
+                holder.description.setText(model.getDesc());
                 holder.price.setText(model.getPrice() + " €");
                 holder.quantity.setText("0");
 
