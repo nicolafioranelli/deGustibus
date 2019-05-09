@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class OrderFragment extends Fragment{
 
-    private ArrayList<Dish> dishList = new ArrayList<>();
+    private ArrayList<Dish> dishList;
     private Dish dish;
     private FirebaseDatabase database;
     private FirebaseUser user;
@@ -82,7 +82,6 @@ public class OrderFragment extends Fragment{
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        // TODO the new fragment must be called by the main activity
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +129,7 @@ public class OrderFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dishList = new ArrayList<>();
         setHasOptionsMenu(true);
     }
 

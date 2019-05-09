@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -28,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
+import com.madness.degustibus.picker.TimePickerFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +43,6 @@ import java.util.HashMap;
  */
 public class CompletedOrderFragment extends Fragment {
 
-    private TextView customerAddress;
     private TextView productsPrice;
     private TextView shippingPrice;
     private TextView totalPrice;
@@ -58,6 +62,10 @@ public class CompletedOrderFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private DatabaseReference databaseRef;
     private FirebaseUser user;
+    private float totalAmount;
+    private TextView totalAmountTextView;
+    private EditText customerAddress;
+
 
 
     public CompletedOrderFragment() {
@@ -69,10 +77,13 @@ public class CompletedOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_completed_order, container, false);
-        getActivity().setTitle("Complete order");
+        getActivity().setTitle("Complete order");   //TODO string
 
         recyclerView = rootView.findViewById(R.id.recyclerViewOrderCompleted);
         complete_btn = rootView.findViewById(R.id.confirm_btn);
+        totalAmountTextView = rootView.findViewById(R.id.total_price);
+        customerAddress = rootView.findViewById(R.id.costumer_address);
+
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -80,6 +91,76 @@ public class CompletedOrderFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         //click on complete order create order and delete cart objects
+
+        complete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(totalAmount == 0){
+                    Toast.makeText(getContext(), "No dishes selected", Toast.LENGTH_SHORT).show(); //TODO strings
+                }else{
+                    boolean doOItOnce = true;
+                    final ReservationClass reservation = new ReservationClass();
+                        reservation.setCustomerAddress(customerAddress.getText().toString());
+                        reservation.setCustomerID(user.getUid());
+                        reservation.setDeliverymanID("null");
+
+                    // store the selected dishes in the cart of the user
+                    for(Dish dish: dishList){             // for each dish in the dailyoffer
+                        if(dish.quantity > 0) {              // keep only the selected ones
+
+
+                            if (doOItOnce){// retrieve restaurant address
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("restaurants")
+                                        .child(dish.restaurant)
+                                        .child("address").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        reservation.setRestaurantAddress(dataSnapshot.getValue().toString());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
+                                reservation.setRestaurantID(dish.restaurant);
+                                doOItOnce = false;
+                            }
+
+                            DialogFragment timePicker = new TimePickerFragment();
+                            timePicker.show();
+
+                            /*reservation.set
+
+                            // we use `updateChildren()` since the user can easily
+                            // update the selected quantity overwriting the previous
+                            // cart item in the database. In addition it avoids duplicated elements
+                            // in the db
+
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("customers")
+                                    .child(user.getUid())
+                                    .child("cart").updateChildren(cartItem);*/
+                        }else{
+
+                            // it could appen that the data was previously stored,
+                            // if so remove the item
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("customers")
+                                    .child(user.getUid())
+                                    .child("cart").child(dish.identifier).removeValue();
+                        }
+                    }
+
+                    Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show(); //TODO strings
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.popBackStackImmediate("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+
+
+            }
+        });
 
         // TODO change it
         /*complete_btn.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +250,7 @@ public class CompletedOrderFragment extends Fragment {
 
         adapter = new FirebaseRecyclerAdapter<Dish, CartHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final CartHolder holder, final int position, @NonNull Dish model) {
+            protected void onBindViewHolder(@NonNull final CartHolder holder, final int position, @NonNull final Dish model) {
 
                 final Integer maxAvail = Integer.parseInt(model.getAvail());
 
@@ -179,6 +260,8 @@ public class CompletedOrderFragment extends Fragment {
                 holder.title.setText(model.getDish());
                 holder.price.setText(model.getPrice() + " €");
                 holder.quantity.setText(String.valueOf(model.getQuantity()));
+                totalAmount += Float.parseFloat(model.getPrice())*model.quantity;
+                totalAmountTextView.setText(String.valueOf(totalAmount));
 
                 // set button plus
                 holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
@@ -190,6 +273,8 @@ public class CompletedOrderFragment extends Fragment {
                             n ++;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
+                            totalAmount += Float.parseFloat(model.price);
+                            totalAmountTextView.setText(String.valueOf(totalAmount));
                         }
 
                     }
@@ -205,6 +290,8 @@ public class CompletedOrderFragment extends Fragment {
                             n --;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
+                            totalAmount -= Float.parseFloat(model.price);
+                            totalAmountTextView.setText(String.valueOf(totalAmount));
                         }
                     }
                 });
@@ -258,5 +345,6 @@ public class CompletedOrderFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
 
 }
