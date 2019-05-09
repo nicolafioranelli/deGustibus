@@ -1,5 +1,7 @@
 package com.madness.degustibus;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +37,9 @@ import java.util.ArrayList;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.ProfileListener,
-        OrderFragment.NewOrderInterface {
+        OrderFragment.NewOrderInterface,
+        TimePickerDialog.OnTimeSetListener,
+        DatePickerDialog.OnDateSetListener{
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -223,7 +229,25 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, "Complete offer");
-        //ft.addToBackStack("DAILY"); // TODO change it
+        ft.addToBackStack("COMPLETEOFFER"); // TODO change it
         ft.commit();
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        CompletedOrderFragment fragment = (CompletedOrderFragment)
+                getSupportFragmentManager().findFragmentByTag("Complete offer");
+        if (fragment != null) {
+            fragment.setDeliveryDate(year, month, dayOfMonth);
+        }
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        CompletedOrderFragment fragment = (CompletedOrderFragment)
+                getSupportFragmentManager().findFragmentByTag("Complete offer");
+        if (fragment != null) {
+            fragment.setDeliveryTime(hourOfDay, minute);
+        }
     }
 }
