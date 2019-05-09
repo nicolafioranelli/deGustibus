@@ -36,16 +36,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class OrderFragment extends Fragment{
 
     ArrayList<MenuClass> dishList = new ArrayList<>();
     MenuClass dish;
+    FirebaseDatabase database;
     DatabaseReference databaseRef;
     private RecyclerView recyclerView;
-    //private MenuDataAdapter mAdapter;
     private Button confirm_btn;
     private Fragment fragment;
     HashMap<String,String> order=new HashMap<>();
@@ -66,39 +64,16 @@ public class OrderFragment extends Fragment{
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        databaseRef = FirebaseDatabase.getInstance().getReference();
+        database = FirebaseDatabase.getInstance();
+        databaseRef = database.getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        //mAdapter = new MenuDataAdapter(dishList);
-
-        /* Here is checked if there are elements to be displayed, in case nothing can be shown an
-        icon is set as visible and the other elements of the fragment are set invisible.
-
-        if (mAdapter.getItemCount() == 0) {
-            recyclerView.setVisibility(View.GONE);
-
-            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-            linearLayout.setVisibility(View.VISIBLE);
-            LinearLayout linearLayout1 = rootView.findViewById(R.id.fabLayout);
-            linearLayout1.setVisibility(View.INVISIBLE);
-        } else {
-            LinearLayout linearLayout = rootView.findViewById(R.id.emptyLayout);
-            linearLayout.setVisibility(View.INVISIBLE);
-            LinearLayout linearLayout1 = rootView.findViewById(R.id.fabLayout);
-            linearLayout1.setVisibility(View.VISIBLE);
-
-            recyclerView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(mAdapter);
-            LinearLayoutManager manager = new LinearLayoutManager(getContext());
-            recyclerView.setLayoutManager(manager);
-        }
-        */
+        // TODO the new fragment must be called by the main activity
 
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
                     fragment = null;
                     Class fragmentClass;
@@ -123,7 +98,7 @@ public class OrderFragment extends Fragment{
                         .commit();
             }
         });
-        populateList();
+        loadFromFirebase();
 
         return rootView;
     }
@@ -132,13 +107,7 @@ public class OrderFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-       // setMenuDataAdapter();
     }
-
-    /* Here is set the Adapter */
-    /*private void setMenuDataAdapter() {
-        mAdapter = new MenuDataAdapter(dishList);
-    }*/
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -159,9 +128,6 @@ public class OrderFragment extends Fragment{
         if( fragment instanceof OrderFragment) {
             View rootView = getLayoutInflater().inflate(R.layout.fragment_order, (ViewGroup) getView().getParent(), false);
             recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
-           /* if (recyclerView.getVisibility() == View.VISIBLE) {
-                outState.putParcelableArrayList("Menu", new ArrayList<>(mAdapter.getList()));
-            }*/
         }
         String piatto = "0";
         for(MenuClass dish: dishList){
@@ -198,14 +164,15 @@ public class OrderFragment extends Fragment{
         }
         return super.onOptionsItemSelected(item);
     }
-    void populateList(){
-        //Id of resturant clicked
 
+    void loadFromFirebase(){
+
+        // cacth the id of the restaurant from the boundle
         final String rest = this.getArguments().getString("restId");
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseRef = FirebaseDatabase.getInstance().getReference("offers/"+rest);
-        Query query = database.getReference().child("offers/"+rest);
+        // obtain the url /offers/{restaurantIdentifier}
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("offers").child(rest);
+        Query query = databaseRef; // query data at /offers/{restaurantIdentifier}
 
         FirebaseRecyclerOptions<MenuClass> options =
                 new FirebaseRecyclerOptions.Builder<MenuClass>()
@@ -213,60 +180,61 @@ public class OrderFragment extends Fragment{
                     @NonNull
                     @Override
                     public MenuClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                         dish = new MenuClass(snapshot.getValue(MenuClass.class).getDish(),snapshot.getValue(MenuClass.class).getType(), snapshot.getValue(MenuClass.class).getAvail(), snapshot.getValue(MenuClass.class).getPrice(), snapshot.getValue(MenuClass.class).getPic());
-                        System.out.println("piatto :" +dish.dish + "id" + dish.identifier);
-                        dishList.add(dish);
-                        return dish;
+                        dish = snapshot.getValue(MenuClass.class);  // get the snapshot and cast it
+                                                                    // into a `MenuClass` item
+                        dishList.add(dish);                         // add the `dish` into the list
+                        return dish;                                // return the item to the builder
                     }
-                })
-                            .build();
+                }).build();                                         // build the option
+
+        // new adapter
         adapter = new FirebaseRecyclerAdapter<MenuClass, MenuHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final MenuHolder holder, final int position, @NonNull MenuClass model) {
-                System.out.println("piatto :" +model.dish + "id" + model.identifier);
+
+                final Integer maxAvail = Integer.parseInt(model.getAvail());
+
                 holder.title.setText(model.getDish());
                 holder.description.setText(model.getType());
-                holder.price.setText(model.getPrice());
-                holder.quantity.setText(model.getAvail());
+                holder.price.setText(model.getPrice() + " €");
+                holder.quantity.setText("0");
+
+                // TODO do it with Glide
                 if (model.getPic() == null) {
                     // Set default image
                     holder.image.setImageResource(R.drawable.dish_image);
                 } else {
                     holder.image.setImageURI(Uri.parse(model.getPic()));
                 }
-                final Button buttonMinus = holder.itemView.findViewById(R.id.buttonMinus);
-                final Button buttonPlus = holder.itemView.findViewById(R.id.buttonPlus);
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+                // set button plus
+                holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String dish_id = getRef(position).getKey();
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        // check for the availability of the product
+                        if(n < maxAvail){
+                            n ++;
+                            holder.quantity.setText(String.valueOf(n));
+                            // NB: it represent the selected quantity
+                            dish.setAvail(String.valueOf(n));
+                        }
 
-                        buttonMinus.setOnClickListener(new View.OnClickListener(){
-                            @Override
-                            public void onClick(View v) {
-                                if (v.getId() == R.id.buttonMinus) {
-                                    if(Integer.parseInt(holder.quantity.getText().toString())!= 0){
-                                        int n =Integer.parseInt(holder.quantity.getText().toString());
-                                        n --;
-                                        holder.quantity.setText(String.valueOf(n));
-                                        dish.setAvail(String.valueOf(n));
-                                    }
-                                }
-                            }
-                        });
-                        buttonPlus.setOnClickListener(new View.OnClickListener(){
-                            @Override
-                            public void onClick(View v) {
-                                if (v.getId() == R.id.buttonPlus) {
-                                    int n =Integer.parseInt(holder.quantity.getText().toString());
-                                    n ++;
-                                    holder.quantity.setText(String.valueOf(n));
-                                    dish.setAvail(String.valueOf(n));
-                                }
-                            }
-                        });
+                    }
+                });
 
-
+                // set button minus
+                holder.buttonMinus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        // check for non negative numbers
+                        if(n > 0){
+                            n --;
+                            holder.quantity.setText(String.valueOf(n));
+                            // NB: it represent the selected quantity
+                            dish.setAvail(String.valueOf(n));
+                        }
                     }
                 });
 
@@ -280,27 +248,6 @@ public class OrderFragment extends Fragment{
             }
         };
         recyclerView.setAdapter(adapter);
-
-
-       /* databaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //this method is called once with the initial value and again whenever data at this location is updated
-                for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    if(dS.getKey().equals(rest)){
-
-                        for(DataSnapshot d: dS.getChildren()){
-                            dish = d.getValue(MenuClass.class);
-                            dishList.add(new MenuClass(dish.getDish(), dish.getType(), dish.getAvail(), dish.getPrice(), dish.getPic()));
-                            recyclerView.setAdapter(mAdapter);
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });*/
     }
     @Override
     public void onStart() {
