@@ -1,183 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".order.CompletedOrderFragment">
 
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="3"
+        android:text="Summary"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/total_price_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Products_price_title">
 
-        >
-
-        <LinearLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewOrderCompleted"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/fab_margin"
-            android:orientation="vertical"
-            android:weightSum="100">
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/cart_listitem">
 
-            <TextView
-                android:id="@+id/summary"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:text="Summary"
-                android:textAlignment="center"
-                android:textAllCaps="true"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/order_list_title"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:text="Ordini"
-                android:textAllCaps="true" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewOrderCompleted"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
-                android:scrollbars="vertical"
-                tools:listitem="@layout/menu_listitem">
-
-            </android.support.v7.widget.RecyclerView>
-
-            <TextView
-                android:id="@+id/costumer_address_title"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:text="indirizzo di consegna"
-                android:textAllCaps="true" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/costumer_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPostalAddress" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/orders_price_title"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/fab_margin"
-                android:layout_weight="3"
-                android:text="Prezzo"
-                android:textAllCaps="true" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
-                android:orientation="horizontal"
-                android:weightSum="100">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="80"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/Products_price_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Products"
-                        android:textAlignment="viewStart" />
-
-                    <TextView
-                        android:id="@+id/shipping_price_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="shipping" />
-
-                    <TextView
-                        android:id="@+id/total_price_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="TOTAL" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/products_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="1" />
-
-                    <TextView
-                        android:id="@+id/shipping_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="1" />
-
-                    <TextView
-                        android:id="@+id/total_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="1" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="€" />
-
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="€" />
-
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="€" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/confirm_btn"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:background="#F44336"
-                android:text="Conferma Ordine " />
-
-        </LinearLayout>
+        </android.support.v7.widget.RecyclerView>
 
     </ScrollView>
 
+    <TextView
+        android:id="@+id/costumer_address_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="3"
+        android:text="indirizzo di consegna"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toTopOf="@+id/costumer_address"
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <EditText
+        android:id="@+id/costumer_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:inputType="textPostalAddress"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/Products_price_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Products"
+        android:textAlignment="viewStart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/summary" />
+
+    <TextView
+        android:id="@+id/total_price_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="TOTAL"
+        app:layout_constraintBottom_toTopOf="@+id/costumer_address_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/total_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="1"
+        app:layout_constraintBottom_toTopOf="@+id/costumer_address_title"
+        app:layout_constraintStart_toEndOf="@+id/total_price_title" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="€"
+        app:layout_constraintBottom_toTopOf="@+id/costumer_address_title"
+        app:layout_constraintStart_toEndOf="@+id/total_price" />
+
+    <Button
+        android:id="@+id/confirm_btn"
+        style="@style/FirebaseUI.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="4dp"
+        android:paddingRight="24dp"
+        android:paddingBottom="4dp"
+        android:text="Completa Ordine"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/primaryText"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

@@ -11,9 +11,9 @@ import com.madness.degustibus.R;
 
 import java.util.ArrayList;
 
-public class MenuHolder extends RecyclerView.ViewHolder {
+public class DishHolder extends RecyclerView.ViewHolder {
 
-    private static final String TAG = MenuHolder.class.getSimpleName();
+    private static final String TAG = DishHolder.class.getSimpleName();
     public TextView title, description, price, quantity;
     public ImageView image;
     public Button buttonPlus;
@@ -25,14 +25,14 @@ public class MenuHolder extends RecyclerView.ViewHolder {
         return dishList.get(position);
     }
 
-    public MenuHolder(final View view) {
+    public DishHolder(final View view) {
         super(view);
         title = view.findViewById(R.id.rest_title);
         description = view.findViewById(R.id.rest_description);
         price = view.findViewById(R.id.price);
         quantity = view.findViewById(R.id.quantity);
         image = view.findViewById(R.id.rest_imageView);
-        buttonMinus = view.findViewById(R.id.buttonMinus);
-        buttonPlus = view.findViewById(R.id.buttonPlus);
+        buttonMinus = view.findViewById(R.id.buttonPlus);
+        buttonPlus = view.findViewById(R.id.buttonMinus);
     }
 }

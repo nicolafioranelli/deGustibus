@@ -207,6 +207,23 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void goToCart(String userIdentifier) {
-        // TODO fill it
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = CompletedOrderFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "onItemClicked: ", e);
+        }
+
+        Bundle args = new Bundle();
+        args.putString("id", userIdentifier);
+        fragment.setArguments(args);
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "Complete offer");
+        //ft.addToBackStack("DAILY"); // TODO change it
+        ft.commit();
     }
 }

@@ -94,7 +94,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
             image = view.findViewById(R.id.rest_imageView);
-            buttonMinus = view.findViewById(R.id.buttonMinus);
+            buttonMinus = view.findViewById(R.id.buttonPlus);
 
             if (Integer.parseInt(quantity.getText().toString())==0){
                 buttonMinus.setVisibility(View.VISIBLE);
@@ -105,7 +105,7 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     Dish dish = getDish(clickPosition);
-                    if (v.getId() == R.id.buttonMinus) {
+                    if (v.getId() == R.id.buttonPlus) {
                         if(Integer.parseInt(quantity.getText().toString())!= 0){
                             int n =Integer.parseInt(quantity.getText().toString());
                             n --;
@@ -115,13 +115,13 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                     }
                 }
             });
-            buttonPlus = view.findViewById(R.id.buttonPlus);
+            buttonPlus = view.findViewById(R.id.buttonMinus);
             buttonPlus.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     Dish dish = getDish(clickPosition);
-                    if (v.getId() == R.id.buttonPlus) {
+                    if (v.getId() == R.id.buttonMinus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;
                             quantity.setText(String.valueOf(n));

@@ -3,10 +3,10 @@ package com.madness.degustibus.order;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,11 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
-import com.madness.degustibus.home.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,24 +37,27 @@ import java.util.HashMap;
  * A simple {@link Fragment} subclass.
  */
 public class CompletedOrderFragment extends Fragment {
+
     private TextView customerAddress;
     private TextView productsPrice;
     private TextView shippingPrice;
     private TextView totalPrice;
     private Button complete_btn;
     private Fragment fragment;
-    ArrayList<CartClass> dishList = new ArrayList<>();
-    HashMap<String,String> order=new HashMap<>();
-    CartClass dish;
-    String descr = "";
-    double prodPrice= 0.0;
-    double shipPrice= 2.5;
-    double totPrice = 0.0;
+    private ArrayList<Dish> dishList = new ArrayList<>();
+    private HashMap<String,String> order=new HashMap<>();
+    private Dish dish;
+    private String descr = "";
+    private double prodPrice= 0.0;
+    private double shipPrice= 2.5;
+    private double totPrice = 0.0;
     private RecyclerView recyclerView;
     private CartDataAdapter mAdapter;
     private SharedPreferences pref;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
+    private DatabaseReference databaseRef;
+    private FirebaseUser user;
 
 
     public CompletedOrderFragment() {
@@ -73,11 +76,13 @@ public class CompletedOrderFragment extends Fragment {
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         //click on complete order create order and delete cart objects
-        complete_btn.setOnClickListener(new View.OnClickListener() {
+
+        // TODO change it
+        /*complete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -114,21 +119,17 @@ public class CompletedOrderFragment extends Fragment {
                 databaseRef.child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart").removeValue();
                 Toast.makeText(getContext(), "ToDo: Completed!", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
         //populate the list of cart objects
-        populateList();
+        loadFromFirebase();
         return rootView;
     }
     @Override
     public void onResume() {
         customerAddress = getView().findViewById(R.id.costumer_address);
-        productsPrice = getView().findViewById(R.id.products_price);
-        shippingPrice = getView().findViewById(R.id.shipping_price);
         totalPrice = getView().findViewById(R.id.total_price);
 
         customerAddress.setText(pref.getString("addressCustomer", getResources().getString(R.string.es_street)));
-        productsPrice.setText(pref.getString("prodPrice","18"));
-        shippingPrice.setText(pref.getString("shipPrice","2.5"));
         totalPrice.setText(pref.getString("totPrice","20.5"));
 
         super.onResume();
@@ -138,43 +139,89 @@ public class CompletedOrderFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setCartDataAdapter();
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
 
-    private void setCartDataAdapter() {
-        mAdapter = new CartDataAdapter(dishList);
-    }
+    public void loadFromFirebase(){
 
-    void populateList(){
-         DatabaseReference dbR = FirebaseDatabase.getInstance().getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
-        Query query = FirebaseDatabase.getInstance().getReference().child("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart");
+        // obtain the url /offers/{restaurantIdentifier}
+        databaseRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("customers")
+                .child(user.getUid())
+                .child("cart");
 
-        FirebaseRecyclerOptions<CartClass> options =
-                new FirebaseRecyclerOptions.Builder<CartClass>()
-                        .setQuery(query, CartClass.class)
-                        .build();
-        adapter = new FirebaseRecyclerAdapter<CartClass, CartHolder>(options) {
+        Query query = databaseRef; // query data at /customers/{customerIdentifier}/cart
+
+        FirebaseRecyclerOptions<Dish> options =
+                new FirebaseRecyclerOptions.Builder<Dish>()
+                        .setQuery(query, new SnapshotParser<Dish>() {
+                            @NonNull
+                            @Override
+                            public Dish parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                dish = snapshot.getValue(Dish.class);  // get the snapshot and cast it
+                                // into a `Dish` item
+                                dishList.add(dish);                         // add the `dish` into the list
+                                return dish;                               // return the item to the builder
+                            }
+                        }).build(); // build the option
+
+
+        adapter = new FirebaseRecyclerAdapter<Dish, CartHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull CartHolder holder, int position, @NonNull CartClass model) {
-                CartClass menu = dishList.get(position);
-                holder.title.setText(menu.getTitle());
-                holder.price.setText(menu.getPrice());
-                holder.quantity.setText(menu.getQuantity());
+            protected void onBindViewHolder(@NonNull final CartHolder holder, final int position, @NonNull Dish model) {
 
+                final Integer maxAvail = Integer.parseInt(model.getAvail());
+
+                // the user can only decrease the selected quantity
+                final int maxQuantity = model.getQuantity();
+
+                holder.title.setText(model.getDish());
+                holder.price.setText(model.getPrice() + " €");
+                holder.quantity.setText(String.valueOf(model.getQuantity()));
+
+                // set button plus
+                holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        // check for the availability of the product
+                        if(n < maxQuantity){
+                            n ++;
+                            holder.quantity.setText(String.valueOf(n));
+                            dishList.get(position).setQuantity(n);
+                        }
+
+                    }
+                });
+
+                // set button minus
+                holder.buttonMinus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        // check for non negative numbers
+                        if(n > 0){
+                            n --;
+                            holder.quantity.setText(String.valueOf(n));
+                            dishList.get(position).setQuantity(n);
+                        }
+                    }
+                });
             }
 
             @Override
             public CartHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.menu_listitem, parent, false);
+                        .inflate(R.layout.cart_listitem, parent, false);
                 return new CartHolder(view);
 
             }
 
         };
         recyclerView.setAdapter(adapter);
-        dbR.addValueEventListener(new ValueEventListener() {
+
+        /*dbR.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //this method is called once with the initial value and again whenever data at this location is updated
@@ -197,7 +244,7 @@ public class CompletedOrderFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
     }
     @Override
