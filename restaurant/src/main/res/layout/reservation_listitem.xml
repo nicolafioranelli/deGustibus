@@ -29,7 +29,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/space8"
-                    android:text="Status: "
+                    android:text="@string/resStatus"
                     android:textSize="18dp"
                     android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="true"
-                    android:text="ACCEPT"
+                    android:text="@string/resAccept"
                     android:visibility="invisible" />
 
                 <Button
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="true"
-                    android:text="REFUSE"
+                    android:text="@string/resRefuse"
                     android:visibility="invisible" />
             </LinearLayout>
         </LinearLayout>
@@ -76,7 +76,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Customer: "
+                android:text="@string/resCustomer"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
@@ -84,14 +84,13 @@
                 android:id="@+id/customer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mario Rossi"
                 android:textSize="15dp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Order"
+            android:text="@string/resOrder"
             android:textSize="15dp"
             android:textStyle="bold" />
 
@@ -99,7 +98,6 @@
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1 x Pizza Margherita\n2 x Carne alla Brace\n4 x Spiedini di maiale"
             android:textSize="15dp" />
 
         <LinearLayout
@@ -116,7 +114,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Date: "
+                    android:text="@string/resDate"
                     android:textSize="15dp"
                     android:textStyle="bold" />
 
@@ -124,7 +122,6 @@
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="11-05-2019"
                     android:textSize="15dp" />
             </LinearLayout>
 
@@ -136,7 +133,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hour: "
+                    android:text="@string/resHour"
                     android:textSize="15dp"
                     android:textStyle="bold" />
 
@@ -144,7 +141,6 @@
                     android:id="@+id/hour"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12:00"
                     android:textSize="15dp" />
             </LinearLayout>
 
@@ -158,7 +154,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total: "
+                    android:text="@string/resTotal"
                     android:textSize="15dp"
                     android:textStyle="bold" />
 

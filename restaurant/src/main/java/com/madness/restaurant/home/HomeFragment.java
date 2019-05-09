@@ -47,8 +47,9 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         getActivity().setTitle("deGustibus");
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -60,6 +61,8 @@ public class HomeFragment extends Fragment {
                     if (dataSnapshot.exists()) {
                         Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                         userName.setText(objectMap.get("name").toString());
+                        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                        rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
                     }
                 }
 

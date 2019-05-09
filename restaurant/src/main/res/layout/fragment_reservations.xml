@@ -37,7 +37,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_nothing" />
+            android:src="@drawable/no_order" />
 
         <TextView
             android:layout_width="match_parent"
