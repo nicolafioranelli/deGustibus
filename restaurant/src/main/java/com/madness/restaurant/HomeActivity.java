@@ -2,7 +2,10 @@ package com.madness.restaurant;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,28 +20,33 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
-import com.madness.restaurant.reservations.NewReservationFragment;
 import com.madness.restaurant.reservations.ReservationFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
-        ProfileFragment.ProfileListener, ReservationFragment.ReservationListener, DailyFragment.DailyListener,
-        NewReservationFragment.NewReservationListener, NewDailyOffer.NewDailyOfferListener {
+        ProfileFragment.ProfileListener, DailyFragment.DailyListener {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -70,8 +78,6 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -80,6 +86,27 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null) {
+            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+            databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                        userName.setText(objectMap.get("name").toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         fragmentManager = getSupportFragmentManager();
 
         /* Instantiate home fragment */
@@ -151,36 +178,20 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_daily).setChecked(true);
             } else if (fragment instanceof ReservationFragment) {
                 navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
-            } else if (fragment instanceof NewReservationFragment) {
-                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
         }
-    }
 
-    @Override
-    public void addReservation() {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = NewReservationFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "onItemClicked: ", e);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
         }
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "AddReservation");
-        ft.addToBackStack("RESERVATION");
-        ft.commit();
     }
 
     @Override
-    public void addDailyOffer() {
+    public void addDailyOffer(String identifier) {
         try {
             fragment = null;
             Class fragmentClass;
@@ -189,6 +200,10 @@ public class HomeActivity extends AppCompatActivity
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
         }
+
+        Bundle args = new Bundle();
+        args.putString("id", identifier);
+        fragment.setArguments(args);
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -201,22 +216,6 @@ public class HomeActivity extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
     }
-
-    /* Inflate the menu: this adds items to the action bar */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    /* Handle clicks on action toolbar */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -286,39 +285,34 @@ public class HomeActivity extends AppCompatActivity
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         EditProfile editFrag = (EditProfile)
                 getSupportFragmentManager().findFragmentByTag("EditP");
-        NewReservationFragment editRes = (NewReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("AddReservation");
         if (editFrag != null) {
             editFrag.setHourAndMinute(hourOfDay, minute);
-        } else if (editRes != null) {
-            editRes.setHourAndMinute(hourOfDay, minute);
         }
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        NewReservationFragment editRes = (NewReservationFragment)
+        /*NewReservationFragment editRes = (NewReservationFragment)
                 getSupportFragmentManager().findFragmentByTag("AddReservation");
         if (editRes != null) {
             editRes.setDate(year, month, dayOfMonth);
-        }
+        }*/
     }
 
-    @Override
-    public void onSubmit() {
-        ReservationFragment reservationFragment = (ReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("RESERVATION");
-        if (reservationFragment != null) {
-            reservationFragment.addOnReservation();
+    /* Check if connection is enabled! */
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+            if (networkInfo != null && networkInfo.isConnected()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    @Override
-    public void onSubmitDish() {
-        DailyFragment dailyFragment = (DailyFragment)
-                getSupportFragmentManager().findFragmentByTag("DAILY");
-        if (dailyFragment != null) {
-            dailyFragment.addOnDaily();
-        }
-    }
 }

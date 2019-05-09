@@ -200,16 +200,16 @@ public class OrderFragment extends Fragment{
 
         FirebaseRecyclerOptions<Dish> options =
                 new FirebaseRecyclerOptions.Builder<Dish>()
-                .setQuery(query, new SnapshotParser<Dish>() {
-                    @NonNull
-                    @Override
-                    public Dish parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        dish = snapshot.getValue(Dish.class);  // get the snapshot and cast it
-                                                                    // into a `Dish` item
-                        dishList.add(dish);                         // add the `dish` into the list
-                        return dish;                                // return the item to the builder
-                    }
-                }).build();                                         // build the option
+                        .setQuery(query, new SnapshotParser<Dish>() {
+                            @NonNull
+                            @Override
+                            public Dish parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                dish = snapshot.getValue(Dish.class);  // get the snapshot and cast it
+                                // into a `Dish` item
+                                dishList.add(dish);                         // add the `dish` into the list
+                                return dish;                                // return the item to the builder
+                            }
+                        }).build();                                         // build the option
 
         // new adapter
         adapter = new FirebaseRecyclerAdapter<Dish, DishHolder>(options) {

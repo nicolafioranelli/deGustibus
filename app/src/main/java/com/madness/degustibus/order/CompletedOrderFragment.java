@@ -101,9 +101,9 @@ public class CompletedOrderFragment extends Fragment {
                 }else{
                     boolean doOItOnce = true;
                     final ReservationClass reservation = new ReservationClass();
-                        reservation.setCustomerAddress(customerAddress.getText().toString());
-                        reservation.setCustomerID(user.getUid());
-                        reservation.setDeliverymanID("null");
+                    reservation.setCustomerAddress(customerAddress.getText().toString());
+                    reservation.setCustomerID(user.getUid());
+                    reservation.setDeliverymanID("null");
 
                     // store the selected dishes in the cart of the user
                     for(Dish dish: dishList){             // for each dish in the dailyoffer
@@ -128,8 +128,8 @@ public class CompletedOrderFragment extends Fragment {
                                 doOItOnce = false;
                             }
 
-                            DialogFragment timePicker = new TimePickerFragment();
-                            timePicker.show();
+                            /*DialogFragment timePicker = new TimePickerFragment();
+                            timePicker.show();*/
 
                             /*reservation.set
 

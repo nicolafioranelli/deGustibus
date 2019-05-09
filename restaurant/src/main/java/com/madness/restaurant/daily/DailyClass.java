@@ -1,56 +1,42 @@
 package com.madness.restaurant.daily;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class DailyClass {
 
-public class DailyClass implements Parcelable {
+    private String dish;
+    private String type;
+    private String avail;
+    private String price;
+    private String pic;
+    private String restaurant;
+    private String identifier;
 
-    public static final Creator<DailyClass> CREATOR = new Creator<DailyClass>() {
-        @Override
-        public DailyClass createFromParcel(Parcel in) {
-            return new DailyClass(in);
-        }
-
-        @Override
-        public DailyClass[] newArray(int size) {
-            return new DailyClass[size];
-        }
-    };
-    String dish;
-    String pic;
-    String type;
-    String avail;
-    String price;
-    private int identifier;
-
-    protected DailyClass(Parcel in) {
-        pic = in.readString();
-        dish = in.readString();
-        type = in.readString();
-        avail = in.readString();
-        price = in.readString();
+    public DailyClass() {
     }
 
-    public DailyClass(String dish, String type, String avail, String price, String pic) {
+    public DailyClass(String dish, String type, String avail, String price, String pic, String restaurant, String identifier) {
         this.dish = dish;
-        this.pic = pic;
         this.type = type;
         this.avail = avail;
         this.price = price;
+        this.pic = pic;
+        this.restaurant = restaurant;
+        this.identifier = identifier;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(pic);
-        dest.writeString(dish);
-        dest.writeString(type);
-        dest.writeString(avail);
-        dest.writeString(price);
+    public String getIdentifier() {
+        return identifier;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setIdentifier(String idenifier) {
+        this.identifier = idenifier;
+    }
+
+    public String getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(String restaurant) {
+        this.restaurant = restaurant;
     }
 
     public String getDish() {
@@ -91,13 +77,5 @@ public class DailyClass implements Parcelable {
 
     public void setPic(String pic) {
         this.pic = pic;
-    }
-
-    public int getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(int identifier) {
-        this.identifier = identifier;
     }
 }

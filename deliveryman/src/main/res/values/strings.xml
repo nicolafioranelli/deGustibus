@@ -77,4 +77,7 @@
     <string name="err_reg">Authentication failed.</string>
     <string name="pass_ok">We have sent you instructions to reset your password!</string>
     <string name="pass_err">Failed to send reset email!</string>
+
+    <!-- Empty Layouts -->
+    <string name="notifications_done">Well done! You\'ve managed all the notifications!</string>
 </resources>

@@ -31,7 +31,7 @@
     <string name="frProfile_defName" translatable="false">Mario Rossi</string>
     <string name="frProfile_defEmail" translatable="false">mario.rossi@polito.it</string>
     <string name="frProfile_defDesc">Love pizza and pasta.</string>
-    <string name="frProfile_defPhone" translatable="false">011 5685222</string>
+    <string name="frProfile_defPhone" translatable="false">012 3456789</string>
     <string name="frProfile_defAddr" translatable="false">Corso Duca degli Abruzzi, 24</string>
 
     <!-- Utils -->
@@ -86,4 +86,8 @@
     <string name="es_text" translatable="false">Lorem ipsum dolor sit amet, orci volutpat pede, at et ratione eleifend, nulla ipsum nascetur nulla, tincidunt a odio cras elementum, sapien nulla amet.</string>
     <string name="btn_new_reservation">NEW RESERVATION</string>
     <string name="btn_or">OR</string>
+    <string name="nameSearch">Restaurant Name</string>
+    <string name="addressSearch">Restaurant Address</string>
+    <string name="reservation_date">Date</string>
+    <string name="reservation_time">Time</string>
 </resources>

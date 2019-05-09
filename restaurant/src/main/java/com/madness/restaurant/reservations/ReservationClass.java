@@ -1,117 +1,111 @@
 package com.madness.restaurant.reservations;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class ReservationClass {
 
-public class ReservationClass implements Parcelable {
+    private String customerID;
+    private String restaurantID;
+    private String deliverymanID;
+    private String deliveryDate;
+    private String deliveryHour;
+    private String description;
+    private String totalPrice;
+    private String customerAddress;
+    private String restaurantAddress;
+    private String status;
 
-    private String name;
-    private int identifier;
-    private String seats;
-
-    public String getDate() {
-        return date;
+    public ReservationClass() {
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public ReservationClass(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
+        this.customerID = customerID;
+        this.restaurantID = restaurantID;
+        this.deliverymanID = deliverymanID;
+        this.deliveryDate = deliveryDate;
+        this.deliveryHour = deliveryHour;
+        this.description = description;
+        this.totalPrice = totalPrice;
+        this.customerAddress = customerAddress;
+        this.restaurantAddress = restaurantAddress;
+        this.status = status;
     }
 
-    public String getTime() {
-        return time;
+    public String getCustomerID() {
+        return customerID;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
     }
 
-    private String date;
-        private String time;
-    private String orderDishes;
-    private String desc;
-
-    public static final Creator<ReservationClass> CREATOR = new Creator<ReservationClass>() {
-        @Override
-        public ReservationClass createFromParcel(Parcel in) {
-            return new ReservationClass(in);
-        }
-
-        @Override
-        public ReservationClass[] newArray(int size) {
-            return new ReservationClass[size];
-        }
-    };
-
-    public String getOrderDishes() {
-        return orderDishes;
+    public String getRestaurantID() {
+        return restaurantID;
     }
 
-    public ReservationClass (Parcel parcel) {
-        this.name = parcel.readString();
-        this.identifier = parcel.readInt();
-        this.seats = parcel.readString();
-        this.date = parcel.readString();
-        this.time = parcel.readString();
-        this.orderDishes = parcel.readString();
-        this.desc = parcel.readString();
-    }
-    public ReservationClass (String name,int identifier,String seats,String date, String time,String orderDishes,String desc ) {
-        this.name = name;
-        this.identifier = identifier;
-        this.seats = seats;
-        this.date = date;
-        this.time = time;
-        this.orderDishes = orderDishes;
-        this.desc = desc;
-    }
-    public void setOrderDishes(String orderDishes) {
-        this.orderDishes = orderDishes;
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDeliverymanID() {
+        return deliverymanID;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDeliverymanID(String deliverymanID) {
+        this.deliverymanID = deliverymanID;
     }
 
-    public int getIdentifier() {
-        return identifier;
+    public String getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setIdentifier(int identifier) {
-        this.identifier = identifier;
+    public void setDeliveryDate(String deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
-    public String getSeats() {
-        return seats;
+    public String getDeliveryHour() {
+        return deliveryHour;
     }
 
-    public void setSeats(String seat) {
-        this.seats = seat;
+    public void setDeliveryHour(String deliveryHour) {
+        this.deliveryHour = deliveryHour;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    @Override
-    public int describeContents() {return 0;
+    public String getTotalPrice() {
+        return totalPrice;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(seats);
-        dest.writeString(date);
-        dest.writeString(time);
-        dest.writeString(desc);
-        dest.writeInt(identifier);
-        dest.writeString(orderDishes);
+    public void setTotalPrice(String totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+    public String getRestaurantAddress() {
+        return restaurantAddress;
+    }
+
+    public void setRestaurantAddress(String restaurantAddress) {
+        this.restaurantAddress = restaurantAddress;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

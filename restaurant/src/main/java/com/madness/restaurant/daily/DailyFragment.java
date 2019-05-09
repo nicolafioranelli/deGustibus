@@ -1,7 +1,6 @@
 package com.madness.restaurant.daily;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,11 +14,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.swipe.SwipeController;
 import com.madness.restaurant.swipe.SwipeControllerActions;
-
-import java.util.ArrayList;
 
 /**
  * The DailyFragment class is in charge of presenting a ListItem View where will be displayed
@@ -29,38 +37,18 @@ import java.util.ArrayList;
  */
 public class DailyFragment extends Fragment {
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    ArrayList<DailyClass> dailyList = new ArrayList<>();
     private DailyListener listener;
     private RecyclerView recyclerView;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private DailyDataAdapter mAdapter;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseDatabase db;
+    private DatabaseReference databaseReference;
+    private ValueEventListener emptyListener;
     private SwipeController swipeController;
-    private int replaced = 0;
-    private int addedposition = 0;
-    private boolean added = true;
-    private int mColumnCount = 1;
+    private FirebaseRecyclerAdapter adapter;
+    private FirebaseUser user;
 
     public DailyFragment() {
-        fakeContent();
-    }
-
-    /* Here is set the content to be shown, this method will be removed from the following lab */
-    private void fakeContent() {
-        DailyClass daily = new DailyClass("Pizza", "Pizza margherita senza mozzarella", "10", "20", null);
-        this.dailyList.add(daily);
-
-        DailyClass daily1 = new DailyClass("Spaghetti", "Pasta e sugo al ragù", "10", "15", null);
-        this.dailyList.add(daily1);
-
-        DailyClass daily2 = new DailyClass("Seppie e piselli", "Seppie del mar Adriatico e piselli bio", "10", "20", null);
-        this.dailyList.add(daily2);
-    }
-
-    /* Here is set the Adapter */
-    private void setDailyDataAdapter() {
-        mAdapter = new DailyDataAdapter(dailyList);
+        // Required empty public constructor();
     }
 
     /* The onAttach method registers the listener */
@@ -70,16 +58,14 @@ public class DailyFragment extends Fragment {
         if (context instanceof DailyListener) {
             listener = (DailyListener) context;
         } else {
-            throw new ClassCastException(context.toString() + "must implement DailyListner");
+            throw new ClassCastException(context.toString() + "must implement DailyListener");
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
-        setDailyDataAdapter();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -87,12 +73,68 @@ public class DailyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_dailyoffers, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_dailyoffers, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Daily));
 
+        db = FirebaseDatabase.getInstance();
+        databaseReference = db.getReference();
         recyclerView = rootView.findViewById(R.id.dishes);
-        mAdapter = new DailyDataAdapter(dailyList);
-        recyclerView.setAdapter(mAdapter);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
+        final Query query = databaseReference.child("offers").child(user.getUid());
+
+        FirebaseRecyclerOptions<DailyClass> options =
+                new FirebaseRecyclerOptions.Builder<DailyClass>()
+                        .setQuery(query, DailyClass.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
+            @NonNull
+            @Override
+            public DailyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                // Create a new instance of the ViewHolder, in this case we are using a custom
+                // layout called R.layout.message for each item
+                View view = LayoutInflater.from(viewGroup.getContext()).
+                        inflate(R.layout.dailyoffer_listitem, viewGroup, false);
+                rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                return new DailyHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull DailyHolder holder, int position, @NonNull DailyClass model) {
+                holder.dish.setText(model.getDish());
+                holder.type.setText(model.getType());
+                holder.avail.setText(model.getAvail());
+                holder.price.setText(model.getPrice());
+
+                GlideApp.with(holder.pic.getContext())
+                        .load(model.getPic())
+                        .placeholder(R.drawable.dish_image)
+                        .into(holder.pic);
+            }
+
+        };
+
+        recyclerView.setAdapter(adapter);
+
+        /* Listener to check if the recycler view is empty */
+        emptyListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
@@ -107,25 +149,31 @@ public class DailyFragment extends Fragment {
         swipeController = new SwipeController((new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
-                added = false;
-                replaced = position + 1;
-                editor.putString("dish", mAdapter.getDailyClass(position).getDish());
-                editor.putString("descDish", mAdapter.getDailyClass(position).getType());
-                editor.putString("avail", mAdapter.getDailyClass(position).getAvail());
-                editor.putString("price", mAdapter.getDailyClass(position).getPrice());
-                editor.putString("photoDish", mAdapter.getDailyClass(position).getPic());
-                editor.apply();
-                listener.addDailyOffer();
-                //Log.d("MAD", "onLeftClicked: left");
+                listener.addDailyOffer(adapter.getRef(position).getKey());
                 super.onLeftClicked(position);
             }
 
             @Override
             public void onRightClicked(int position) {
-                mAdapter.remove(position);
-                mAdapter.notifyItemRemoved(position);
-                mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
-                //Log.d("MAD", "onLeftClicked: right");
+                databaseReference = db.getReference();
+                Query removeQuery = databaseReference.child("offers")
+                        .child(user.getUid())
+                        .orderByChild("identifier")
+                        .equalTo(adapter.getRef(position).getKey());
+
+                removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            singleSnapshot.getRef().removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 super.onRightClicked(position);
             }
         }), this.getContext());
@@ -143,55 +191,31 @@ public class DailyFragment extends Fragment {
         resFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                added = true;
-                addedposition = mAdapter.getItemCount();
-                editor.putString("dish", getResources().getString(R.string.frDaily_defName));
-                editor.putString("descDish", getResources().getString(R.string.frDaily_defDesc));
-                editor.putString("avail", String.valueOf(0));
-                editor.putString("price", String.valueOf(0.00));
-                editor.putString("photoDish", null);
-                editor.apply();
-                listener.addDailyOffer();
+                listener.addDailyOffer("null");
             }
         });
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            dailyList = savedInstanceState.getParcelableArrayList("Dailies");
-            setDailyDataAdapter();
-            recyclerView.setAdapter(mAdapter);
-        }
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("Dailies", new ArrayList<>(mAdapter.getList()));
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
-    public void addOnDaily() {
-        DailyClass dailyClass = new DailyClass(
-                pref.getString("dish", getResources().getString(R.string.reservation_customerNameEdit)),
-                pref.getString("descDish", "0"),
-                pref.getString("avail", "01/01/2019"),
-                pref.getString("price", "13:00"),
-                pref.getString("photoDish", getResources().getString(R.string.reservation_dishesOrderededit))
-        );
-        if (added)
-            mAdapter.add(addedposition, dailyClass);
-        if (!added) {
-            mAdapter.add(replaced, dailyClass);
-            mAdapter.remove(replaced - 1);
-            mAdapter.notifyItemRemoved(replaced - 1);
-            mAdapter.notifyItemRangeChanged(replaced - 1, mAdapter.getItemCount());
-        }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseReference.removeEventListener(emptyListener);
     }
 
     /* Here is defined the interface for the HomeActivity in order to manage the click */
     public interface DailyListener {
-        void addDailyOffer();
+        void addDailyOffer(String identifier);
     }
 }

@@ -29,7 +29,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 
 import java.io.File;
@@ -53,21 +67,16 @@ public class NewDailyOffer extends Fragment {
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private NewDailyOfferListener listener;
+    private String id;
+    private String imageUrl;
+
+    private Uri mImageUri;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+    private FirebaseUser user;
 
     public NewDailyOffer() {
         // Required empty public constructor
-    }
-
-    /* Attach the listener to the fragment */
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof NewDailyOfferListener) {
-            listener = (NewDailyOfferListener) context;
-        } else {
-            throw new ClassCastException(context.toString() + "must implement NewDailyOfferListener");
-        }
     }
 
     /* Retrieve data and enable the toolbar */
@@ -75,8 +84,11 @@ public class NewDailyOffer extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
+        storageReference = FirebaseStorage.getInstance().getReference("offers");
+        databaseReference = FirebaseDatabase.getInstance().getReference("offers");
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
     }
 
     /* Set the title and inflate view */
@@ -93,7 +105,6 @@ public class NewDailyOffer extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setHasOptionsMenu(true);
         minusBtn = getActivity().findViewById(R.id.button_minus);
         plusBtn = getActivity().findViewById(R.id.button_plus);
         dishname = getActivity().findViewById(R.id.et_dish_name);
@@ -102,10 +113,22 @@ public class NewDailyOffer extends Fragment {
         price = getActivity().findViewById(R.id.et_price);
         img = getActivity().findViewById(R.id.imageviewfordish);
 
-        if (savedInstanceState != null) {
-            loadBundle(savedInstanceState);
+        view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
+
+        /* Check if it is a new insertion or an edit one in case id equals to null is a new insertion
+         * and the view is populated with the canonical strings else they are downloaded from firebase.
+         */
+        Bundle bundle = getArguments();
+        id = bundle.getString("id");
+        if (id.equals("null")) {
+            dishname.setText(getResources().getString(R.string.frDaily_defName));
+            desc.setText(getResources().getString(R.string.frDaily_defDesc));
+            avail.setText(String.valueOf(0));
+            price.setText(String.valueOf(0.00));
+            img.setImageResource(R.drawable.dish_image);
+            view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
         } else {
-            loadSharedPrefs();
+            loadFromFirebase(bundle.getString("id"), view);
         }
 
         minusBtn.setOnClickListener(new View.OnClickListener() {
@@ -146,22 +169,6 @@ public class NewDailyOffer extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void onSaveInstanceState(Bundle outState) {
-        // Save away the original text, so we still have it if the activity
-        // needs to be killed while paused.
-        super.onSaveInstanceState(outState);
-
-        outState.putString("dish", dishname.getText().toString());
-        outState.putString("descDish", desc.getText().toString());
-        outState.putString("avail", avail.getText().toString());
-        outState.putString("price", price.getText().toString());
-        if (getPrefPhoto() == null) {
-            outState.putString("photoDish", pref.getString("photoDish", null));
-        } else {
-            outState.putString("photoDish", getPrefPhoto());
-        }
-    }
-
     public void getPhoto(View v) {
         ImageView imageView = getActivity().findViewById(R.id.imageviewfordish);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -187,36 +194,7 @@ public class NewDailyOffer extends Fragment {
                         });
                 pictureDialog.show();
             }
-
         });
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Result code is RESULT_OK only if the user captures an Image
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
-                    //img = getView().findViewById(R.id.imageviewfordish);
-                    img.setImageURI(photo);
-                    setPrefPhoto(photo.toString());
-                    break;
-                case 1:
-                    Uri selectedImage = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
-                    break;
-            }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.d("MAD", "onActivityResult: CANCELED");
-            try {
-                File photoToCancel = new File(getPrefPhoto());
-                photoToCancel.delete();
-            } catch (Exception e) {
-                Log.e("MAD", "onActivityResult: ", e);
-            }
-            delPrefPhoto();
-        }
     }
 
     private String getPrefPhoto() {
@@ -239,13 +217,157 @@ public class NewDailyOffer extends Fragment {
         editor.apply();
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Result code is RESULT_OK only if the user captures an Image
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 0:
+                    mImageUri = Uri.parse(getPrefPhoto());
+                    Glide.with(getContext()).load(mImageUri).into(img);
+                    setPrefPhoto(mImageUri.toString());
+                    break;
+                case 1:
+                    mImageUri = data.getData();
+                    setPrefPhoto(mImageUri.toString());
+                    Glide.with(getContext()).load(mImageUri).into(img);
+                    break;
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            try {
+                File photoToCancel = new File(getPrefPhoto());
+                photoToCancel.delete();
+            } catch (Exception e) {
+                Log.e("MAD", "onActivityResult: ", e);
+            }
+            delPrefPhoto();
+        }
+    }
+
+    private void storeOnFirebase() {
+        if (id.equals("null")) {  // -- NEW ELEMENT --
+            final DatabaseReference newItem = databaseReference.child(user.getUid()).push();  // generate a new key in /offers/{uID}
+            final String newItemKey = newItem.getKey();
+            final StorageReference fileReference = storageReference.child(user.getUid()).child(newItem.getKey());  // generate a new child in /
+
+            // store the picture into firestore
+            if (mImageUri != null) {
+                fileReference.putFile(mImageUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                  @Override
+                                                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                      fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                          @Override
+                                                          public void onSuccess(Uri uri) {
+                                                              imageUrl = uri.toString();
+
+                                                              // create a new daily class container
+                                                              DailyClass dailyClass = new DailyClass(
+                                                                      dishname.getText().toString(),  // dishname from textview
+                                                                      desc.getText().toString(),      // desc from textview
+                                                                      avail.getText().toString(),     // avail from textviev
+                                                                      price.getText().toString(),     // price from textview
+                                                                      imageUrl,       // url from previous storage on firestore
+                                                                      user.getUid(),                  // TODO REMOVE IT
+                                                                      newItemKey                // unique key already generated with `push()`
+                                                              );
+
+                                                              newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                  @Override
+                                                                  public void onSuccess(Void aVoid) {
+                                                                      // Ok!
+                                                                  }
+                                                              });
+
+                                                          }
+                                                      });
+                                                  }
+                                              }
+                        );
+
+            } else {
+                // create a new daily class container
+                DailyClass dailyClass = new DailyClass(
+                        dishname.getText().toString(),  // dishname from textview
+                        desc.getText().toString(),      // desc from textview
+                        avail.getText().toString(),     // avail from textviev
+                        price.getText().toString(),     // price from textview
+                        imageUrl,       // url from previous storage on firestore
+                        user.getUid(),                  // TODO REMOVE IT
+                        newItemKey                // unique key already generated with `push()`
+                );
+
+                newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //  Ok!
+                    }
+                });
+            }
+        } else {  // -- UPDATE --
+            final DatabaseReference updateItem = databaseReference.child(user.getUid()).child(id);
+            final StorageReference fileReference = storageReference.child(user.getUid()).child(id);  // generate a new child in /
+
+            // store the picture into firestore
+            if (mImageUri != null) {
+                fileReference.putFile(mImageUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                  @Override
+                                                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                      fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                          @Override
+                                                          public void onSuccess(Uri uri) {
+                                                              imageUrl = uri.toString();
+
+                                                              // create a new daily class container
+                                                              DailyClass dailyClass = new DailyClass(
+                                                                      dishname.getText().toString(),  // dishname from textview
+                                                                      desc.getText().toString(),      // desc from textview
+                                                                      avail.getText().toString(),     // avail from textviev
+                                                                      price.getText().toString(),     // price from textview
+                                                                      imageUrl,       // url from previous storage on firestore
+                                                                      user.getUid(),                  // TODO REMOVE IT
+                                                                      id
+                                                              );
+
+                                                              updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                  @Override
+                                                                  public void onSuccess(Void aVoid) {
+                                                                      //Ok!
+                                                                  }
+                                                              });
+
+                                                          }
+                                                      });
+                                                  }
+                                              }
+                        );
+            } else {
+                // create a new daily class container
+                DailyClass dailyClass = new DailyClass(
+                        dishname.getText().toString(),  // dishname from textview
+                        desc.getText().toString(),      // desc from textview
+                        avail.getText().toString(),     // avail from textviev
+                        price.getText().toString(),     // price from textview
+                        imageUrl,       // url from previous storage on firestore
+                        user.getUid(),                  // TODO REMOVE IT
+                        id
+                );
+
+                updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Ok!
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-
-            //TODO: missing save function!
-
+            storeOnFirebase();
             Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.popBackStackImmediate("DAILY", FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -254,26 +376,32 @@ public class NewDailyOffer extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadSharedPrefs() {
-        dishname.setText(pref.getString("dish", getResources().getString(R.string.frDaily_defName)));
-        desc.setText(pref.getString("descDish", getResources().getString(R.string.frDaily_defDesc)));
-        avail.setText(pref.getString("avail", String.valueOf(0)));
-        price.setText(pref.getString("price", String.valueOf(0.00)));
-        /* check if a photo is set */
-        if (pref.getString("photoDish", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photoDish", null)));
-        }
-    }
+    private void loadFromFirebase(String id, final View view) {
+        Query query = databaseReference.child(user.getUid()).orderByKey().equalTo(id);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        DailyClass d = snapshot.getValue(DailyClass.class);
+                        dishname.setText(d.getDish());
+                        desc.setText(d.getType());
+                        avail.setText(d.getAvail());
+                        price.setText(d.getPrice());
+                        GlideApp.with(getContext())
+                                .load(d.getPic())
+                                .placeholder(R.drawable.dish_image)
+                                .into(img);
+                    }
+                }
+                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+            }
 
-    private void loadBundle(Bundle bundle) {
-        dishname.setText(bundle.getString("dish"));
-        desc.setText(bundle.getString("descDish"));
-        avail.setText(bundle.getString("avail"));
-        price.setText(bundle.getString("price"));
-        if (bundle.getString("photoDish") != null) {
-            img.setImageURI(Uri.parse(bundle.getString("photoDish")));
-        }
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("MAD", "onCancelled: ", databaseError.toException());
+            }
+        });
     }
 
     /* -- Methods for permissions --
@@ -287,7 +415,6 @@ public class NewDailyOffer extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
-            Log.d("MAD", "onCreate: permission granted");
             //Create an Intent with action as ACTION_PICK
             Intent intent = new Intent(Intent.ACTION_PICK);
             // Sets the type as image/*. This ensures only components of type image are selected
@@ -333,7 +460,6 @@ public class NewDailyOffer extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d("MAD", "onRequestPermissionsResult: HERE");
         switch (requestCode) {
             case 20: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -386,8 +512,4 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
-    /* Listener is temporary disabled since no integration with the database is present */
-    public interface NewDailyOfferListener {
-        void onSubmitDish();
-    }
 }

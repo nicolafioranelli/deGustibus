@@ -87,7 +87,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
             title = view.findViewById(R.id.rest_title);
             price = view.findViewById(R.id.price);
             quantity = view.findViewById(R.id.quantity);
-            buttonMinus = view.findViewById(R.id.buttonPlus);
+            buttonMinus = view.findViewById(R.id.buttonMinus);
 
             if (Integer.parseInt(quantity.getText().toString())==0){
                 buttonMinus.setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     CartClass dish = getDish(clickPosition);
-                    if (v.getId() == R.id.buttonPlus) {
+                    if (v.getId() == R.id.buttonMinus) {
                         int n =Integer.parseInt(quantity.getText().toString());
                         n --;
                         quantity.setText(String.valueOf(n));
@@ -110,13 +110,13 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
                     }
                 }
             });
-            buttonPlus = view.findViewById(R.id.buttonMinus);
+            buttonPlus = view.findViewById(R.id.buttonPlus);
             buttonPlus.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     CartClass dish = getDish(clickPosition);
-                    if (v.getId() == R.id.buttonMinus) {
+                    if (v.getId() == R.id.buttonPlus) {
                             int n =Integer.parseInt(quantity.getText().toString());
                             n ++;
                             quantity.setText(String.valueOf(n));

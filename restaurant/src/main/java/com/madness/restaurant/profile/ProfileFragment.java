@@ -1,6 +1,8 @@
 package com.madness.restaurant.profile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,10 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.madness.restaurant.R;
 
 /**
@@ -45,11 +46,6 @@ public class ProfileFragment extends Fragment {
     private SharedPreferences pref;
     private ProfileListener listener;
 
-    /* Interface for the listener */
-    public interface ProfileListener {
-        public void onItemClicked();
-    }
-
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -58,7 +54,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof ProfileListener) {
+        if (context instanceof ProfileListener) {
             listener = (ProfileListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement ProfileListener");
@@ -70,14 +66,14 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
     }
 
     /* Populates the menu with the edit button */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /* Click listener to correctly handle actions related to toolbar items */
@@ -93,7 +89,7 @@ public class ProfileFragment extends Fragment {
     }
 
     /* Method to trigger the listener */
-    public void onClick(){
+    public void onClick() {
         listener.onItemClicked();
     }
 
@@ -150,10 +146,15 @@ public class ProfileFragment extends Fragment {
         saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.frProfile_defClose)));
         sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.frProfile_defOpen)));
         sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.frProfile_defClose)));
-        if(pref.getString("photo", null) != null) {
+        if (pref.getString("photo", null) != null) {
             img.setImageURI(Uri.parse(pref.getString("photo", null)));
         }
         super.onResume();
+    }
+
+    /* Interface for the listener */
+    public interface ProfileListener {
+        void onItemClicked();
     }
 
 }

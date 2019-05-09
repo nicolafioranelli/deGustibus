@@ -3,11 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IncomingFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".incoming.IncomingFragment">
 
-    <TextView
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        android:id="@+id/progress_horizontal"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false"
+        android:layout_alignParentBottom="true"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/task_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Incoming" />
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical"
+        android:scrollbars="none"/>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone" />
 </FrameLayout>

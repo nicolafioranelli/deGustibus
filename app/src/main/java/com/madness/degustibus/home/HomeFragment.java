@@ -1,5 +1,7 @@
 package com.madness.degustibus.home;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -45,6 +48,10 @@ public class HomeFragment extends Fragment{
     private Fragment fragment;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
+    private SearchView byName;
+    private SearchView byAddress;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -54,6 +61,8 @@ public class HomeFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        editor = pref.edit();
         setHasOptionsMenu(true);
         //setHomeDataAdapter();
     }
@@ -75,6 +84,21 @@ public class HomeFragment extends Fragment{
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         populateList();
+        byName = rootView.findViewById(R.id.nameSearchView);
+        byAddress = rootView.findViewById(R.id.addressSearchView);
+        byName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                firebaseSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                firebaseSearch(newText);
+                return false;
+            }
+        });
         return rootView;
     }
 
@@ -86,6 +110,7 @@ public class HomeFragment extends Fragment{
             recyclerView.setAdapter(adapter);
         }
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -148,7 +173,7 @@ public class HomeFragment extends Fragment{
                         .build();
         adapter = new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull HomeClass model) {
+            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final HomeClass model) {
                 //HomeClass restaurant = restaurantList.get(position);
                 holder.title.setText(model.getName());
                 holder.subtitle.setText(model.getAddress());
@@ -157,7 +182,12 @@ public class HomeFragment extends Fragment{
                     // Set default image
                     holder.image.setImageResource(R.drawable.restaurant);
                 } else {
-                    holder.image.setImageURI(Uri.parse(model.getPic()));
+
+
+                    /*GlideApp.with(holder.image.getContext())
+                            .load(model.getPic())
+                            .placeholder(R.drawable.dish_image)
+                            .into(holder.image);*/
                 }
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -167,6 +197,8 @@ public class HomeFragment extends Fragment{
 
                             Bundle bundle = new Bundle();
                             bundle.putString("restId",rest_id);
+                            bundle.putString("restName",model.getName());
+                            bundle.putString("restAddress",model.getAddress());
                             fragment = null;
                             fragment = OrderFragment.class.newInstance();
                             fragment.setArguments(bundle);
@@ -195,6 +227,71 @@ public class HomeFragment extends Fragment{
 
         };
 
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void firebaseSearch(String searchText){
+        Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText).endAt(searchText+"\uf0ff");
+        FirebaseRecyclerOptions<HomeClass> options =
+                new FirebaseRecyclerOptions.Builder<HomeClass>()
+                        .setQuery(firebaseSearchQuery, new SnapshotParser<HomeClass>() {
+                            @NonNull
+                            @Override
+                            public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(),snapshot.getValue(HomeClass.class).getAddress(),snapshot.getValue(HomeClass.class).getDesc(),snapshot.getValue(HomeClass.class).getPic(),snapshot.getKey());
+                            }
+                        })
+                        .build();
+        FirebaseRecyclerAdapter<HomeClass, HomeHolder> firebaseRecyclerAdapter= new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final HomeClass model) {
+                //HomeClass restaurant = restaurantList.get(position);
+                final String restName=model.getName();
+                holder.title.setText(restName);
+                final String restAddress=model.getAddress();
+                holder.subtitle.setText(restAddress);
+                holder.description.setText(model.getDesc());
+                if (model.getPic() == null) {
+                    // Set default image
+                    holder.image.setImageResource(R.drawable.restaurant);
+                } else {
+                    holder.image.setImageURI(Uri.parse(model.getPic()));
+                }
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String rest_id = getRef(position).getKey();
+                        try {
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("restId",rest_id);
+                            bundle.putString("restName",restName);
+                            bundle.putString("restAddress",restAddress);
+                            fragment = null;
+                            fragment = OrderFragment.class.newInstance();
+                            fragment.setArguments(bundle);
+
+                        } catch (Exception e) {
+                            Log.e("MAD", "editProfileClick: ", e);
+                        }
+
+                        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.flContent, fragment, " Order")
+                                .addToBackStack("HOME")
+                                .commit();
+                    }
+                });
+            }
+
+            @Override
+            public HomeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.restaurants_listitem, parent, false);
+
+                HomeHolder hold = new HomeHolder(view);
+                return hold;
+
+            }};
         recyclerView.setAdapter(adapter);
     }
     @Override

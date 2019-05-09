@@ -122,10 +122,10 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                     int clickPosition = getAdapterPosition();
                     Dish dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
-                            int n =Integer.parseInt(quantity.getText().toString());
-                            n ++;
-                            quantity.setText(String.valueOf(n));
-                            dish.setAvail(String.valueOf(n));
+                        int n =Integer.parseInt(quantity.getText().toString());
+                        n ++;
+                        quantity.setText(String.valueOf(n));
+                        dish.setAvail(String.valueOf(n));
                     }
                 }
             });

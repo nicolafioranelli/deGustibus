@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.madness.deliveryman.notifications.NotificationsFragment;
+
 public class HomeFragment extends Fragment {
 
 
