@@ -66,7 +66,7 @@ public class NotificationsFragment extends Fragment {
             protected void onBindViewHolder(@NonNull NotificationHolder holder, final int position, @NonNull NotificationsClass model) {
                 holder.type.setText(model.getType());
                 holder.description.setText(model.getDescription());
-                holder.type.setText(model.getType());
+                holder.date.setText(model.getDate());
 
                 /* Sets a click listener on the corresponding delete button of the notification */
                 holder.button.setOnClickListener(new View.OnClickListener() {
