@@ -1,19 +1,25 @@
 package com.madness.degustibus.order;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,11 +38,14 @@ import com.madness.degustibus.R;
 import com.madness.degustibus.picker.DatePickerFragment;
 import com.madness.degustibus.picker.TimePickerFragment;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,11 +58,11 @@ public class CompletedOrderFragment extends Fragment {
     private Button complete_btn;
     private Fragment fragment;
     private ArrayList<Dish> dishList = new ArrayList<>();
-    private HashMap<String, String> order = new HashMap<>();
+    private HashMap<String,String> order=new HashMap<>();
     private Dish dish;
     private String descr = "";
-    private double prodPrice = 0.0;
-    private double shipPrice = 2.5;
+    private double prodPrice= 0.0;
+    private double shipPrice= 2.5;
     private double totPrice = 0.0;
     private RecyclerView recyclerView;
     private CartDataAdapter mAdapter;
@@ -69,8 +78,7 @@ public class CompletedOrderFragment extends Fragment {
     private DialogFragment datePicker;
     private TextView setDate;
     private TextView setTime;
-    private String res;
-
+    private String restaurantID;
 
     public CompletedOrderFragment() {
         // Required empty public constructor
@@ -105,7 +113,6 @@ public class CompletedOrderFragment extends Fragment {
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-
         user = FirebaseAuth.getInstance().getCurrentUser();
         //click on complete order create order and delete cart objects
 
@@ -114,7 +121,7 @@ public class CompletedOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 datePicker = new DatePickerFragment();
-                datePicker.show(getFragmentManager(), "datePicker");
+                datePicker.show(getFragmentManager(),"datePicker");
             }
         });
 
@@ -122,7 +129,7 @@ public class CompletedOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 timePicker = new TimePickerFragment();
-                timePicker.show(getFragmentManager(), "timePIcker");
+                timePicker.show(getFragmentManager(),"timePicker");
             }
         });
 
@@ -131,10 +138,9 @@ public class CompletedOrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (totalAmount == 0) {
-                    Toast.makeText(getContext(), "No dishes selected", Toast.LENGTH_SHORT).show(); //TODO strings
-                } else {
-
+                if(totalAmount == 0){
+                    Toast.makeText(getContext(), getString(R.string.select), Toast.LENGTH_SHORT).show();
+                }else{
                     boolean doOItOnce = true;
                     final ReservationClass reservation = new ReservationClass();
                     reservation.setCustomerAddress(customerAddress.getText().toString());
@@ -147,11 +153,11 @@ public class CompletedOrderFragment extends Fragment {
                     reservation.setStatus("new");
 
                     // store the selected dishes in the cart of the user
-                    for (final Dish dish : dishList) {             // for each dish in the dailyoffer
-                        if (dish.getQuantity() > 0) {              // keep only the selected ones
+                    for(final Dish dish: dishList){             // for each dish in the dailyoffer
+                        if(dish.getQuantity() > 0) {              // keep only the selected ones
 
-
-                            if (doOItOnce) {// retrieve restaurant address
+                            if (doOItOnce){// retrieve restaurant address
+                                restaurantID = dish.getRestaurant();
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("restaurants")
                                         .child(dish.getRestaurant())
@@ -169,46 +175,38 @@ public class CompletedOrderFragment extends Fragment {
                                 doOItOnce = false;
                             }
 
-                            // remove the quantoty from the dishes
-                            //TODO do it with a transaction
-
                             FirebaseDatabase.getInstance().getReference()
                                     .child("offers")
                                     .child(dish.getRestaurant())
-                                    .child(dish.getIdentifier())
-                                    .child("avail")
+                                    .child(dish.identifier)
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    System.out.println(dataSnapshot.toString());
-                                    res = dataSnapshot.getValue(String.class);
-                                    // TODO it is not able to retrieve data!!!!
-                                }
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            System.out.println(dataSnapshot);
+                                            if (dataSnapshot.exists()) {
+                                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                                String val = String.valueOf(Integer.parseInt(objectMap.get("avail").toString()) - dish.getQuantity());
+                                                objectMap.put("avail", val);
+                                                FirebaseDatabase.getInstance().getReference()
+                                                        .child("offers")
+                                                        .child(dish.getRestaurant())
+                                                        .child(dish.identifier).updateChildren(objectMap);
+                                            }
+                                        }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            });
-
-                            Integer prevAvail = Integer.parseInt(res);
-
-                            dish.setAvail(String.valueOf(prevAvail - dish.quantity));
-
-                            // TODO check it
-                            FirebaseDatabase.getInstance().getReference()
-                                    .child("offers")
-                                    .child(dish.getRestaurant())
-                                    .child(dish.getIdentifier())
-                                    .child("avail").setValue(dish.getAvail());
+                                        }
+                                    });
 
                             reservation.setDescription(reservation
-                            .getDescription()
-                            .concat(String.valueOf(dish.getQuantity())
-                                    .concat("x ")
-                                    .concat(dish.getDish())
-                                    .concat("\n")
-                            ));
+                                    .getDescription()
+                                    .concat(String.valueOf(dish.getQuantity())
+                                            .concat("x ")
+                                            .concat(dish.getDish())
+                                            .concat("\n")
+                                    ));
                         }
                     }
 
@@ -217,12 +215,12 @@ public class CompletedOrderFragment extends Fragment {
                             .child("orders")
                             .push().setValue(reservation);
 
-                    Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show(); //TODO strings
+                    sendNotification(restaurantID);
+
+                    Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.popBackStackImmediate("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 }
-
-
             }
         });
 
@@ -230,15 +228,13 @@ public class CompletedOrderFragment extends Fragment {
         loadFromFirebase();
         return rootView;
     }
-
     @Override
     public void onResume() {
         customerAddress = getView().findViewById(R.id.costumer_address);
         totalPrice = getView().findViewById(R.id.total_price);
 
         customerAddress.setText(pref.getString("addressCustomer", getResources().getString(R.string.es_street)));
-        totalPrice.setText(pref.getString("totPrice", "20.5"));
-
+        totalPrice.setText(pref.getString("totPrice","20.5"));
         super.onResume();
     }
 
@@ -249,7 +245,7 @@ public class CompletedOrderFragment extends Fragment {
         pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
     }
 
-    public void loadFromFirebase() {
+    public void loadFromFirebase(){
 
         // obtain the url /offers/{restaurantIdentifier}
         databaseRef = FirebaseDatabase.getInstance()
@@ -277,7 +273,6 @@ public class CompletedOrderFragment extends Fragment {
         adapter = new FirebaseRecyclerAdapter<Dish, CartHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final CartHolder holder, final int position, @NonNull final Dish model) {
-
                 // the user can only decrease the selected quantity
                 final int maxQuantity = model.getQuantity();
 
@@ -291,10 +286,10 @@ public class CompletedOrderFragment extends Fragment {
                 holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n = Integer.parseInt(holder.quantity.getText().toString());
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
                         // check for the availability of the product
-                        if (n < maxQuantity) {
-                            n++;
+                        if(n < maxQuantity){
+                            n ++;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
                             totalAmount += Float.parseFloat(model.getPrice());
@@ -308,10 +303,10 @@ public class CompletedOrderFragment extends Fragment {
                 holder.buttonMinus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n = Integer.parseInt(holder.quantity.getText().toString());
+                        int n =Integer.parseInt(holder.quantity.getText().toString());
                         // check for non negative numbers
-                        if (n > 0) {
-                            n--;
+                        if(n > 0){
+                            n --;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
                             totalAmount -= Float.parseFloat(model.getPrice());
@@ -331,32 +326,6 @@ public class CompletedOrderFragment extends Fragment {
 
         };
         recyclerView.setAdapter(adapter);
-
-        /*dbR.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //this method is called once with the initial value and again whenever data at this location is updated
-                for(DataSnapshot dS : dataSnapshot.getChildren()){
-                    dish = new CartClass(dS.getValue(CartClass.class).getTitle(),dS.getValue(CartClass.class).getPrice(),dS.getValue(CartClass.class).getQuantity());
-                    dish.setId(dS.getKey());
-                    prodPrice = prodPrice + (Double.parseDouble(dish.getPrice())*Integer.parseInt(dish.getQuantity()));
-                    dishList.add(dish);
-                    productsPrice.setText(String.valueOf(prodPrice));
-                    totalPrice.setText(String.valueOf(prodPrice+shipPrice));
-                }
-
-
-
-                mAdapter = new CartDataAdapter(dishList);
-                recyclerView.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-
     }
 
     @Override
@@ -371,7 +340,6 @@ public class CompletedOrderFragment extends Fragment {
         adapter.stopListening();
     }
 
-
     public void setDeliveryDate(int year, int month, int dayOfMonth) {
         String date = dayOfMonth + "/" + month + "/" + year;
         setDate.setText(date);
@@ -380,5 +348,18 @@ public class CompletedOrderFragment extends Fragment {
     public void setDeliveryTime(int hourOfDay, int minute) {
         String date = hourOfDay + ":" + minute;
         setTime.setText(date);
+    }
+
+    private void sendNotification(final String restaurantID) {
+        /* Send notification to user */
+        final Map<String, Object> newNotification = new HashMap<String, Object>();
+        newNotification.put("type", getString(R.string.typeNot_new));
+        newNotification.put("description", getString(R.string.desc));
+
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        newNotification.put("date", dateFormat.format(date));
+
+        FirebaseDatabase.getInstance().getReference().child("notifications").child(restaurantID).push().setValue(newNotification);
     }
 }
