@@ -22,15 +22,6 @@ public class CartHolder extends RecyclerView.ViewHolder {
 
     private List<CartClass> cart_offers;
 
-    public CartClass getDish(int position) {
-        return cart_offers.get(position);
-    }
-    public void remove(int position) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart/" + cart_offers.get(position).getId());
-        databaseRef.removeValue();
-    }
-
     public CartHolder(final View view) {
         super(view);
         title = view.findViewById(R.id.title);
@@ -38,5 +29,15 @@ public class CartHolder extends RecyclerView.ViewHolder {
         quantity = view.findViewById(R.id.quantity);
         buttonPlus = view.findViewById(R.id.buttonPlus);
         buttonMinus = view.findViewById(R.id.buttonMinus);
+    }
+
+    public CartClass getDish(int position) {
+        return cart_offers.get(position);
+    }
+
+    public void remove(int position) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseRef = database.getReference("customers/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/cart/" + cart_offers.get(position).getId());
+        databaseRef.removeValue();
     }
 }

@@ -1,8 +1,5 @@
 package com.madness.degustibus.home;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,15 +17,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.order.OrderFragment;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
  * The HomeFragment inflates the layout for the homepage of the application.
  */
 
-public class HomeFragment extends Fragment{
+public class HomeFragment extends Fragment {
 
     ArrayList<HomeClass> restaurantList = new ArrayList<>();
     HomeClass rest;
@@ -48,29 +47,19 @@ public class HomeFragment extends Fragment{
     private Fragment fragment;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
-    private SearchView byName;
-    private SearchView byAddress;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private android.support.v7.widget.SearchView byName;
+    private ValueEventListener emptyListener;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         setHasOptionsMenu(true);
-        //setHomeDataAdapter();
     }
-
-    /* Here is set the Adapter */
-   /* private void setHomeDataAdapter() {
-        mAdapter = new (restaurantList,this);
-    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,60 +72,40 @@ public class HomeFragment extends Fragment{
         databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        populateList();
-        byName = rootView.findViewById(R.id.nameSearchView);
-        byAddress = rootView.findViewById(R.id.addressSearchView);
-        byName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                firebaseSearch(query);
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                firebaseSearch(newText);
-                return false;
-            }
-        });
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
+        populateList(rootView);
+
         return rootView;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            restaurantList = savedInstanceState.getParcelableArrayList("Restaurant");
-            recyclerView.setAdapter(adapter);
-        }
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        /* Checks if the fragment actually loaded is the home fragment, in case no disable the saving operation */
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if( fragment instanceof HomeFragment ) {
-            View rootView = getLayoutInflater().inflate(R.layout.fragment_home, (ViewGroup) getView().getParent(), false);
-            recyclerView = rootView.findViewById(R.id.recyclerViewHome);
-        }
-    }
-
-    /* Populates the menu with the notification button */
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.home, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.search, menu);
+
+        // Associate searchable configuration with the SearchView
+
+        byName = (android.support.v7.widget.SearchView) menu.findItem(R.id.action_search).getActionView();
+        byName.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                firebaseSearch(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                firebaseSearch(s);
+                return false;
+            }
+        });
     }
 
     /* Add action to be performed once the item on the toolbar is clicked */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_notifications) {
             Fragment fragment = null;
             Class fragmentClass;
@@ -155,9 +124,8 @@ public class HomeFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
 
-    //method to popultate list
-    void populateList (){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+    /* Populate list */
+    private void populateList(final View rootView) {
         databaseRef = FirebaseDatabase.getInstance().getReference("restaurants");
         Query query = FirebaseDatabase.getInstance().getReference().child("restaurants");
 
@@ -167,7 +135,7 @@ public class HomeFragment extends Fragment{
                             @NonNull
                             @Override
                             public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                   return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(),snapshot.getValue(HomeClass.class).getAddress(),snapshot.getValue(HomeClass.class).getDesc(),snapshot.getValue(HomeClass.class).getPic(),snapshot.getKey());
+                                return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(), snapshot.getValue(HomeClass.class).getAddress(), snapshot.getValue(HomeClass.class).getDesc(), snapshot.getValue(HomeClass.class).getPic(), snapshot.getKey());
                             }
                         })
                         .build();
@@ -178,27 +146,20 @@ public class HomeFragment extends Fragment{
                 holder.title.setText(model.getName());
                 holder.subtitle.setText(model.getAddress());
                 holder.description.setText(model.getDesc());
-                if (model.getPic() == null) {
-                    // Set default image
-                    holder.image.setImageResource(R.drawable.restaurant);
-                } else {
+                GlideApp.with(holder.image.getContext())
+                        .load(model.getPic())
+                        .placeholder(R.drawable.restaurant)
+                        .into(holder.image);
 
-
-                    /*GlideApp.with(holder.image.getContext())
-                            .load(model.getPic())
-                            .placeholder(R.drawable.dish_image)
-                            .into(holder.image);*/
-                }
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String rest_id = getRef(position).getKey();
                         try {
-
                             Bundle bundle = new Bundle();
-                            bundle.putString("restId",rest_id);
-                            bundle.putString("restName",model.getName());
-                            bundle.putString("restAddress",model.getAddress());
+                            bundle.putString("restId", rest_id);
+                            bundle.putString("restName", model.getName());
+                            bundle.putString("restAddress", model.getAddress());
                             fragment = null;
                             fragment = OrderFragment.class.newInstance();
                             fragment.setArguments(bundle);
@@ -222,51 +183,71 @@ public class HomeFragment extends Fragment{
 
                 HomeHolder hold = new HomeHolder(view);
                 return hold;
+            }
+        };
+        recyclerView.setAdapter(adapter);
 
+
+        /* Listener to check if the recycler view is empty */
+        emptyListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                } else {
+                    rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
+                }
             }
 
-        };
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        recyclerView.setAdapter(adapter);
+            }
+        });
     }
 
-    private void firebaseSearch(String searchText){
-        Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText).endAt(searchText+"\uf0ff");
+    private void firebaseSearch(String searchText) {
+        Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText);
+
         FirebaseRecyclerOptions<HomeClass> options =
                 new FirebaseRecyclerOptions.Builder<HomeClass>()
                         .setQuery(firebaseSearchQuery, new SnapshotParser<HomeClass>() {
                             @NonNull
                             @Override
                             public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(),snapshot.getValue(HomeClass.class).getAddress(),snapshot.getValue(HomeClass.class).getDesc(),snapshot.getValue(HomeClass.class).getPic(),snapshot.getKey());
+                                rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(), snapshot.getValue(HomeClass.class).getAddress(), snapshot.getValue(HomeClass.class).getDesc(), snapshot.getValue(HomeClass.class).getPic(), snapshot.getKey());
+                                System.out.println("Ristorante " + rest.name);
+                                return rest;
                             }
                         })
                         .build();
-        FirebaseRecyclerAdapter<HomeClass, HomeHolder> firebaseRecyclerAdapter= new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final HomeClass model) {
-                //HomeClass restaurant = restaurantList.get(position);
-                final String restName=model.getName();
+                final String restName = model.getName();
                 holder.title.setText(restName);
-                final String restAddress=model.getAddress();
+                final String restAddress = model.getAddress();
                 holder.subtitle.setText(restAddress);
                 holder.description.setText(model.getDesc());
-                if (model.getPic() == null) {
-                    // Set default image
-                    holder.image.setImageResource(R.drawable.restaurant);
-                } else {
-                    holder.image.setImageURI(Uri.parse(model.getPic()));
-                }
+                holder.image.setImageResource(R.drawable.restaurant);
+
+                GlideApp.with(holder.image.getContext())
+                        .load(model.getPic())
+                        .placeholder(R.drawable.restaurant)
+                        .into(holder.image);
+
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String rest_id = getRef(position).getKey();
                         try {
-
                             Bundle bundle = new Bundle();
-                            bundle.putString("restId",rest_id);
-                            bundle.putString("restName",restName);
-                            bundle.putString("restAddress",restAddress);
+                            bundle.putString("restId", rest_id);
+                            bundle.putString("restName", restName);
+                            bundle.putString("restAddress", restAddress);
                             fragment = null;
                             fragment = OrderFragment.class.newInstance();
                             fragment.setArguments(bundle);
@@ -291,9 +272,12 @@ public class HomeFragment extends Fragment{
                 HomeHolder hold = new HomeHolder(view);
                 return hold;
 
-            }};
-        recyclerView.setAdapter(adapter);
+            }
+        };
+        recyclerView.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -304,5 +288,11 @@ public class HomeFragment extends Fragment{
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseRef.removeEventListener(emptyListener);
     }
 }

@@ -1,6 +1,5 @@
 package com.madness.degustibus.order;
 
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,9 +26,12 @@ import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
@@ -37,8 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class OrderFragment extends Fragment{
+public class OrderFragment extends Fragment {
 
     private ArrayList<Dish> dishList;
     private Dish dish;
@@ -51,6 +52,7 @@ public class OrderFragment extends Fragment{
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
     private NewOrderInterface newOrderInterface;
+    private ValueEventListener emptyListener;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -72,11 +74,12 @@ public class OrderFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
-        getActivity().setTitle("New order");
+        getActivity().setTitle(getString(R.string.title_Order));
 
         dishList = new ArrayList<>();
-
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
+
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -88,9 +91,7 @@ public class OrderFragment extends Fragment{
         confirm_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 int cart = 0;
-
                 // at first clear the cart clear the db
                 FirebaseDatabase.getInstance().getReference()
                         .child("customers")
@@ -98,20 +99,17 @@ public class OrderFragment extends Fragment{
                         .child("cart")
                         .removeValue();
 
-
-
                 // store the selected dishes in the cart of the user
-                for(Dish dish: dishList){             // for each dish in the dailyoffer
-                    if(dish.quantity > 0){         // keep only the selected ones
+                for (Dish dish : dishList) {    // for each dish in the dailyoffer
+                    if (dish.quantity > 0) {    // keep only the selected ones
 
                         // store it on firebase
-
                         // nb. do not use the attribute `databaceReference`
                         // since it will be modified during the execution of the class
                         // poitnig to orders
 
                         Map<String, Object> cartItem = new HashMap<>();
-                        cartItem.put(dish.identifier,dish);
+                        cartItem.put(dish.identifier, dish);
 
                         FirebaseDatabase.getInstance().getReference()
                                 .child("customers")
@@ -123,19 +121,18 @@ public class OrderFragment extends Fragment{
                 }
 
                 // if at least one dish is selected call the checkout
-                if(cart > 0){
+                if (cart > 0) {
                     newOrderInterface.goToCart(user.getUid());
-                }else{
+                } else {
                     Toast.makeText(getContext(),
-                            "select at least one item!",    // TODO STRING
+                            getString(R.string.select),
                             Toast.LENGTH_SHORT)
                             .show();
                 }
             }
         });
 
-        loadFromFirebase();
-
+        loadFromFirebase(rootView);
         return rootView;
     }
 
@@ -150,25 +147,16 @@ public class OrderFragment extends Fragment{
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             dishList = savedInstanceState.getParcelableArrayList("Menu");
-            //setMenuDataAdapter();
-            //recyclerView.setAdapter(mAdapter);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        /* Checks if the fragment actually loaded is the home fragment, in case no disable the saving operation */
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.flContent);
-        if( fragment instanceof OrderFragment) {
-            View rootView = getLayoutInflater().inflate(R.layout.fragment_order, (ViewGroup) getView().getParent(), false);
-            recyclerView = rootView.findViewById(R.id.recyclerViewNotf);
-        }
         String piatto = "0";
-        for(Dish dish: dishList){
-            outState.putString(piatto,dish.avail);
-            piatto = String.valueOf(Integer.valueOf(piatto)+1);
+        for (Dish dish : dishList) {
+            outState.putString(piatto, dish.avail);
+            piatto = String.valueOf(Integer.valueOf(piatto) + 1);
         }
     }
 
@@ -201,14 +189,12 @@ public class OrderFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadFromFirebase(){
-
-        // cacth the id of the restaurant from the boundle
+    public void loadFromFirebase(final View rootView) {
+        // catch the id of the restaurant from the bundle
         final String rest = this.getArguments().getString("restId");
 
         // obtain the url /offers/{restaurantIdentifier}
-        databaseRef = FirebaseDatabase.getInstance().getReference().child("offers").child(rest);
-        Query query = databaseRef; // query data at /offers/{restaurantIdentifier}
+        Query query = FirebaseDatabase.getInstance().getReference().child("offers").child(rest); // query data at /offers/{restaurantIdentifier}
 
         FirebaseRecyclerOptions<Dish> options =
                 new FirebaseRecyclerOptions.Builder<Dish>()
@@ -235,22 +221,19 @@ public class OrderFragment extends Fragment{
                 holder.price.setText(model.getPrice() + " €");
                 holder.quantity.setText("0");
 
-                // TODO do it with Glide
-                if (model.getPic() == null) {
-                    // Set default image
-                    holder.image.setImageResource(R.drawable.dish_image);
-                } else {
-                    holder.image.setImageURI(Uri.parse(model.getPic()));
-                }
+                GlideApp.with(holder.image.getContext())
+                        .load(model.getPic())
+                        .placeholder(R.drawable.dish_image)
+                        .into(holder.image);
 
                 // set button plus
                 holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
                         // check for the availability of the product
-                        if(n < maxAvail){
-                            n ++;
+                        if (n < maxAvail) {
+                            n++;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
                         }
@@ -262,10 +245,10 @@ public class OrderFragment extends Fragment{
                 holder.buttonMinus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
                         // check for non negative numbers
-                        if(n > 0){
-                            n --;
+                        if (n > 0) {
+                            n--;
                             holder.quantity.setText(String.valueOf(n));
                             dishList.get(position).setQuantity(n);
                         }
@@ -278,11 +261,34 @@ public class OrderFragment extends Fragment{
             public DishHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.menu_listitem, parent, false);
+
                 return new DishHolder(view);
             }
         };
+
+        emptyListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.menu).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.complete_order_btn).setVisibility(View.VISIBLE);
+                } else {
+                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.complete_order_btn).setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         recyclerView.setAdapter(adapter);
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -293,6 +299,12 @@ public class OrderFragment extends Fragment{
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseRef.removeEventListener(emptyListener);
     }
 
     /* Here is defined the interface for the HomeActivity in order to manage the click */

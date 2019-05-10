@@ -1,95 +1,26 @@
 package com.madness.degustibus.notifications;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class NotificationsClass {
 
-public class NotificationsClass implements Parcelable {
+    private String date;
+    private String description;
+    private String type;
 
-    public static final Creator<NotificationsClass> CREATOR = new Creator<NotificationsClass>() {
-        @Override
-        public NotificationsClass createFromParcel(Parcel in) {
-            return new NotificationsClass(in);
-        }
-
-        @Override
-        public NotificationsClass[] newArray(int size) {
-            return new NotificationsClass[size];
-        }
-    };
-    String title;
-    String description;
-    String date = null;
-    String hour = null;
-    String price;
-    String idOrder;
-    private int identifier;
-
-    protected NotificationsClass(Parcel in) {
-        title = in.readString();
-        date = in.readString();
-        description = in.readString();
-        hour = in.readString();
-        price = in.readString();
-        idOrder = in.readString();
+    public NotificationsClass() {
     }
 
-    public NotificationsClass(String title, String description, String date, String hour,String price,String order) {
-        this.title = title;
+    public NotificationsClass(String date, String description, String type) {
         this.date = date;
         this.description = description;
-        this.hour = hour;
-        this.price = price;
-        this.idOrder = order;
-    }
-    public NotificationsClass(){
-        //Required empty class
+        this.type = type;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(date);
-        dest.writeString(description);
-        dest.writeString(hour);
-        dest.writeString(price);
-        dest.writeString(idOrder);
+    public String getType() {
+        return type;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public String getIdOrder() {
-        return idOrder;
-    }
-
-    public void setIdOrder(String idOrder) {
-        this.idOrder = idOrder;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getDescription() {
@@ -100,20 +31,11 @@ public class NotificationsClass implements Parcelable {
         this.description = description;
     }
 
-    public String getHour() {
-        return hour;
+    public String getDate() {
+        return date;
     }
 
-    public void setHour(String hour) {
-        this.hour = hour;
-    }
-
-    public int getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(int identifier) {
-        this.identifier = identifier;
+    public void setDate(String date) {
+        this.date = date;
     }
 }
-

@@ -22,8 +22,33 @@ public class Restaurant {
     private String saturdayClose;
     private String sundayOpen;
     private String sundayClose;
+
     public Restaurant() {
 
+    }
+
+    public Restaurant(String name, String email, String desc, String phone, String address, String defaultOpen, String defaultClose, String mondayOpen, String mondayClose, String tuesdayOpen, String tuesdayClose, String wednesdayOpen, String wednesdayClose, String thursdayOpen, String thursdayClose, String fridayOpen, String fridayClose, String saturdayOpen, String saturdayClose, String sundayOpen, String sundayClose) {
+        this.name = name;
+        this.email = email;
+        this.desc = desc;
+        this.phone = phone;
+        this.address = address;
+        this.defaultOpen = defaultOpen;
+        this.defaultClose = defaultClose;
+        this.mondayOpen = mondayOpen;
+        this.mondayClose = mondayClose;
+        this.tuesdayOpen = tuesdayOpen;
+        this.tuesdayClose = tuesdayClose;
+        this.wednesdayOpen = wednesdayOpen;
+        this.wednesdayClose = wednesdayClose;
+        this.thursdayOpen = thursdayOpen;
+        this.thursdayClose = thursdayClose;
+        this.fridayOpen = fridayOpen;
+        this.fridayClose = fridayClose;
+        this.saturdayOpen = saturdayOpen;
+        this.saturdayClose = saturdayClose;
+        this.sundayOpen = sundayOpen;
+        this.sundayClose = sundayClose;
     }
 
     public String getName() {
@@ -191,30 +216,6 @@ public class Restaurant {
     }
 
     public void setSundayClose(String sundayClose) {
-        this.sundayClose = sundayClose;
-    }
-
-    public Restaurant(String name, String email, String desc, String phone, String address, String defaultOpen, String defaultClose, String mondayOpen, String mondayClose, String tuesdayOpen, String tuesdayClose, String wednesdayOpen, String wednesdayClose, String thursdayOpen, String thursdayClose, String fridayOpen, String fridayClose, String saturdayOpen, String saturdayClose, String sundayOpen, String sundayClose) {
-        this.name = name;
-        this.email = email;
-        this.desc = desc;
-        this.phone = phone;
-        this.address = address;
-        this.defaultOpen = defaultOpen;
-        this.defaultClose = defaultClose;
-        this.mondayOpen = mondayOpen;
-        this.mondayClose = mondayClose;
-        this.tuesdayOpen = tuesdayOpen;
-        this.tuesdayClose = tuesdayClose;
-        this.wednesdayOpen = wednesdayOpen;
-        this.wednesdayClose = wednesdayClose;
-        this.thursdayOpen = thursdayOpen;
-        this.thursdayClose = thursdayClose;
-        this.fridayOpen = fridayOpen;
-        this.fridayClose = fridayClose;
-        this.saturdayOpen = saturdayOpen;
-        this.saturdayClose = saturdayClose;
-        this.sundayOpen = sundayOpen;
         this.sundayClose = sundayClose;
     }
 }

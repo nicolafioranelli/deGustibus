@@ -113,6 +113,7 @@ public class ReservationFragment extends Fragment {
                 holder.hour.setText(model.getDeliveryHour());
                 holder.status.setText(model.getStatus());
                 if (model.getStatus().equals("new")) {
+                    System.out.println(model.getStatus().equals("new"));
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);
                     holder.status.setText(R.string.status_new);
@@ -129,14 +130,24 @@ public class ReservationFragment extends Fragment {
                         }
                     });
                 } else if (model.getStatus().equals("refused")) {
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_refused);
                 } else if (model.getStatus().equals("incoming")) {
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_elaboration);
                 } else if (model.getStatus().equals("done")) {
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_done);
                 } else if (model.getStatus().equals("delivering")) {
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(getString(R.string.status_deliverying));
                 } else if (model.getStatus().equals("elaboration")) {
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_elaboration);
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -256,7 +267,7 @@ public class ReservationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                             objectMap.put("status", "incoming");
-                            objectMap.put("riderID", riderID);
+                            objectMap.put("deliverymanID", riderID);
                             databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
                             incomingNotifications(objectMap.get("restaurantID").toString(), riderID, objectMap.get("customerID").toString(), adapter.getRef(position).getKey());
                         }

@@ -1,4 +1,4 @@
-package com.madness.degustibus;
+package com.madness.degustibus.profile;
 
 import android.Manifest;
 import android.app.Activity;
@@ -32,7 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.madness.degustibus.auth.LoginActivity;
+import com.madness.degustibus.BuildConfig;
+import com.madness.degustibus.R;
 
 import java.io.File;
 import java.util.HashMap;

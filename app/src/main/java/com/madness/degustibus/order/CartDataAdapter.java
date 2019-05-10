@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,11 +18,6 @@ import java.util.ArrayList;
 public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuViewHolder> {
 
     private ArrayList<CartClass> dishList;
-
-
-    public interface ItemClickListener {
-        void onListItemClick(int clickedItemIndex);
-    }
 
 
     public CartDataAdapter(ArrayList<CartClass> dishes) {
@@ -76,12 +72,16 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
         return dishList;
     }
 
-    public class MenuViewHolder extends RecyclerView.ViewHolder{
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+    public class MenuViewHolder extends RecyclerView.ViewHolder {
         private TextView title, price, quantity;
         private Button buttonPlus;
         private Button buttonMinus;
 
-        public MenuViewHolder (View view) {
+        public MenuViewHolder(View view) {
 
             super(view);
             title = view.findViewById(R.id.rest_title);
@@ -89,21 +89,21 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
             quantity = view.findViewById(R.id.quantity);
             buttonMinus = view.findViewById(R.id.buttonMinus);
 
-            if (Integer.parseInt(quantity.getText().toString())==0){
+            if (Integer.parseInt(quantity.getText().toString()) == 0) {
                 buttonMinus.setVisibility(View.VISIBLE);
                 quantity.setVisibility(View.VISIBLE);
             }
-            buttonMinus.setOnClickListener(new View.OnClickListener(){
+            buttonMinus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
-                        int n =Integer.parseInt(quantity.getText().toString());
-                        n --;
+                        int n = Integer.parseInt(quantity.getText().toString());
+                        n--;
                         quantity.setText(String.valueOf(n));
                         dish.setQuantity(String.valueOf(n));
-                        if((Integer.parseInt(quantity.getText().toString())+1)==1){
+                        if ((Integer.parseInt(quantity.getText().toString()) + 1) == 1) {
 
                             remove(clickPosition);
                         }
@@ -111,16 +111,16 @@ public class CartDataAdapter extends RecyclerView.Adapter<CartDataAdapter.MenuVi
                 }
             });
             buttonPlus = view.findViewById(R.id.buttonPlus);
-            buttonPlus.setOnClickListener(new View.OnClickListener(){
+            buttonPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     CartClass dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonPlus) {
-                            int n =Integer.parseInt(quantity.getText().toString());
-                            n ++;
-                            quantity.setText(String.valueOf(n));
-                            dish.setQuantity(String.valueOf(n));
+                        int n = Integer.parseInt(quantity.getText().toString());
+                        n++;
+                        quantity.setText(String.valueOf(n));
+                        dish.setQuantity(String.valueOf(n));
                     }
                 }
             });

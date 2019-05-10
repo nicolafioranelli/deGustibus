@@ -51,6 +51,17 @@
     <string name="Date">Data</string>
     <string name="Hour">Ora</string>
     <string name="btn_new_reservation">NUOVA PRENOTAZIONE</string>
-    <string name="nameSearch">Nome Del Ristorante</string>
-    <string name="addressSearch">Indirizzo Del Ristorante</string>
+    <string name="nameSearch">Nome del ristorante</string>
+    <string name="addressSearch">Indirizzo</string>
+    <string name="reservation_date">Data</string>
+    <string name="reservation_time">Ora</string>
+    <string name="err_connection">Sembra che tu non sia connesso! Attiva la tua connessione a Internet...</string>
+    <string name="err_notification">Ben fatto! Qua non c\'è più nulla da fare!</string>
+    <string name="select">Seleziona almeno un piatto! :)</string>
+    <string name="err_reservations">Ops... qua non c\'è nulla!</string>
+    <string name="title_Complete">Completa ordine</string>
+    <string name="title_Order">Nuovo ordine</string>
+    <string name="done">Done!</string>
+    <string name="typeNot_new">Nuovo ordine</string>
+    <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
 </resources>

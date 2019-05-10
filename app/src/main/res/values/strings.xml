@@ -7,6 +7,8 @@
     <string name="title_Profile">Profile</string>
     <string name="title_EditProfile">Edit</string>
     <string name="title_Settings">Settings</string>
+    <string name="title_Order">New order</string>
+    <string name="title_Complete">Complete order</string>
 
     <!-- Menu Titles -->
     <string name="menu_home" translatable="false">Home</string>
@@ -86,8 +88,17 @@
     <string name="es_text" translatable="false">Lorem ipsum dolor sit amet, orci volutpat pede, at et ratione eleifend, nulla ipsum nascetur nulla, tincidunt a odio cras elementum, sapien nulla amet.</string>
     <string name="btn_new_reservation">NEW RESERVATION</string>
     <string name="btn_or">OR</string>
-    <string name="nameSearch">Restaurant Name</string>
-    <string name="addressSearch">Restaurant Address</string>
+    <string name="nameSearch">Restaurant name</string>
+    <string name="addressSearch">Restaurant address</string>
     <string name="reservation_date">Date</string>
     <string name="reservation_time">Time</string>
+
+    <string name="err_notification">Well done! You\'ve managed all the notifications!</string>
+    <string name="err_connection">It seems you\'re not connected! Please enable your Internet connection&#8230;</string>
+    <string name="err_reservations">Ops&#8230; nothing to show here!</string>
+
+    <string name="select">Please, select at least one element!</string>
+    <string name="done">Done!</string>
+    <string name="typeNot_new">New order</string>
+    <string name="desc">You have received a new order! Check in your reservation box</string>
 </resources>

@@ -3,8 +3,6 @@ package com.madness.degustibus.order;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-
 public class CartClass implements Parcelable {
 
     public static final Creator<CartClass> CREATOR = new Creator<CartClass>() {
@@ -21,7 +19,7 @@ public class CartClass implements Parcelable {
     String dishname;
     String price;
     String quantity;
-    String id ;
+    String id;
     private int identifier;
 
     protected CartClass(Parcel in) {
@@ -38,7 +36,7 @@ public class CartClass implements Parcelable {
         id = null;
     }
 
-    public CartClass(){
+    public CartClass() {
         // Required empty public constructor
     }
 

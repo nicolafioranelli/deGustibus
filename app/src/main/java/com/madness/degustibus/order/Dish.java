@@ -23,28 +23,10 @@ public class Dish implements Parcelable {
     String pic;
     String restaurant;
     int quantity;
+    String identifier;
 
     public Dish() {
     }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String idenifier) {
-        this.identifier = idenifier;
-    }
-
-    String identifier;
-
-    public String getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
-    }
-
 
     protected Dish(Parcel in) {
         pic = in.readString();
@@ -60,6 +42,22 @@ public class Dish implements Parcelable {
         this.avail = avail;
         this.price = price;
         this.pic = pic;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String idenifier) {
+        this.identifier = idenifier;
+    }
+
+    public String getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(String restaurant) {
+        this.restaurant = restaurant;
     }
 
     @Override
@@ -116,7 +114,11 @@ public class Dish implements Parcelable {
         this.pic = pic;
     }
 
-    public int getQuantity() { return quantity; }
+    public int getQuantity() {
+        return quantity;
+    }
 
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }

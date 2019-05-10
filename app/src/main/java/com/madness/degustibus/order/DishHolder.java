@@ -21,10 +21,6 @@ public class DishHolder extends RecyclerView.ViewHolder {
 
     private ArrayList<Dish> dishList;
 
-    public Dish getDish(int position) {
-        return dishList.get(position);
-    }
-
     public DishHolder(final View view) {
         super(view);
         title = view.findViewById(R.id.rest_title);
@@ -34,5 +30,9 @@ public class DishHolder extends RecyclerView.ViewHolder {
         image = view.findViewById(R.id.rest_imageView);
         buttonMinus = view.findViewById(R.id.buttonPlus);
         buttonPlus = view.findViewById(R.id.buttonMinus);
+    }
+
+    public Dish getDish(int position) {
+        return dishList.get(position);
     }
 }

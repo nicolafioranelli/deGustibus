@@ -42,7 +42,7 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="Well done... nothing more here!"
+            android:text="@string/err_notification"
             android:textSize="20dp"
             android:theme="@style/FirebaseUI.Text.BodyText" />
 

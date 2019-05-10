@@ -19,11 +19,6 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
     private ArrayList<Dish> dishList;
 
 
-    public interface ItemClickListener {
-        void onListItemClick(int clickedItemIndex);
-    }
-
-
     public MenuDataAdapter(ArrayList<Dish> dishes) {
         this.dishList = dishes;
     }
@@ -80,13 +75,17 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
         return dishList;
     }
 
-    public class MenuViewHolder extends RecyclerView.ViewHolder{
+    public interface ItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+    public class MenuViewHolder extends RecyclerView.ViewHolder {
         private TextView title, description, price, quantity;
         private ImageView image;
         private Button buttonPlus;
         private Button buttonMinus;
 
-        public MenuViewHolder (View view) {
+        public MenuViewHolder(View view) {
 
             super(view);
             title = view.findViewById(R.id.rest_title);
@@ -96,19 +95,19 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
             image = view.findViewById(R.id.rest_imageView);
             buttonMinus = view.findViewById(R.id.buttonPlus);
 
-            if (Integer.parseInt(quantity.getText().toString())==0){
+            if (Integer.parseInt(quantity.getText().toString()) == 0) {
                 buttonMinus.setVisibility(View.VISIBLE);
                 quantity.setVisibility(View.VISIBLE);
             }
-            buttonMinus.setOnClickListener(new View.OnClickListener(){
+            buttonMinus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     Dish dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonPlus) {
-                        if(Integer.parseInt(quantity.getText().toString())!= 0){
-                            int n =Integer.parseInt(quantity.getText().toString());
-                            n --;
+                        if (Integer.parseInt(quantity.getText().toString()) != 0) {
+                            int n = Integer.parseInt(quantity.getText().toString());
+                            n--;
                             quantity.setText(String.valueOf(n));
                             dish.setAvail(String.valueOf(n));
                         }
@@ -116,14 +115,14 @@ public class MenuDataAdapter extends RecyclerView.Adapter<MenuDataAdapter.MenuVi
                 }
             });
             buttonPlus = view.findViewById(R.id.buttonMinus);
-            buttonPlus.setOnClickListener(new View.OnClickListener(){
+            buttonPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int clickPosition = getAdapterPosition();
                     Dish dish = getDish(clickPosition);
                     if (v.getId() == R.id.buttonMinus) {
-                        int n =Integer.parseInt(quantity.getText().toString());
-                        n ++;
+                        int n = Integer.parseInt(quantity.getText().toString());
+                        n++;
                         quantity.setText(String.valueOf(n));
                         dish.setAvail(String.valueOf(n));
                     }

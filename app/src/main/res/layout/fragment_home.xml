@@ -6,36 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".home.HomeFragment">
 
-
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progress_horizontal"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false" />
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="match_parent"
+        android:id="@+id/homeLayout"
         android:layout_width="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible">
 
-            <SearchView
-                android:id="@+id/nameSearchView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"
-                android:queryHint="@string/nameSearch" />
-
-            <SearchView
-                android:id="@+id/addressSearchView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"
-                android:queryHint="@string/addressSearch" />
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewHome"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:orientation="vertical">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewHome"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical" />
+
+        </LinearLayout>
     </LinearLayout>
 
         <LinearLayout
@@ -62,8 +61,5 @@
                 android:text="Ops... there is nothing here!"
                 android:textSize="20dp"
                 android:theme="@style/FirebaseUI.Text.BodyText" />
-
         </LinearLayout>
-
-
 </FrameLayout>
