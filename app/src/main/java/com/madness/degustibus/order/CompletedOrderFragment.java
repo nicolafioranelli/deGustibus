@@ -76,6 +76,7 @@ public class CompletedOrderFragment extends Fragment {
     private DialogFragment datePicker;
     private TextView setDate;
     private TextView setTime;
+    private String res;
 
 
 
@@ -184,24 +185,27 @@ public class CompletedOrderFragment extends Fragment {
                             // remove the quantoty from the dishes
                             //TODO do it with a transaction
 
-                            final int n;
                             FirebaseDatabase.getInstance().getReference()
                                     .child("offers")
                                     .child(dish.getRestaurant())
                                     .child(dish.getIdentifier())
-                                    .child("avail").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    .child("avail")
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    dish.setAvail(String.valueOf(
-                                            Integer.parseInt(dataSnapshot.getValue(String.class))
-                                            - dish.quantity
-                                    ));
+                                    System.out.println(dataSnapshot.toString());
+                                    res = dataSnapshot.getValue(String.class);
+                                    // TODO it is not able to retrieve data!!!!
                                 }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {}
 
                             });
+
+                            Integer prevAvail = Integer.parseInt(res);
+
+                            dish.setAvail(String.valueOf(prevAvail - dish.quantity));
 
                             // TODO check it
                             FirebaseDatabase.getInstance().getReference()
