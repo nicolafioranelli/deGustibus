@@ -486,9 +486,7 @@ public class EditProfileFragment extends Fragment {
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("vehicle", this.vehicle);
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
+        map.put("photo", getPrefPhoto());
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("riders").child(user.getUid()).updateChildren(map);

@@ -788,6 +788,9 @@ public class EditProfile extends Fragment {
                                               }
                                           }
                     );
+        } else {
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
         }
     }
 }

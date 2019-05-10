@@ -69,4 +69,5 @@
     <string name="products">Prodotti</string>
     <string name="summary">Riepilogo</string>
     <string name="total">"Totale: "</string>
+    <string name="errProfile">Completa il tuo profilo prima di poter continuare!</string>
 </resources>

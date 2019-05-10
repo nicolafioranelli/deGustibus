@@ -151,5 +151,5 @@
     <string name="resTotal">Total: </string>
     <string name="delete">Delete</string>
 
-
+    <string name="errProfile">Complete your profile before continuing!</string>
 </resources>

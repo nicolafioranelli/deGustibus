@@ -55,6 +55,7 @@ public class HomeActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseUser user;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -88,7 +89,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
             databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -187,6 +188,23 @@ public class HomeActivity extends AppCompatActivity
 
         if (!isNetworkAvailable(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
+        }
+
+        if(user!=null) {
+            FirebaseDatabase.getInstance().getReference().child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if (!dataSnapshot.exists()) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 
