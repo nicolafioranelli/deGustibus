@@ -38,7 +38,10 @@ import com.madness.degustibus.DatePickerFragment;
 import com.madness.degustibus.R;
 import com.madness.degustibus.picker.TimePickerFragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 
@@ -94,6 +97,19 @@ public class CompletedOrderFragment extends Fragment {
         setDate = rootView.findViewById(R.id.setDate);
         setTime = rootView.findViewById(R.id.setTime);
 
+        //set current time + 1 hour
+        Date currentDate = Calendar.getInstance().getTime();        // get the current date time
+        Calendar newCalendar = Calendar.getInstance();              // create a new calendar
+        newCalendar.setTime(currentDate);                           // set it with the current date time
+        newCalendar.add(Calendar.HOUR,1);                    // add one hour
+        Date newDefaultDeliveryTime = newCalendar.getTime();        // create the default date time
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");   // date format
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");        // time format
+
+        setDate.setText(dateFormat.format(newDefaultDeliveryTime));     // set Date TextView
+        setTime.setText(timeFormat.format(newDefaultDeliveryTime));     // set Time TextView
+
 
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
@@ -122,7 +138,7 @@ public class CompletedOrderFragment extends Fragment {
 
 
 
-
+        // submit operation
         complete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,10 +152,11 @@ public class CompletedOrderFragment extends Fragment {
                     reservation.setCustomerAddress(customerAddress.getText().toString());
                     reservation.setCustomerID(user.getUid());
                     reservation.setDeliverymanID("null");
-                    reservation.setDeliveryDate(setDate.toString());
-                    reservation.setDeliveryHour(setTime.toString());
-                    reservation.setTotalPrice(totalPrice.toString());
-
+                    reservation.setDeliveryDate(setDate.getText().toString());
+                    reservation.setDeliveryHour(setTime.getText().toString());
+                    reservation.setTotalPrice(totalPrice.getText().toString());
+                    reservation.setDescription(""); // fill it in the for
+                    reservation.setStatus("new");
 
                     // store the selected dishes in the cart of the user
                     for(final Dish dish: dishList){             // for each dish in the dailyoffer
@@ -193,12 +210,20 @@ public class CompletedOrderFragment extends Fragment {
                                     .child(dish.getIdentifier())
                                     .child("avail").setValue(dish.getAvail());
 
-                            reservation.setDescription(String.valueOf(dish.getQuantity())
+                            reservation.setDescription(reservation
+                            .getDescription()
+                            .concat(String.valueOf(dish.getQuantity())
                                     .concat("x ")
                                     .concat(dish.getDish())
-                            );
+                                    .concat("\n")
+                            ));
                         }
                     }
+
+                    // store reservation
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("orders")
+                            .push().setValue(reservation);
 
                     Toast.makeText(getContext(), "done!", Toast.LENGTH_SHORT).show(); //TODO strings
                     FragmentManager fragmentManager = getFragmentManager();
