@@ -10,7 +10,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +33,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
-import com.madness.degustibus.home.RestaurantClass;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
 import java.util.ArrayList;
@@ -197,21 +195,22 @@ public class OrderFragment extends Fragment {
         // catch the id of the restaurant from the bundle
         final String rest = this.getArguments().getString("restId");
 
-
-
         // set the top pic
-        DatabaseReference reference = FirebaseDatabase
-                .getInstance()
+        FirebaseDatabase.getInstance()
                 .getReference()
                 .child("restaurants")
-                .child(rest);
-        Log.d("mad", reference.toString());
-
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                .child(rest)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d("mad", "onDataChange: " + dataSnapshot);
-                        picture = dataSnapshot.getValue(RestaurantClass.class).getPhoto();
+                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                        picture = objectMap.get("photo").toString();
+
+                        ImageView image = rootView.findViewById(R.id.rest_imageView);
+                        GlideApp.with(getContext())
+                                .load(picture)
+                                .placeholder(R.drawable.restaurant)
+                                .into(image);
                     }
 
                     @Override
@@ -219,13 +218,6 @@ public class OrderFragment extends Fragment {
 
                     }
                 });
-
-        ImageView image = rootView.findViewById(R.id.rest_imageView);
-        GlideApp.with(getContext())
-                .load(picture)
-                .placeholder(R.drawable.restaurant)
-                .into(image);
-
 
         // obtain the url /offers/{restaurantIdentifier}
         Query query = FirebaseDatabase.getInstance().getReference().child("offers").child(rest); // query data at /offers/{restaurantIdentifier}
@@ -303,7 +295,7 @@ public class OrderFragment extends Fragment {
         emptyListener = query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                     rootView.findViewById(R.id.menu).setVisibility(View.VISIBLE);
                     rootView.findViewById(R.id.complete_order_btn).setVisibility(View.VISIBLE);
