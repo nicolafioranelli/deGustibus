@@ -22,9 +22,9 @@ public class HomeHolder extends RecyclerView.ViewHolder implements View.OnClickL
         void onListItemClick(int clickedItemIndex);
     }
 */
-    private ArrayList<HomeClass> RestaurantList;
+    private ArrayList<_HomeClass> RestaurantList;
 
-    public HomeClass getDish(int position) {
+    public _HomeClass getDish(int position) {
         return RestaurantList.get(position);
     }
 

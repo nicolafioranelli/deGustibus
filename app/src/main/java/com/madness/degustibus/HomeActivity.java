@@ -101,7 +101,8 @@ public class HomeActivity extends AppCompatActivity
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        userName.setText(objectMap.get("name").toString());
+                        if(objectMap.get("name") != null)   // TODO fix, it is always null
+                            userName.setText(objectMap.get("name").toString());
                     }
                 }
 

@@ -1,7 +1,6 @@
 package com.madness.degustibus.order;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -33,6 +34,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
+import com.madness.degustibus.home.RestaurantClass;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ public class OrderFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private NewOrderInterface newOrderInterface;
     private ValueEventListener emptyListener;
+    private RestaurantClass restaurant;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -75,6 +78,7 @@ public class OrderFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle(getString(R.string.title_Order));
+
 
         dishList = new ArrayList<>();
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
@@ -142,13 +146,13 @@ public class OrderFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
+    /*@Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             dishList = savedInstanceState.getParcelableArrayList("Menu");
         }
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -192,6 +196,36 @@ public class OrderFragment extends Fragment {
     public void loadFromFirebase(final View rootView) {
         // catch the id of the restaurant from the bundle
         final String rest = this.getArguments().getString("restId");
+
+
+
+        // set the top pic
+        DatabaseReference reference = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("restaurants")
+                .child(rest);
+        Log.d("mad", reference.toString());
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d("mad", "onDataChange: " + dataSnapshot);
+                        restaurant = dataSnapshot.getValue(RestaurantClass.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+        ImageView image = rootView.findViewById(R.id.rest_imageView);
+        GlideApp.with(getContext())
+                .load(restaurant.getPhoto())
+                .placeholder(R.drawable.dish_image)
+                .into(image);
+
 
         // obtain the url /offers/{restaurantIdentifier}
         Query query = FirebaseDatabase.getInstance().getReference().child("offers").child(rest); // query data at /offers/{restaurantIdentifier}

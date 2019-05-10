@@ -3,17 +3,17 @@ package com.madness.degustibus.home;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class HomeClass implements Parcelable {
+public class _HomeClass implements Parcelable {
 
-    public static final Creator<HomeClass> CREATOR = new Creator<HomeClass>() {
+    public static final Creator<_HomeClass> CREATOR = new Creator<_HomeClass>() {
         @Override
-        public HomeClass createFromParcel(Parcel in) {
-            return new HomeClass(in);
+        public _HomeClass createFromParcel(Parcel in) {
+            return new _HomeClass(in);
         }
 
         @Override
-        public HomeClass[] newArray(int size) {
-            return new HomeClass[size];
+        public _HomeClass[] newArray(int size) {
+            return new _HomeClass[size];
         }
     };
     String name;
@@ -23,7 +23,7 @@ public class HomeClass implements Parcelable {
     String id;
     private int identifier;
 
-    protected HomeClass(Parcel in) {
+    protected _HomeClass(Parcel in) {
         name = in.readString();
         address = in.readString();
         desc = in.readString();
@@ -31,10 +31,10 @@ public class HomeClass implements Parcelable {
         id = in.readString();
     }
 
-    public HomeClass(){
+    public _HomeClass(){
         //required empty
     }
-    public HomeClass(String name, String address, String desc, String pic,String id) {
+    public _HomeClass(String name, String address, String desc, String pic, String id) {
         this.name = name;
         this.address = address;
         this.desc = desc;

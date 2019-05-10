@@ -42,8 +42,8 @@ import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
-    ArrayList<HomeClass> restaurantList = new ArrayList<>();
-    HomeClass rest;
+    ArrayList<_HomeClass> restaurantList = new ArrayList<>();
+    _HomeClass rest;
     private RecyclerView recyclerView;
     private DatabaseReference databaseRef;
     private Fragment fragment;
@@ -136,25 +136,27 @@ public class HomeFragment extends Fragment {
         databaseRef = FirebaseDatabase.getInstance().getReference("restaurants");
         Query query = FirebaseDatabase.getInstance().getReference().child("restaurants");
 
-        FirebaseRecyclerOptions<HomeClass> options =
-                new FirebaseRecyclerOptions.Builder<HomeClass>()
-                        .setQuery(query, new SnapshotParser<HomeClass>() {
+        FirebaseRecyclerOptions<RestaurantClass> options =
+                new FirebaseRecyclerOptions.Builder<RestaurantClass>()
+                        .setQuery(query, new SnapshotParser<RestaurantClass>() {
                             @NonNull
                             @Override
-                            public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(), snapshot.getValue(HomeClass.class).getAddress(), snapshot.getValue(HomeClass.class).getDesc(), snapshot.getValue(HomeClass.class).getPic(), snapshot.getKey());
+                            public RestaurantClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                RestaurantClass home = snapshot.getValue(RestaurantClass.class);
+                                return home;
                             }
                         })
                         .build();
-        adapter = new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<RestaurantClass, HomeHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final HomeClass model) {
-                //HomeClass restaurant = restaurantList.get(position);
+            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final RestaurantClass model) {
+                //_HomeClass restaurant = restaurantList.get(position);
                 holder.title.setText(model.getName());
                 holder.subtitle.setText(model.getAddress());
                 holder.description.setText(model.getDesc());
+
                 GlideApp.with(holder.image.getContext())
-                        .load(model.getPic())
+                        .load(model.getPhoto())
                         .placeholder(R.drawable.restaurant)
                         .into(holder.image);
 
@@ -219,21 +221,21 @@ public class HomeFragment extends Fragment {
     private void firebaseSearch(String searchText) {
         Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText);
 
-        FirebaseRecyclerOptions<HomeClass> options =
-                new FirebaseRecyclerOptions.Builder<HomeClass>()
-                        .setQuery(firebaseSearchQuery, new SnapshotParser<HomeClass>() {
+        FirebaseRecyclerOptions<_HomeClass> options =
+                new FirebaseRecyclerOptions.Builder<_HomeClass>()
+                        .setQuery(firebaseSearchQuery, new SnapshotParser<_HomeClass>() {
                             @NonNull
                             @Override
-                            public HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                rest = new HomeClass(snapshot.getValue(HomeClass.class).getName(), snapshot.getValue(HomeClass.class).getAddress(), snapshot.getValue(HomeClass.class).getDesc(), snapshot.getValue(HomeClass.class).getPic(), snapshot.getKey());
+                            public _HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                rest = new _HomeClass(snapshot.getValue(_HomeClass.class).getName(), snapshot.getValue(_HomeClass.class).getAddress(), snapshot.getValue(_HomeClass.class).getDesc(), snapshot.getValue(_HomeClass.class).getPic(), snapshot.getKey());
                                 System.out.println("Ristorante " + rest.name);
                                 return rest;
                             }
                         })
                         .build();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<HomeClass, HomeHolder>(options) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<_HomeClass, HomeHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final HomeClass model) {
+            protected void onBindViewHolder(@NonNull HomeHolder holder, final int position, @NonNull final _HomeClass model) {
                 final String restName = model.getName();
                 holder.title.setText(restName);
                 final String restAddress = model.getAddress();
