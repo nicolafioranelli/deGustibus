@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/space8"
                     android:text="@string/resStatus"
-                    android:textSize="18dp"
+                    android:textSize="15dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/space8"
-                    android:textSize="18dp"
+                    android:textSize="15dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -115,14 +115,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/resDate"
-                    android:textSize="15dp"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp" />
+                    android:textSize="13dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -134,14 +134,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/resHour"
-                    android:textSize="15dp"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/hour"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp" />
+                    android:textSize="13dp" />
             </LinearLayout>
 
 
@@ -155,7 +155,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/resTotal"
-                    android:textSize="15dp"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -163,7 +163,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="35,60 €"
-                    android:textSize="15dp" />
+                    android:textSize="13dp" />
             </LinearLayout>
 
         </LinearLayout>

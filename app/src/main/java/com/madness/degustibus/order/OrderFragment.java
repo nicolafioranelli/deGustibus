@@ -77,7 +77,6 @@ public class OrderFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle(getString(R.string.title_Order));
 
-
         dishList = new ArrayList<>();
         confirm_btn = rootView.findViewById(R.id.complete_order_btn);
 

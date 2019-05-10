@@ -1,6 +1,5 @@
 package com.madness.degustibus.order;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -45,7 +44,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * A simple {@link Fragment} subclass.

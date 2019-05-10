@@ -219,7 +219,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void firebaseSearch(String searchText) {
-        Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText);
+        Query firebaseSearchQuery = databaseRef.orderByChild("name").startAt(searchText).endAt(searchText+"\uf0ff");
 
         FirebaseRecyclerOptions<_HomeClass> options =
                 new FirebaseRecyclerOptions.Builder<_HomeClass>()
@@ -228,7 +228,6 @@ public class HomeFragment extends Fragment {
                             @Override
                             public _HomeClass parseSnapshot(@NonNull DataSnapshot snapshot) {
                                 rest = new _HomeClass(snapshot.getValue(_HomeClass.class).getName(), snapshot.getValue(_HomeClass.class).getAddress(), snapshot.getValue(_HomeClass.class).getDesc(), snapshot.getValue(_HomeClass.class).getPic(), snapshot.getKey());
-                                System.out.println("Ristorante " + rest.name);
                                 return rest;
                             }
                         })

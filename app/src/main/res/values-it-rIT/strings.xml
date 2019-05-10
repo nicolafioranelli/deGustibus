@@ -61,7 +61,7 @@
     <string name="err_reservations">Ops... qua non c\'è nulla!</string>
     <string name="title_Complete">Completa ordine</string>
     <string name="title_Order">Nuovo ordine</string>
-    <string name="done">Done!</string>
+    <string name="done">Fatto!</string>
     <string name="typeNot_new">Nuovo ordine</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
     <string name="address">Indirizzo di consegna</string>

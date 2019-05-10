@@ -89,10 +89,6 @@
 
             </LinearLayout>
 
-
-
-            <!-- TODO STRINGS -->
-
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -110,7 +106,7 @@
                     android:paddingTop="4dp"
                     android:paddingRight="24dp"
                     android:paddingBottom="4dp"
-                    android:text="Completa Ordine"
+                    android:text="@string/order"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/primaryText"

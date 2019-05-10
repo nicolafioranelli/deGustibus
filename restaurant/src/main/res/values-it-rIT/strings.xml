@@ -112,4 +112,5 @@
     <string name="resDate">"Data: "</string>
     <string name="resHour">"Ora: "</string>
     <string name="resTotal">"Totale: "</string>
+    <string name="delete">Elimina</string>
 </resources>
