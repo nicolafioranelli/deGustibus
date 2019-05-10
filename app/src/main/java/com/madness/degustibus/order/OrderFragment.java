@@ -55,7 +55,7 @@ public class OrderFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private NewOrderInterface newOrderInterface;
     private ValueEventListener emptyListener;
-    private RestaurantClass restaurant;
+    private String picture;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -211,7 +211,7 @@ public class OrderFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Log.d("mad", "onDataChange: " + dataSnapshot);
-                        restaurant = dataSnapshot.getValue(RestaurantClass.class);
+                        picture = dataSnapshot.getValue(RestaurantClass.class).getPhoto();
                     }
 
                     @Override
@@ -222,8 +222,8 @@ public class OrderFragment extends Fragment {
 
         ImageView image = rootView.findViewById(R.id.rest_imageView);
         GlideApp.with(getContext())
-                .load(restaurant.getPhoto())
-                .placeholder(R.drawable.dish_image)
+                .load(picture)
+                .placeholder(R.drawable.restaurant)
                 .into(image);
 
 
