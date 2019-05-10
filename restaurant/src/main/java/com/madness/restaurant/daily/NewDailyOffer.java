@@ -388,6 +388,7 @@ public class NewDailyOffer extends Fragment {
                         desc.setText(d.getType());
                         avail.setText(d.getAvail());
                         price.setText(d.getPrice());
+                        imageUrl = d.getPic();
                         GlideApp.with(getContext())
                                 .load(d.getPic())
                                 .placeholder(R.drawable.dish_image)

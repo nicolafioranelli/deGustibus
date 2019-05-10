@@ -101,4 +101,10 @@
     <string name="done">Done!</string>
     <string name="typeNot_new">New order</string>
     <string name="desc">You have received a new order! Check in your reservation box</string>
+
+    <string name="summary">Summary</string>
+    <string name="address">Address</string>
+    <string name="products">Products</string>
+    <string name="total">"Total: "</string>
+    <string name="order">Complete order</string>
 </resources>

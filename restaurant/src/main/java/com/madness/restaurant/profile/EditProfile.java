@@ -31,14 +31,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.R;
+import com.madness.restaurant.daily.DailyClass;
 import com.madness.restaurant.picker.TimePickerFragment;
 
 import java.io.File;
@@ -80,6 +83,7 @@ public class EditProfile extends Fragment {
     private String cameraFilePath;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+    private Uri mImageUri;
 
     public EditProfile() {
         // Required empty public constructor
@@ -576,11 +580,13 @@ public class EditProfile extends Fragment {
             switch (requestCode) {
                 case 0:
                     Uri photo = Uri.parse(getPrefPhoto());
+                    mImageUri = Uri.parse(getPrefPhoto());
                     img.setImageURI(photo);
                     setPrefPhoto(photo.toString());
                     break;
                 case 1:
                     Uri selectedImage = data.getData();
+                    mImageUri = data.getData();
                     img.setImageURI(selectedImage);
                     setPrefPhoto(selectedImage.toString());
                     break;
@@ -733,9 +739,9 @@ public class EditProfile extends Fragment {
      */
     private void storeOnFirebase() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        Map<String, Object> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
 
         map.put("name", fullname.getText().toString());
         map.put("email", email.getText().toString());
@@ -759,10 +765,29 @@ public class EditProfile extends Fragment {
         map.put("sundayOpen", sundayOpen.getText().toString());
         map.put("sundayClose", sundayClose.getText().toString());
 
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        //storageReference.child(user.getUid()).child("profile_pictures").child("img_profile").putFile(Uri.parse(getPrefPhoto()));
+        final DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();  // generate a new key in /offers/{uID}
+        final String newItemKey = newItem.getKey();
+        final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());  // generate a new child in /
 
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
+        // store the picture into firestore
+        if (mImageUri != null) {
+            fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                              @Override
+                                              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                  fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                      @Override
+                                                      public void onSuccess(Uri uri) {
+                                                          String imageUrl = uri.toString();
+                                                          map.put("photo", imageUrl);
+                                                          DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                                                          mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
+
+                                                      }
+                                                  });
+                                              }
+                                          }
+                    );
+        }
     }
 }

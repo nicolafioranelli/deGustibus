@@ -61,7 +61,7 @@ public class IncomingFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-        final Query query = databaseReference.child("orders").orderByChild("riderID").equalTo(user.getUid());
+        final Query query = databaseReference.child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -132,6 +132,7 @@ public class IncomingFragment extends Fragment {
                     }
                 });
                 holder.status.setText(model.getStatus());
+                System.out.println(model.getStatus());
                 if (model.getStatus().equals("incoming")) {
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);
@@ -150,12 +151,15 @@ public class IncomingFragment extends Fragment {
                     });
                 } else if (model.getStatus().equals("refused")) {
                     holder.status.setText(R.string.status_refused);
-                } else if (model.getStatus().equals("new")) {
-                    holder.status.setText(R.string.status_new);
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
+                    holder.refuse.setVisibility(View.GONE);
+                    holder.button.setVisibility(View.GONE);
                 } else if (model.getStatus().equals("elaboration")) {
                     holder.status.setText(R.string.status_elaboration);
+                    holder.button.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.refuse.setText(R.string.buttonPick);
                     holder.refuse.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +169,9 @@ public class IncomingFragment extends Fragment {
                         }
                     });
                 } else if (model.getStatus().equals("delivering")) {
+                    System.out.println(model.getStatus());
                     holder.status.setText(R.string.status_delivering);
+                    holder.button.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.refuse.setText(R.string.buttonDeliver);
                     holder.refuse.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +182,6 @@ public class IncomingFragment extends Fragment {
                     });
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-
             }
 
         };

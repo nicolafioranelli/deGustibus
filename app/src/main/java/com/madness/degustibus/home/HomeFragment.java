@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +52,7 @@ public class HomeFragment extends Fragment {
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private android.support.v7.widget.SearchView byName;
     private ValueEventListener emptyListener;
+    private FirebaseUser user;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -74,7 +77,11 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-        populateList(rootView);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            populateList(rootView);
+        }
 
         return rootView;
     }
@@ -197,7 +204,7 @@ public class HomeFragment extends Fragment {
                     rootView.findViewById(R.id.emptyLayout).setVisibility(View.GONE);
                     rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
                 } else {
-                    rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                     rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
                 }
             }
@@ -232,7 +239,7 @@ public class HomeFragment extends Fragment {
                 final String restAddress = model.getAddress();
                 holder.subtitle.setText(restAddress);
                 holder.description.setText(model.getDesc());
-                holder.image.setImageResource(R.drawable.restaurant);
+                //holder.image.setImageResource(R.drawable.restaurant);
 
                 GlideApp.with(holder.image.getContext())
                         .load(model.getPic())
@@ -281,18 +288,24 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (user != null) {
+            adapter.startListening();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if (user != null) {
+            adapter.stopListening();
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        databaseRef.removeEventListener(emptyListener);
+        if (user != null) {
+            databaseRef.removeEventListener(emptyListener);
+        }
     }
 }

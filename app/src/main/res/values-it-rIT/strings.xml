@@ -64,4 +64,9 @@
     <string name="done">Done!</string>
     <string name="typeNot_new">Nuovo ordine</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
+    <string name="address">Indirizzo di consegna</string>
+    <string name="order">Completa ordine</string>
+    <string name="products">Prodotti</string>
+    <string name="summary">Riepilogo</string>
+    <string name="total">"Totale: "</string>
 </resources>

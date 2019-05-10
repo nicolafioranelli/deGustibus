@@ -22,7 +22,7 @@
                 android:id="@+id/summary"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Summary"
+                android:text="@string/summary"
                 android:layout_marginBottom="@dimen/fab_margin"
                 android:textAlignment="center"
                 android:textAllCaps="true"
