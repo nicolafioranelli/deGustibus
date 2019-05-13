@@ -47,6 +47,8 @@ import java.util.Map;
  * to let the user authenticates itself.
  */
 
+/*commento prova*/
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.ProfileListener,
