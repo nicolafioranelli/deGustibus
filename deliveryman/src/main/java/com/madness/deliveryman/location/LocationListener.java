@@ -10,8 +10,10 @@ public class LocationListener implements  android.location.LocationListener {
     private static final String TAG = "LocationListener";
 
     public LocationListener(String passiveProvider) {
-        Log.e(TAG, "LocationListener " + passiveProvider);
+        Log.d(TAG, "LocationListener " + passiveProvider);
         mLastLocation = new Location(passiveProvider);
+        System.out.println("Latitude: " + mLastLocation.getLatitude());
+        System.out.println("Longitude: " + mLastLocation.getLongitude());
     }
 
     @Override

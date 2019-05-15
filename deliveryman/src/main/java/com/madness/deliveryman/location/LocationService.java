@@ -14,8 +14,8 @@ public class LocationService extends Service {
 
     private static final String TAG = "LocationService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+    private static final int LOCATION_INTERVAL = 1000; // minimum time interval between location updates, in milliseconds
+    private static final float LOCATION_DISTANCE = 10f; // minimum distance between location updates, in meters
     private LocationListener mLocationListener = new LocationListener(LocationManager.PASSIVE_PROVIDER);
 
     @Override
@@ -25,7 +25,7 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
+        Log.d(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -33,9 +33,9 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
 
-        Log.e(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
 
-        Log.e(TAG, "newLocation manager: LOCATION_INTERVAL =  " + LOCATION_INTERVAL
+        Log.d(TAG, "newLocation manager: LOCATION_INTERVAL =  " + LOCATION_INTERVAL
                 + "\t LOCATION_DISTANCE =  " + LOCATION_DISTANCE);
 
         /**
@@ -76,7 +76,7 @@ public class LocationService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
 
         if (mLocationManager != null) {

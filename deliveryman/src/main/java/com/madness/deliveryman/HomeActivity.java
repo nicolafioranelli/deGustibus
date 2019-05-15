@@ -2,14 +2,17 @@ package com.madness.deliveryman;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,12 +32,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.auth.LoginActivity;
 import com.madness.deliveryman.incoming.IncomingFragment;
+import com.madness.deliveryman.location.LocationService;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 import com.madness.deliveryman.profile.EditProfileFragment;
 import com.madness.deliveryman.profile.ProfileFragment;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Thread.sleep;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
@@ -47,6 +53,9 @@ public class HomeActivity extends AppCompatActivity
     FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
+    private boolean gps_permission;
+    private static final int REQUEST_PERMISSIONS = 100;
+    private Intent gpsIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,65 +73,87 @@ public class HomeActivity extends AppCompatActivity
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    finish();
+                    finish(); // it terminate the activity
+                } else {
+
                 }
             }
         };
 
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+            navigationView = findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null) {
-            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-            databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        userName.setText(objectMap.get("name").toString());
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+                databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            userName.setText(objectMap.get("name").toString());
+                        }
                     }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            fragmentManager = getSupportFragmentManager();
+
+            /* Instantiate home fragment */
+            if (savedInstanceState == null) {
+                try {
+                    fragment = null;
+                    Class fragmentClass;
+                    fragmentClass = HomeFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                } catch (Exception e) {
+                    Log.e("MAD", "onCreate: ", e);
                 }
+            } else {
+                fragment = getSupportFragmentManager().findFragmentByTag("HOME");
+            }
 
+            fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                public void onBackStackChanged() {
+                    updateMenu();
                 }
             });
+
+            // check for user permission
+            if(user != null){
+                this.gps_permission();
+
+                // launch the GPS service
+                if (gps_permission) {
+                    // start service
+                    gpsIntent = new Intent(getApplicationContext(), LocationService.class);
+                    //gpsIntent.setAction("cidadaos.cidade.data.UpdaterServiceManager");
+                    startService(gpsIntent);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable the gps", Toast.LENGTH_LONG).show();
+                }
+            }
+
+
+
         }
 
-        fragmentManager = getSupportFragmentManager();
 
-        /* Instantiate home fragment */
-        if (savedInstanceState == null) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
-        }
-
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                updateMenu();
-            }
-        });
-    }
 
     @Override
     public void onStart() {
@@ -133,6 +164,10 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
+        // stop service
+        if(gpsIntent != null)
+            stopService(gpsIntent);
+
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
@@ -275,6 +310,42 @@ public class HomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         return false;
+    }
+
+    private void gps_permission() {
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(
+                    HomeActivity.this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION )
+                )){
+                // empty body
+            } else {
+                ActivityCompat.requestPermissions(HomeActivity.this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_PERMISSIONS
+                );
+            }
+        } else {
+            this.gps_permission = true;
+        }
+    }
+
+    // TODO change strings
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    this.gps_permission = true;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please allow the permission", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
 }
