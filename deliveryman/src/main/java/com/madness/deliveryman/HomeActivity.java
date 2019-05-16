@@ -203,7 +203,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         // stop tracking
-        tracker.stopLocationUpdates();
+        if(tracker != null && tracker.isStartUpdates())
+            tracker.stopLocationUpdates();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -356,7 +357,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onPostResume() {
         super.onPostResume();
         // resume the tracking
-        if(tracker.isStartUpdates()){
+        if(tracker!= null && tracker.isStartUpdates()){
             tracker.startLocationUpdates();
         }
     }

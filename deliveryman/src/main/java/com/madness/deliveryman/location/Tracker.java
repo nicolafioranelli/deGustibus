@@ -37,6 +37,7 @@ public class Tracker {
     private static String TAG = "Tracker";
     private LocationCallback locationCallback;
     private boolean startUpdates = false;
+    private static int DELAY = 60; // in seconds
 
     public Tracker(Context context, String userId, LocationCallback locationCallback) {
         this.context = context;
@@ -67,9 +68,8 @@ public class Tracker {
 
 
         // setup the next updates
-        int interval = 1;
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(interval * 1000); //
+        locationRequest.setInterval(DELAY * 1000); //
         //locationRequest.setFastestInterval(interval*1000); // 1 second
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
