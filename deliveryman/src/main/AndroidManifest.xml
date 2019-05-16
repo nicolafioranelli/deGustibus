@@ -19,7 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".location.LocationService" />
         <activity android:name=".auth.ResetPasswordActivity"/>
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".auth.RegisterActivity" />

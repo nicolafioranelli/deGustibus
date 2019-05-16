@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -25,9 +24,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.auth.LoginActivity;
 import com.madness.deliveryman.incoming.IncomingFragment;
-import com.madness.deliveryman.location.LocationService;
+import com.madness.deliveryman.location.Tracker;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 import com.madness.deliveryman.profile.EditProfileFragment;
 import com.madness.deliveryman.profile.ProfileFragment;
@@ -50,18 +46,18 @@ import static java.lang.Thread.sleep;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
-    Toolbar toolbar;
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Fragment fragment;
-    FragmentManager fragmentManager;
-    FirebaseAuth firebaseAuth;
+    private Toolbar toolbar;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+    private Fragment fragment;
+    private FragmentManager fragmentManager;
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private boolean gps_permission;
     private static final int REQUEST_PERMISSIONS = 100;
-    private Intent gpsIntent;
-    private FusedLocationProviderClient fusedLocationClient;
+    private Tracker tracker;
+
 
 
     @Override
@@ -141,7 +137,11 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+
         if (user != null) {
+
+            // it manages the use position
+            tracker = new Tracker(this,user.getUid());
 
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
@@ -167,7 +167,7 @@ public class HomeActivity extends AppCompatActivity
                 }
             } else {
                 // Permission has already been granted
-                storeTheFirstPosition();
+                tracker.storeTheFirstPosition();
             }
         }
     }
@@ -182,10 +182,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        // stop service
-        if (gpsIntent != null)
-            stopService(gpsIntent);
-
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
@@ -338,7 +334,7 @@ public class HomeActivity extends AppCompatActivity
         switch (requestCode) {
             case REQUEST_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    storeTheFirstPosition();
+                    tracker.storeTheFirstPosition();
                 } else {
                     Toast.makeText(getApplicationContext(), "Please allow the GPS", Toast.LENGTH_LONG).show();
                 }
@@ -346,44 +342,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    public void storeTheFirstPosition() {
-        if (user != null) {
 
-            // this check is compulsory in order to build correctly the project
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                // Logic to handle location object
-                                Log.d("POSITION", "Latitude: " + location.getLatitude());
-                                Log.d("POSITION", "Longitude: " + location.getLongitude());
-                                storePostionOnFirebase(location.getLatitude(), location.getLongitude());
-                            }
-                        }
-                    });
-
-
-        }
-    }
-
-
-    public void storePostionOnFirebase(double latitude, double longitude){
-
-        Map<String,Object> map = new HashMap<>();
-
-        map.put("latitude",latitude);
-        map.put("longitude",longitude);
-
-        FirebaseDatabase.getInstance().getReference()
-                .child("positions")
-                .child(user.getUid())
-                .setValue(map);
-    }
 
 }
