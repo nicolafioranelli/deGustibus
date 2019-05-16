@@ -141,49 +141,36 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        // check for user permission
-            /*if(user != null){
-                this.gps_permission();
-
-                // launch the GPS service
-                if (gps_permission) {
-                    // start service
-                    gpsIntent = new Intent(getApplicationContext(), LocationService.class);
-                    //gpsIntent.setAction("cidadaos.cidade.data.UpdaterServiceManager");
-                    startService(gpsIntent);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Please enable the gps", Toast.LENGTH_LONG).show();
-                }
-            }*/
-
         if (user != null) {
-            this.gps_permission();
 
-            if (gps_permission) {
-                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+                // Permission is not granted
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    Toast.makeText(getApplicationContext(), "Please allow the GPS", Toast.LENGTH_LONG).show();
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_PERMISSIONS);
+
+                    // REQUEST_PERMISSIONS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
                 }
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                // Got last known location. In some rare situations this can be null.
-                                if (location != null) {
-                                    // Logic to handle location object
-                                    Log.d("POSITION", "Latitude: " + location.getLatitude());
-                                    Log.d("POSITION", "Longitude: " + location.getLongitude());
-                                }
-                            }
-                        });
-                }
+            } else {
+                // Permission has already been granted
+                storeTheFirstPosition();
             }
-
-
-
         }
-
+    }
 
 
     @Override
@@ -196,7 +183,7 @@ public class HomeActivity extends AppCompatActivity
     public void onStop() {
         super.onStop();
         // stop service
-        if(gpsIntent != null)
+        if (gpsIntent != null)
             stopService(gpsIntent);
 
         if (authStateListener != null) {
@@ -310,11 +297,11 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
         }
 
-        if(user!=null) {
+        if (user != null) {
             FirebaseDatabase.getInstance().getReference().child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(!dataSnapshot.exists()){
+                    if (!dataSnapshot.exists()) {
                         Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -343,26 +330,6 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
-    private void gps_permission() {
-        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(
-                    HomeActivity.this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION )
-                )){
-                // empty body
-            } else {
-                ActivityCompat.requestPermissions(HomeActivity.this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_PERMISSIONS
-                );
-            }
-        } else {
-            this.gps_permission = true;
-        }
-    }
-
     // TODO change strings
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -371,11 +338,34 @@ public class HomeActivity extends AppCompatActivity
         switch (requestCode) {
             case REQUEST_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    this.gps_permission = true;
+                    storeTheFirstPosition();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please allow the permission", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Please allow the GPS", Toast.LENGTH_LONG).show();
                 }
             }
+        }
+    }
+
+    public void storeTheFirstPosition() {
+        if (user != null) {
+
+            // this check is compulsory in order to build correctly the project
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                Log.d("POSITION", "Latitude: " + location.getLatitude());
+                                Log.d("POSITION", "Longitude: " + location.getLongitude());
+                            }
+                        }
+                    });
         }
     }
 
