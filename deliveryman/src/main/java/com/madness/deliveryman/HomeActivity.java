@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,6 +58,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean gps_permission;
     private static final int REQUEST_PERMISSIONS = 100;
     private Tracker tracker;
+    private LocationCallback locationCallback;
 
 
 
@@ -141,7 +143,7 @@ public class HomeActivity extends AppCompatActivity
         if (user != null) {
 
             // it manages the use position
-            tracker = new Tracker(this,user.getUid());
+            tracker = new Tracker(this,user.getUid(),locationCallback);
 
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
@@ -195,6 +197,13 @@ public class HomeActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // stop tracking
+        tracker.stopLocationUpdates();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -343,5 +352,12 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        // resume the tracking
+        if(tracker.isStartUpdates()){
+            tracker.startLocationUpdates();
+        }
+    }
 }
