@@ -1,8 +1,10 @@
 package com.madness.deliveryman;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,6 +25,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -56,6 +61,8 @@ public class HomeActivity extends AppCompatActivity
     private boolean gps_permission;
     private static final int REQUEST_PERMISSIONS = 100;
     private Intent gpsIntent;
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,61 +88,61 @@ public class HomeActivity extends AppCompatActivity
         };
 
         drawer = findViewById(R.id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
-            toggle.syncState();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-            navigationView = findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user != null) {
-                final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-                databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                            userName.setText(objectMap.get("name").toString());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            fragmentManager = getSupportFragmentManager();
-
-            /* Instantiate home fragment */
-            if (savedInstanceState == null) {
-                try {
-                    fragment = null;
-                    Class fragmentClass;
-                    fragmentClass = HomeFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                } catch (Exception e) {
-                    Log.e("MAD", "onCreate: ", e);
-                }
-            } else {
-                fragment = getSupportFragmentManager().findFragmentByTag("HOME");
-            }
-
-            fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+            databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onBackStackChanged() {
-                    updateMenu();
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                        userName.setText(objectMap.get("name").toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
             });
+        }
 
-            // check for user permission
-            if(user != null){
+        fragmentManager = getSupportFragmentManager();
+
+        /* Instantiate home fragment */
+        if (savedInstanceState == null) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(0).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
+        }
+
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                updateMenu();
+            }
+        });
+
+        // check for user permission
+            /*if(user != null){
                 this.gps_permission();
 
                 // launch the GPS service
@@ -146,6 +153,30 @@ public class HomeActivity extends AppCompatActivity
                     startService(gpsIntent);
                 } else {
                     Toast.makeText(getApplicationContext(), "Please enable the gps", Toast.LENGTH_LONG).show();
+                }
+            }*/
+
+        if (user != null) {
+            this.gps_permission();
+
+            if (gps_permission) {
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    // Logic to handle location object
+                                    Log.d("POSITION", "Latitude: " + location.getLatitude());
+                                    Log.d("POSITION", "Longitude: " + location.getLongitude());
+                                }
+                            }
+                        });
                 }
             }
 
