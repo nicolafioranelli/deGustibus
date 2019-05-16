@@ -363,10 +363,27 @@ public class HomeActivity extends AppCompatActivity
                                 // Logic to handle location object
                                 Log.d("POSITION", "Latitude: " + location.getLatitude());
                                 Log.d("POSITION", "Longitude: " + location.getLongitude());
+                                storePostionOnFirebase(location.getLatitude(), location.getLongitude());
                             }
                         }
                     });
+
+
         }
+    }
+
+
+    public void storePostionOnFirebase(double latitude, double longitude){
+
+        Map<String,Object> map = new HashMap<>();
+
+        map.put("latitude",latitude);
+        map.put("longitude",longitude);
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("positions")
+                .child(user.getUid())
+                .setValue(map);
     }
 
 }
