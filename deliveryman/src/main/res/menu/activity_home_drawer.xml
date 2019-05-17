@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -21,4 +22,10 @@
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/menu_settings" />
     </group>
+
+    <item
+        android:icon="@drawable/ic_check_black_24dp"
+        android:id="@+id/app_bar_switch"
+        android:title="Switch"
+        app:actionLayout="@layout/switch_item" />
 </menu>
