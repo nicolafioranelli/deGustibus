@@ -21,11 +21,13 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/menu_settings" />
-    </group>
 
+    </group>
     <item
         android:icon="@drawable/ic_check_black_24dp"
         android:id="@+id/nav_available"
         android:title="@string/menu_available"
         app:actionLayout="@layout/switch_item" />
+
+
 </menu>

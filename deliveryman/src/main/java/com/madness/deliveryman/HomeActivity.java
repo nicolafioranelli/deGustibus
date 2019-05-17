@@ -21,6 +21,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -172,6 +175,39 @@ public class HomeActivity extends AppCompatActivity
                 tracker.storeTheFirstPosition();
             }
         }
+
+
+        Switch available = new Switch(this);
+        // register a listener on the switch button in the navigation drawer
+        navigationView.getMenu().findItem(R.id.nav_available).setActionView(available);
+
+        available.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            Map<String,Object> m = new HashMap<String,Object>();
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // update the database
+                m.put("available",isChecked);
+                FirebaseDatabase.getInstance().getReference()
+                        .child("positions")
+                        .child(user.getUid())
+                        .updateChildren(m);
+            }
+        });
+
+        if(user != null){
+            // at the beginning the user is not available
+            available.setChecked(false);
+            Map<String,Object> m = new HashMap<String,Object>();
+            m.put("available",false);
+            FirebaseDatabase.getInstance().getReference()
+                    .child("positions")
+                    .child(user.getUid())
+                    .updateChildren(m);
+
+        }
+
     }
 
 

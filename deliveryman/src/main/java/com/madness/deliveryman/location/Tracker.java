@@ -152,14 +152,13 @@ public class Tracker {
     public void storePostionOnFirebase(double latitude, double longitude){
 
         Map<String,Object> map = new HashMap<>();
-
         map.put("latitude",latitude);
         map.put("longitude",longitude);
 
         FirebaseDatabase.getInstance().getReference()
                 .child("positions")
                 .child(userId)
-                .setValue(map);
+                .updateChildren(map);
     }
 
     public boolean isStartUpdates() {
