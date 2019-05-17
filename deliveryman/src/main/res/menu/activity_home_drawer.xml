@@ -25,7 +25,7 @@
 
     <item
         android:icon="@drawable/ic_check_black_24dp"
-        android:id="@+id/app_bar_switch"
-        android:title="Switch"
+        android:id="@+id/nav_available"
+        android:title="@string/menu_available"
         app:actionLayout="@layout/switch_item" />
 </menu>

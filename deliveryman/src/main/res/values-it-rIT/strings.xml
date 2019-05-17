@@ -92,4 +92,5 @@
     <string name="err_connection">Sembra che tu non sia connesso! Attiva la tua connessione a Internet...</string>
     <string name="welcome">Bentornato!</string>
     <string name="errProfile">Completa il tuo profilo prima di poter continuare!</string>
+    <string name="menu_available">disponibile</string>
 </resources>
