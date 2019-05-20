@@ -4,16 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,9 +24,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +39,7 @@ public class ReservationFragment extends Fragment {
     private ValueEventListener emptyListener;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
+    private Fragment fragment;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -89,7 +87,7 @@ public class ReservationFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final ReservationHolder holder, final int position, @NonNull ReservationClass model) {
+            protected void onBindViewHolder(@NonNull final ReservationHolder holder, final int position, @NonNull final ReservationClass model) {
                 /* Set the name of the customer */
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -113,43 +111,40 @@ public class ReservationFragment extends Fragment {
                 holder.hour.setText(model.getDeliveryHour());
                 holder.status.setText(model.getStatus());
                 if (model.getStatus().equals("new")) {
-                    System.out.println(model.getStatus().equals("new"));
-                    holder.refuse.setVisibility(View.VISIBLE);
-                    holder.button.setVisibility(View.VISIBLE);
                     holder.status.setText(R.string.status_new);
-                    holder.refuse.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            refuse(position);
-                        }
-                    });
-                    holder.button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            accept(position);
-                        }
-                    });
                 } else if (model.getStatus().equals("refused")) {
-                    holder.refuse.setVisibility(View.GONE);
-                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_refused);
                 } else if (model.getStatus().equals("incoming")) {
-                    holder.refuse.setVisibility(View.GONE);
-                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_elaboration);
                 } else if (model.getStatus().equals("done")) {
-                    holder.refuse.setVisibility(View.GONE);
-                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_done);
                 } else if (model.getStatus().equals("delivering")) {
-                    holder.refuse.setVisibility(View.GONE);
-                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(getString(R.string.status_deliverying));
                 } else if (model.getStatus().equals("elaboration")) {
-                    holder.refuse.setVisibility(View.GONE);
-                    holder.button.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_elaboration);
                 }
+
+                holder.button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String orderID = getRef(position).getKey();
+                        try {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("orderID", orderID);
+                            fragment = null;
+                            fragment = RiderChoiceFragment.class.newInstance();
+                            fragment.setArguments(bundle);
+
+                        } catch (Exception e) {
+                            Log.e("MAD", "editProfileClick: ", e);
+                        }
+
+                        ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.flContent, fragment, " Order")
+                                .addToBackStack("Reservation")
+                                .commit();
+                    }
+                });
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
 
@@ -199,176 +194,4 @@ public class ReservationFragment extends Fragment {
         databaseReference.removeEventListener(emptyListener);
     }
 
-    private void refuse(final int position) {
-        Query refuseQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
-
-        refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    /* Set order as refused */
-                    databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                                objectMap.put("status", "refused");
-                                databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-
-                                /* Send notification to user */
-                                final Map<String, Object> newNotification = new HashMap<String, Object>();
-                                newNotification.put("type", getString(R.string.typeNot_refused));
-
-                                Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                                String restaurantName = restaurantMap.get("name").toString();
-                                newNotification.put("description", getString(R.string.desc1) + restaurantName);
-
-                                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                                Date date = new Date();
-                                newNotification.put("date", dateFormat.format(date));
-
-                                databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void accept(final int position) {
-        Query selectDeliveryman = databaseReference.child("riders").limitToFirst(1);
-
-        selectDeliveryman.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    /* Rider selection */
-                    String temp = null;
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        temp = snapshot.getKey();
-
-                    }
-                    final String riderID = temp;
-
-                    Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
-                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                            objectMap.put("status", "incoming");
-                            objectMap.put("deliverymanID", riderID);
-                            databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-                            incomingNotifications(objectMap.get("restaurantID").toString(), riderID, objectMap.get("customerID").toString(), adapter.getRef(position).getKey());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                } else {
-                    /* No riders available error */
-                    Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
-
-                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                            databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()) {
-                                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                                        objectMap.put("status", "done");
-                                        databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-
-                                        /* Send notification to user */
-                                        final Map<String, Object> newNotification = new HashMap<String, Object>();
-                                        newNotification.put("type", getString(R.string.typeNot_noRider));
-
-                                        Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                                        String restaurantName = restaurantMap.get("name").toString();
-                                        newNotification.put("description", getString(R.string.desc1) + restaurantName + getString(R.string.desc2));
-
-                                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                                        Date date = new Date();
-                                        newNotification.put("date", dateFormat.format(date));
-
-                                        databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void incomingNotifications(String restaurantID, final String riderID, final String customerID, final String orderID) {
-        databaseReference.child("restaurants").child(restaurantID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    /* Send notification to user */
-                    final Map<String, Object> newNotification = new HashMap<String, Object>();
-                    newNotification.put("type", getString(R.string.typeNot_accepted));
-
-                    Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                    String restaurantName = restaurantMap.get("name").toString();
-                    newNotification.put("description", getString(R.string.desc3) + orderID.substring(1, 6) + getString(R.string.desc4) + restaurantName);
-
-                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Date date = new Date();
-                    newNotification.put("date", dateFormat.format(date));
-
-                    databaseReference.child("notifications").child(customerID).push().setValue(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            /* Send notification to rider */
-                            final Map<String, Object> notificationRider = new HashMap<String, Object>();
-                            notificationRider.put("type", getString(R.string.typeNot_incoming));
-                            notificationRider.put("description", getString(R.string.desc5) + orderID.substring(1, 6) + getString(R.string.desc6));
-                            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                            Date date = new Date();
-                            notificationRider.put("date", dateFormat.format(date));
-
-                            databaseReference.child("notifications").child(riderID).push().setValue(notificationRider);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
 }

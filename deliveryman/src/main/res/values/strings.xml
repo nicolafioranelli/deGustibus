@@ -124,5 +124,5 @@
     <string name="buttonPick">Pick up</string>
     <string name="buttonDeliver">Deliver</string>
     <string name="errProfile">Complete your profile before continuing!</string>
-    <string name="menu_available">available</string>
+    <string name="menu_available">Available</string>
 </resources>

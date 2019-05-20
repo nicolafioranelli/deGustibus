@@ -1,14 +1,10 @@
 package com.madness.restaurant.Haversine;
 
-import android.support.v4.app.Fragment;
-
-import com.madness.restaurant.R;
-
-public class computeDistance  extends Fragment {
+public class ComputeDistance {
     static final double DEG_RAD = 0.01745329251994;
     static final double R_EARTH = 6371.005;
 
-    double getDistance(Point p1, Point p2) {
+    public double getDistance(Point p1, Point p2) {
         double haversine, distance;
         double dLat, dLon;
         dLat = (p2.getLatitude() - p1.getLatitude()) * DEG_RAD;
