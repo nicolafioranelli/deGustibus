@@ -100,6 +100,7 @@ public class IncomingFragment extends Fragment {
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
 
+
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -204,6 +205,12 @@ public class IncomingFragment extends Fragment {
 
             }
         });
+
+
+        // manage the map
+        // TODO
+
+
         return rootView;
     }
 
