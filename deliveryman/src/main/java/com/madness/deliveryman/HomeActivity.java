@@ -190,7 +190,7 @@ public class HomeActivity extends AppCompatActivity
                 // update the database
                 m.put("available",isChecked);
                 FirebaseDatabase.getInstance().getReference()
-                        .child("positions")
+                        .child("riders")
                         .child(user.getUid())
                         .updateChildren(m);
             }
@@ -202,7 +202,7 @@ public class HomeActivity extends AppCompatActivity
             Map<String,Object> m = new HashMap<String,Object>();
             m.put("available",false);
             FirebaseDatabase.getInstance().getReference()
-                    .child("positions")
+                    .child("riders")
                     .child(user.getUid())
                     .updateChildren(m);
 

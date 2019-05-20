@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -22,6 +24,7 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -151,14 +154,25 @@ public class Tracker {
 
     public void storePostionOnFirebase(double latitude, double longitude){
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("latitude",latitude);
-        map.put("longitude",longitude);
+        // store using geofire
+        GeoFire geoFire = new GeoFire(FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("positions"));
 
-        FirebaseDatabase.getInstance().getReference()
-                .child("positions")
-                .child(userId)
-                .updateChildren(map);
+        geoFire.setLocation(
+                "5RM1aR8nYSRG3FiPbpy4eYsPkIB3",
+                new GeoLocation(latitude, longitude),
+                new GeoFire.CompletionListener() {
+            @Override
+            public void onComplete(String key, DatabaseError error) {
+                if (error != null) {
+                    System.err.println("There was an error saving the location to GeoFire: " + error);
+                } else {
+                    System.out.println("Location saved on server successfully!");
+                }
+            }
+        });
     }
 
     public boolean isStartUpdates() {
