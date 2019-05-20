@@ -49,4 +49,10 @@
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
+
+
+
+
+
+
 </resources>

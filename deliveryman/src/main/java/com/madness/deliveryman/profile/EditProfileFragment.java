@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -30,15 +31,23 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madness.deliveryman.BuildConfig;
+import com.madness.deliveryman.GlideApp;
 import com.madness.deliveryman.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,12 +59,15 @@ public class EditProfileFragment extends Fragment {
     private EditText desc;
     private EditText phone;
     private ImageView img;
-    private String cameraFilePath;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private String vehicle;
     private RadioGroup vehicles;
     private RadioButton button;
+
+    private String cameraFilePath;
+    private SharedPreferences pref;
+    private String vehicle;
+
+    private Uri mImageUri = null;
+    private String selector;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -66,7 +78,6 @@ public class EditProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
-        editor = pref.edit();
         setHasOptionsMenu(true);
     }
 
@@ -76,6 +87,7 @@ public class EditProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         getActivity().setTitle(getString(R.string.title_Edit));
         return rootView;
     }
@@ -86,8 +98,14 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        fullname = getView().findViewById(R.id.et_edit_fullName);
+        email = getView().findViewById(R.id.et_edit_email);
+        desc = getView().findViewById(R.id.et_edit_desc);
+        phone = getView().findViewById(R.id.et_edit_phone);
+        img = getView().findViewById(R.id.imageview);
 
-        /* store the status of the radio button */
+        loadFromFirebase();
+
         vehicles = getView().findViewById(R.id.rg_edit_vehicle);
         vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -110,15 +128,7 @@ public class EditProfileFragment extends Fragment {
             }
         });
 
-        //restore the content
-        if (savedInstanceState != null) {
-            loadBundle(savedInstanceState);
-        } else {
-            loadSharedPrefs();
-        }
-
-        getPhoto(view);
-        buttonClick(view);
+        getPhoto(getView());
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml) */
@@ -132,23 +142,7 @@ public class EditProfileFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_edit) {
-            fullname = getView().findViewById(R.id.et_edit_fullName);
-            email = getView().findViewById(R.id.et_edit_email);
-            desc = getView().findViewById(R.id.et_edit_desc);
-            phone = getView().findViewById(R.id.et_edit_phone);
-
-            /* Define shared preferences and insert values */
-            editor.putString("name", fullname.getText().toString());
-            editor.putString("email", email.getText().toString());
-            editor.putString("desc", desc.getText().toString());
-            editor.putString("phone", phone.getText().toString());
-            editor.putString("vehicle", this.vehicle);
-            if (getPrefPhoto() != null) {
-                editor.putString("photo", getPrefPhoto());
-            }
-            editor.apply();
             storeOnFirebase();
             delPrefPhoto();
 
@@ -158,7 +152,6 @@ public class EditProfileFragment extends Fragment {
             fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -181,102 +174,6 @@ public class EditProfileFragment extends Fragment {
         SharedPreferences.Editor editor = pref.edit();
         editor.remove("photo");
         editor.apply();
-    }
-
-    private void loadSharedPrefs() {
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        img = getView().findViewById(R.id.imageview);
-
-        fullname.setText(pref.getString("name", getResources().getString(R.string.name)));
-        email.setText(pref.getString("email", getResources().getString(R.string.email)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.desc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.phone)));
-
-        /* check if a photo is set */
-        if (pref.getString("photo", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photo", null)));
-        }
-
-        String tmp = pref.getString("vehicle", "bike");
-        switch (tmp) {
-            case "bike": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_bike);
-                button.toggle();
-            }
-            break;
-            case "car": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_car);
-                button.toggle();
-            }
-            break;
-            case "motorbike": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_motorbike);
-                button.toggle();
-            }
-            break;
-        }
-    }
-
-    private void loadBundle(Bundle bundle) {
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        img = getView().findViewById(R.id.imageview);
-
-        fullname.setText(bundle.getString("name"));
-        email.setText(bundle.getString("email"));
-        desc.setText(bundle.getString("desc"));
-        phone.setText(bundle.getString("phone"));
-        if (bundle.getString("photo") != null) {
-            img.setImageURI(Uri.parse(bundle.getString("photo")));
-        }
-        String selector = bundle.getString("vehicle");
-
-        switch (selector) {
-            case "bike": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_bike);
-                button.toggle();
-            }
-            break;
-            case "car": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_car);
-                button.toggle();
-            }
-            break;
-            case "motorbike": {
-                RadioButton button = getView().findViewById(R.id.rb_edit_motorbike);
-                button.toggle();
-            }
-            break;
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Save away the original text, so we still have it if the activity
-        // needs to be killed while paused.
-        super.onSaveInstanceState(outState);
-
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        img = getView().findViewById(R.id.imageview);
-
-        outState.putString("name", fullname.getText().toString());
-        outState.putString("email", email.getText().toString());
-        outState.putString("desc", desc.getText().toString());
-        outState.putString("phone", phone.getText().toString());
-        outState.putString("vehicle", this.vehicle);
-        if (getPrefPhoto() == null) {
-            outState.putString("photo", pref.getString("photo", null));
-        } else {
-            outState.putString("photo", getPrefPhoto());
-        }
     }
 
     /* This method is used to retrieve the photo via camera or gallery and it is the same
@@ -318,14 +215,14 @@ public class EditProfileFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
-                    img.setImageURI(photo);
-                    setPrefPhoto(photo.toString());
+                    mImageUri = Uri.parse(getPrefPhoto());
+                    Glide.with(getContext()).load(mImageUri).into(img);
+                    setPrefPhoto(mImageUri.toString());
                     break;
                 case 1:
-                    Uri selectedImage = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
+                    mImageUri = data.getData();
+                    setPrefPhoto(mImageUri.toString());
+                    Glide.with(getContext()).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -447,48 +344,108 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
-    public void buttonClick(View view) {
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = ((RadioButton) v).isChecked();
-                // Check which radio button was clicked
-                switch (v.getId()) {
-                    case R.id.rb_edit_bike:
-                        if (checked)
-                            vehicle = "bike";
-                        break;
-                    case R.id.rb_edit_car:
-                        if (checked)
-                            vehicle = "car";
-                        break;
-                    case R.id.rb_edit_motorbike:
-                        if (checked)
-                            vehicle = "motorbike";
-                        break;
-                }
-            }
-        });
-    }
-
     /*
      * This method allows to save personal informations on Firebase. We need first to get the current
      * user instance, then prepare an hash map where information can be put and last insert the map into
-     * the database under the child "customers" with the uid of the current authenticated user.
+     * the database under the child "riders" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();
+        final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());
 
-        Map<String, Object> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
         map.put("name", fullname.getText().toString());
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("vehicle", this.vehicle);
-        map.put("photo", getPrefPhoto());
 
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("riders").child(user.getUid()).updateChildren(map);
+        if (mImageUri != null) {
+            try {
+                Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageUri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                byte[] data = baos.toByteArray();
+                //uploading the image
+                fileReference.putBytes(data)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String imageUrl = uri.toString();
+                                        map.put("photo", imageUrl);
+                                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                                        mDatabase.child("riders").child(user.getUid()).updateChildren(map);
+
+                                    }
+                                });
+                            }
+                        });
+            } catch (Exception e) {
+                Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
+            }
+        } else {
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            mDatabase.child("riders").child(user.getUid()).updateChildren(map);
+        }
+    }
+
+    private void loadFromFirebase() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("riders").child(user.getUid());
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                /* Load items of the view */
+                fullname.setText(user.get("name").toString());
+                email.setText(user.get("email").toString());
+                desc.setText(user.get("desc").toString());
+                phone.setText(user.get("phone").toString());
+
+                String pic = null;
+                if (user.get("photo") != null) {
+                    pic = user.get("photo").toString();
+                }
+                /* Glide */
+                GlideApp.with(getContext())
+                        .load(pic)
+                        .placeholder(R.drawable.user_profile)
+                        .into(img);
+
+                selector = user.get("vehicle").toString();
+                switch (selector) {
+                    case "bike": {
+                        button = getView().findViewById(R.id.rb_edit_bike);
+                        button.toggle();
+                    }
+                    break;
+                    case "car": {
+                        button = getView().findViewById(R.id.rb_edit_car);
+                        button.toggle();
+                    }
+                    break;
+                    case "motorbike": {
+                        button = getView().findViewById(R.id.rb_edit_motorbike);
+                        button.toggle();
+                    }
+                    break;
+                }
+                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
