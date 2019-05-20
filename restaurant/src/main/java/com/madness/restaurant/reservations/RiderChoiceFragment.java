@@ -1,12 +1,14 @@
 package com.madness.restaurant.reservations;
 
+import android.graphics.PorterDuff;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +27,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madness.restaurant.GlideApp;
+import com.madness.restaurant.Haversine.ComputeDistance;
+import com.madness.restaurant.Haversine.Point;
 import com.madness.restaurant.R;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RiderChoiceFragment extends Fragment {
@@ -39,9 +47,58 @@ public class RiderChoiceFragment extends Fragment {
     private ValueEventListener summaryListener;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private FirebaseRecyclerAdapter adapter;
+    private Point restaurant;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+
+        // Get restaurant address
+        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> rest = (HashMap<String, Object>) dataSnapshot.getValue();
+                //restAddress = user.get("address").toString();
+                System.out.println(rest.get("address").toString());
+                List<Address> fromLocationName = null;
+                Double latitude = null;
+                Double longitude = null;
+
+                try {
+                    fromLocationName = geocoder.getFromLocationName(rest.get("address").toString(), 1);
+                    if (fromLocationName != null && fromLocationName.size() > 0) {
+                        Address a = fromLocationName.get(0);
+                        latitude = a.getLatitude();
+                        System.out.println(latitude);
+                        longitude = a.getLongitude();
+                    }
+                } catch (Exception e) {
+
+                }
+                restaurant = new Point();
+                restaurant.setLatitude(latitude);
+                restaurant.setLongitude(longitude);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -50,20 +107,16 @@ public class RiderChoiceFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_rider_choice, container, false);
-        getActivity().setTitle("Scegli fattorino"); // TODO: string
+        getActivity().setTitle(getResources().getString(R.string.title_Order));
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
-        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
         String orderID = this.getArguments().getString("orderID");
         loadData(orderID, rootView);
 
-        //loadAdapter();
-
+        loadAdapter(rootView);
         return rootView;
     }
 
@@ -72,7 +125,6 @@ public class RiderChoiceFragment extends Fragment {
         super.onDetach();
         databaseReference.removeEventListener(summaryListener);
     }
-
 
 
     /* Retrieve data from Firebase and load it into the summary at the beginning of the fragment */
@@ -101,6 +153,7 @@ public class RiderChoiceFragment extends Fragment {
                             customer.setText(customerName);
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
@@ -158,6 +211,82 @@ public class RiderChoiceFragment extends Fragment {
 
             }
         });
+    }
+
+    private void loadAdapter(View view) {
+        final Query query = databaseReference.child("positions").orderByChild("available").equalTo(false);
+
+        FirebaseRecyclerOptions<RiderClass> options = new FirebaseRecyclerOptions.Builder<RiderClass>()
+                .setQuery(query, RiderClass.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<RiderClass, RiderHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final RiderHolder holder, int position, @NonNull RiderClass model) {
+                final String userID = adapter.getRef(position).getKey();
+                String restID = user.getUid();
+
+                // Get name and image then display them
+                databaseReference.child("riders").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        System.out.println(dataSnapshot.getValue());
+                        Map<String, Object> rider = (HashMap<String, Object>) dataSnapshot.getValue();
+                        holder.name.setText(rider.get("name").toString());
+
+                        GlideApp.with(holder.imageView.getContext())
+                                .load(rider.get("photo").toString())
+                                .placeholder(R.drawable.user_profile)
+                                .into(holder.imageView);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                // Display distance
+                databaseReference.child("positions").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+                        Boolean avail = (Boolean) user.get("available");
+                        if (!avail) {
+                            holder.status.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+                        }
+
+                        Point customer = new Point();
+                        customer.setLatitude((double) user.get("latitude"));
+                        customer.setLongitude((double) user.get("longitude"));
+
+                        /* Get haversine class and call method to calculate distance, then display it on the recycler view */
+                        ComputeDistance computeDistance = new ComputeDistance();
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        holder.distance.setText(df.format(computeDistance.getDistance(customer, restaurant)).concat(" km"));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //Set click listener to select user
+            }
+
+            @NonNull
+            @Override
+            public RiderHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View view = LayoutInflater.from(viewGroup.getContext()).
+                        inflate(R.layout.rider_listitem, viewGroup, false);
+
+                return new RiderHolder(view);
+
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
     }
 
     private void refuse(final String orderID) {
@@ -333,4 +462,15 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 }

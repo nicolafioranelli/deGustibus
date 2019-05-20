@@ -114,4 +114,6 @@
     <string name="resTotal">"Totale: "</string>
     <string name="delete">Elimina</string>
     <string name="errProfile">Completa il tuo profilo prima di poter continuare!</string>
+    <string name="select_rider">Seleziona un rider:</string>
+    <string name="title_Order">Ordine</string>
 </resources>

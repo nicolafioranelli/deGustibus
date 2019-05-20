@@ -152,4 +152,6 @@
     <string name="delete">Delete</string>
 
     <string name="errProfile">Complete your profile before continuing!</string>
+    <string name="select_rider">Select your rider:</string>
+    <string name="title_Order">Order</string>
 </resources>

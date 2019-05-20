@@ -188,23 +188,25 @@
             android:layout_height="wrap_content"
             android:divider="@drawable/divider_drawable"
             android:orientation="vertical"
-            android:showDividers="end">
+            android:showDividers="beginning">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/space8"
                 android:padding="@dimen/space8"
-                android:text="Select your rider: "
+                android:text="@string/select_rider"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical" />
+
         </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
     </LinearLayout>
 
     <LinearLayout

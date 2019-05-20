@@ -1,14 +1,11 @@
 package com.madness.restaurant.reservations;
 
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.madness.restaurant.R;
-import com.madness.restaurant.daily.DailyHolder;
 
 public class ReservationHolder extends RecyclerView.ViewHolder {
 
