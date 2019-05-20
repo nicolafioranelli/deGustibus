@@ -1,4 +1,4 @@
-package com.madness.restaurant.Haversine;
+package com.madness.restaurant.haversine;
 
 public class ComputeDistance {
     static final double DEG_RAD = 0.01745329251994;

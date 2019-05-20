@@ -1,6 +1,5 @@
 package com.madness.restaurant.reservations;
 
-import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -9,14 +8,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,14 +29,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.madness.restaurant.GlideApp;
-import com.madness.restaurant.Haversine.ComputeDistance;
-import com.madness.restaurant.Haversine.Point;
 import com.madness.restaurant.R;
+import com.madness.restaurant.haversine.ComputeDistance;
+import com.madness.restaurant.haversine.Point;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +52,12 @@ public class RiderChoiceFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private FirebaseRecyclerAdapter adapter;
+    private RiderAdapter adapter;
     private Point restaurant;
+    private RiderComparable rider;
+    private Geocoder geocoder;
+    private String tempName;
+    private String tempPhoto;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
@@ -59,46 +66,9 @@ public class RiderChoiceFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-
-        // Get restaurant address
-        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, Object> rest = (HashMap<String, Object>) dataSnapshot.getValue();
-                //restAddress = user.get("address").toString();
-                System.out.println(rest.get("address").toString());
-                List<Address> fromLocationName = null;
-                Double latitude = null;
-                Double longitude = null;
-
-                try {
-                    fromLocationName = geocoder.getFromLocationName(rest.get("address").toString(), 1);
-                    if (fromLocationName != null && fromLocationName.size() > 0) {
-                        Address a = fromLocationName.get(0);
-                        latitude = a.getLatitude();
-                        System.out.println(latitude);
-                        longitude = a.getLongitude();
-                    }
-                } catch (Exception e) {
-
-                }
-                restaurant = new Point();
-                restaurant.setLatitude(latitude);
-                restaurant.setLongitude(longitude);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -116,7 +86,31 @@ public class RiderChoiceFragment extends Fragment {
         String orderID = this.getArguments().getString("orderID");
         loadData(orderID, rootView);
 
-        loadAdapter(rootView);
+        convertLocation(new RestPositionCallback() {
+            @Override
+            public void onCallback(String value) {
+                geocoder = new Geocoder(getContext(), Locale.getDefault());
+                List<Address> fromLocationName = null;
+                Double latitude = null;
+                Double longitude = null;
+                try {
+                    fromLocationName = geocoder.getFromLocationName(value, 1);
+                    if (fromLocationName != null && fromLocationName.size() > 0) {
+                        Address a = fromLocationName.get(0);
+                        latitude = a.getLatitude();
+                        longitude = a.getLongitude();
+
+                        restaurant = new Point();
+                        restaurant.setLatitude(latitude);
+                        restaurant.setLongitude(longitude);
+                    }
+                } catch (Exception e) {
+                    Log.e("MAD", "onCallback: ", e);
+                }
+                loadAdapter();
+            }
+        });
+
         return rootView;
     }
 
@@ -213,80 +207,50 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
-    private void loadAdapter(View view) {
-        final Query query = databaseReference.child("positions").orderByChild("available").equalTo(false);
+    private void loadAdapter() {
+        getRiders(new GetRidersCallback() {
+            List<RiderComparable> list = new ArrayList<>();
 
-        FirebaseRecyclerOptions<RiderClass> options = new FirebaseRecyclerOptions.Builder<RiderClass>()
-                .setQuery(query, RiderClass.class)
-                .build();
-
-        adapter = new FirebaseRecyclerAdapter<RiderClass, RiderHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final RiderHolder holder, int position, @NonNull RiderClass model) {
-                final String userID = adapter.getRef(position).getKey();
-                String restID = user.getUid();
-
-                // Get name and image then display them
-                databaseReference.child("riders").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        System.out.println(dataSnapshot.getValue());
-                        Map<String, Object> rider = (HashMap<String, Object>) dataSnapshot.getValue();
-                        holder.name.setText(rider.get("name").toString());
-
-                        GlideApp.with(holder.imageView.getContext())
-                                .load(rider.get("photo").toString())
-                                .placeholder(R.drawable.user_profile)
-                                .into(holder.imageView);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onCallback(RiderComparable rider) {
+                list.add(rider);
+                Collections.sort(list, new Comparator<RiderComparable>() {
+                    public int compare(RiderComparable obj1, RiderComparable obj2) {
+                        // ## Ascending order
+                        return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance())); // To compare integer values
                     }
                 });
+                adapter = new RiderAdapter(getContext(), list);
+                recyclerView.setAdapter(adapter);
+            }
 
-                // Display distance
-                databaseReference.child("positions").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
-                        Boolean avail = (Boolean) user.get("available");
-                        if (!avail) {
-                            holder.status.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
-                        }
-
-                        Point customer = new Point();
-                        customer.setLatitude((double) user.get("latitude"));
-                        customer.setLongitude((double) user.get("longitude"));
-
-                        /* Get haversine class and call method to calculate distance, then display it on the recycler view */
-                        ComputeDistance computeDistance = new ComputeDistance();
-                        DecimalFormat df = new DecimalFormat("#.##");
-                        holder.distance.setText(df.format(computeDistance.getDistance(customer, restaurant)).concat(" km"));
+            @Override
+            public void onUpdate(RiderComparable rider) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getName().equals(rider.getName())) {
+                        list.set(i, rider);
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                }
+                Collections.sort(list, new Comparator<RiderComparable>() {
+                    public int compare(RiderComparable obj1, RiderComparable obj2) {
+                        // ## Ascending order
+                        return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance())); // To compare integer values
                     }
                 });
-
-                //Set click listener to select user
+                adapter.updateData(list);
             }
 
-            @NonNull
             @Override
-            public RiderHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext()).
-                        inflate(R.layout.rider_listitem, viewGroup, false);
-
-                return new RiderHolder(view);
-
+            public void onExit(RiderComparable rider) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getKey().equals(rider.getKey())) {
+                        list.remove(i);
+                    }
+                }
+                adapter.updateData(list);
             }
-        };
+        });
 
-        recyclerView.setAdapter(adapter);
     }
 
     private void refuse(final String orderID) {
@@ -462,15 +426,121 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
+    private void convertLocation(final RestPositionCallback callback) {
+        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> rest = (HashMap<String, Object>) dataSnapshot.getValue();
+                callback.onCallback(rest.get("address").toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopListening();
+    private void retrieveData(String key, final DataRetrieveCallback callback) {
+        databaseReference.child("riders").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+                callback.onCallback(user);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getRiders(final GetRidersCallback callback) {
+        GeoFire geoFire = new GeoFire(databaseReference.child("positions"));
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(restaurant.getLatitude(), restaurant.getLongitude()), 5);
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(final String key, final GeoLocation location) {
+                retrieveData(key, new DataRetrieveCallback() {
+                    @Override
+                    public void onCallback(Map user) {
+                        rider = null;
+                        rider = new RiderComparable();
+                        rider.setAvailable((boolean) user.get("available"));
+                        rider.setName(user.get("name").toString());
+                        rider.setPhoto(user.get("photo").toString());
+                        rider.setKey(key);
+                        Point customer = new Point();
+                        customer.setLatitude(location.latitude);
+                        customer.setLongitude(location.longitude);
+
+                        // Get haversine class and call method to calculate distance, then display it on the recycler view
+                        ComputeDistance computeDistance = new ComputeDistance();
+                        rider.setDistance(computeDistance.getDistance(customer, restaurant));
+
+                        callback.onCallback(rider);
+                    }
+                });
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                rider = null;
+                rider = new RiderComparable();
+                rider.setKey(key);
+                callback.onExit(rider);
+            }
+
+            @Override
+            public void onKeyMoved(final String key, final GeoLocation location) {
+                retrieveData(key, new DataRetrieveCallback() {
+                    @Override
+                    public void onCallback(Map user) {
+                        rider = null;
+                        rider = new RiderComparable();
+                        rider.setAvailable((boolean) user.get("available"));
+                        rider.setName(user.get("name").toString());
+                        rider.setPhoto(user.get("photo").toString());
+                        rider.setKey(key);
+                        Point customer = new Point();
+                        customer.setLatitude(location.latitude);
+                        customer.setLongitude(location.longitude);
+
+                        // Get haversine class and call method to calculate distance, then display it on the recycler view
+                        ComputeDistance computeDistance = new ComputeDistance();
+                        rider.setDistance(computeDistance.getDistance(customer, restaurant));
+
+                        callback.onUpdate(rider);
+                    }
+                });
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    public interface RestPositionCallback {
+        void onCallback(String value);
+    }
+
+    public interface DataRetrieveCallback {
+        void onCallback(Map user);
+    }
+
+    public interface GetRidersCallback {
+        void onCallback(RiderComparable rider);
+
+        void onUpdate(RiderComparable rider);
+
+        void onExit(RiderComparable rider);
     }
 }
