@@ -19,26 +19,20 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 import com.madness.restaurant.haversine.ComputeDistance;
 import com.madness.restaurant.haversine.Point;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,32 +40,39 @@ import java.util.Map;
 
 public class RiderChoiceFragment extends Fragment {
 
+    /* Database references */
     private DatabaseReference databaseReference;
+    private DatabaseReference summaryReference;
+    private DatabaseReference customerReference;
+    private DatabaseReference riderReference;
+
+    /* Value Event Listeners */
     private ValueEventListener summaryListener;
+    private ValueEventListener locationListener;
+    private ValueEventListener customerListener;
+    private ValueEventListener riderListener;
+    private GeoQueryEventListener eventListener;
+
+    /* Firebase and GeoFire */
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private RecyclerView recyclerView;
+    private Geocoder geocoder;
+    private GeoQuery geoQuery;
+
     private LinearLayoutManager linearLayoutManager;
     private RiderAdapter adapter;
     private Point restaurant;
     private RiderComparable rider;
-    private Geocoder geocoder;
-    private GeoQueryEventListener eventListener;
-    private GeoQuery geoQuery;
     private boolean isNew;
     private View view;
-    private ValueEventListener location;
-    private ValueEventListener custName;
-    private DatabaseReference reference;
-    private DatabaseReference reference2;
-    private ValueEventListener data;
-    private DatabaseReference reference3;
+    private OrderData order;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
     }
 
-    /* In the onCreate method all variables containing useful informations are set in a way that other
+    /* In the onCreate method all variables containing useful information are set in a way that other
      * methods can use them once called.
      */
     @Override
@@ -80,9 +81,10 @@ public class RiderChoiceFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        order = new OrderData();
     }
 
-    /* The onCreateView allows to inflate the view of the fragment, in particular here are load informations
+    /* The onCreateView allows to inflate the view of the fragment, in particular here are load information
      * from Firebase related to the order and the riders in case is a new order.
      */
     @Override
@@ -139,17 +141,22 @@ public class RiderChoiceFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        reference.removeEventListener(summaryListener);
-        if (eventListener != null) {
-            geoQuery.removeAllListeners();
+        try {
+            summaryReference.removeEventListener(summaryListener);
+            if (eventListener != null) {
+                geoQuery.removeAllListeners();
+            }
+            databaseReference.child("restaurants").child(user.getUid()).removeEventListener(locationListener);
+            customerReference.removeEventListener(customerListener);
+            riderReference.removeEventListener(riderListener);
+        } catch (Exception e) {
+            Log.e("MAD", "onDetach: ", e);
         }
-        databaseReference.child("restaurants").child(user.getUid()).removeEventListener(location);
-        reference2.removeEventListener(custName);
-        reference3.addValueEventListener(data);
     }
 
     /* Retrieve data from Firebase and load it into the summary at the beginning of the fragment */
     private void loadData(final String id, final View view, final isNewCallback callback) {
+        /* Items of the view are here retrieved to be populated during the firebase request */
         final TextView status = view.findViewById(R.id.status);
         final TextView customer = view.findViewById(R.id.customer);
         final TextView description = view.findViewById(R.id.description);
@@ -159,15 +166,24 @@ public class RiderChoiceFragment extends Fragment {
         final Button button = view.findViewById(R.id.orderButton);
         final Button refuse = view.findViewById(R.id.refuseButton);
 
-        reference = databaseReference.child("orders").child(id);
-        summaryListener = reference.addValueEventListener(new ValueEventListener() {
+        summaryReference = databaseReference.child("orders").child(id);
+        summaryListener = summaryReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, Object> orderData = (HashMap<String, Object>) dataSnapshot.getValue();
+                final Map<String, Object> orderData = (HashMap<String, Object>) dataSnapshot.getValue();
+                order.setCustomerID(orderData.get("customerID").toString());
+                order.setCustomerAddress(orderData.get("customerAddress").toString());
+                order.setDeliveryDate(orderData.get("deliveryDate").toString());
+                order.setDeliveryHour(orderData.get("deliveryHour").toString());
+                order.setRestaurantID(orderData.get("restaurantID").toString());
+                order.setTotalPrice(orderData.get("totalPrice").toString());
+                order.setDescription(orderData.get("description").toString());
+                order.setStatus(orderData.get("status").toString());
+                order.setOrderKey(dataSnapshot.getKey());
 
                 /* Set the name of the customer */
-                reference2 = databaseReference.child("customers").child(orderData.get("customerID").toString());
-                custName = reference2.addValueEventListener(new ValueEventListener() {
+                customerReference = databaseReference.child("customers").child(orderData.get("customerID").toString());
+                customerListener = customerReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
@@ -189,48 +205,48 @@ public class RiderChoiceFragment extends Fragment {
                 hour.setText(orderData.get("deliveryHour").toString());
                 if (orderData.get("status").toString().equals("new")) {
                     refuse.setVisibility(View.VISIBLE);
-                    //button.setVisibility(View.VISIBLE);
                     status.setText(R.string.status_new);
                     refuse.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            refuse(id);
-                        }
-                    });
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            accept(id);
+                            NewNotificationClass notification = new NewNotificationClass(getContext());
+                            notification.refuseAndNotify(order);
+                            view.findViewById(R.id.select_rider).setVisibility(View.GONE);
+                            view.findViewById(R.id.recyclerView).setVisibility(View.GONE);
                         }
                     });
                     isNew = true;
                 } else if (orderData.get("status").toString().equals("refused")) {
                     refuse.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_refused);
                     isNew = false;
                 } else if (orderData.get("status").toString().equals("incoming")) {
                     refuse.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
                     isNew = false;
                 } else if (orderData.get("status").toString().equals("done")) {
                     refuse.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_done);
                     isNew = false;
                 } else if (orderData.get("status").toString().equals("delivering")) {
                     refuse.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(getString(R.string.status_deliverying));
                     isNew = false;
                 } else if (orderData.get("status").toString().equals("elaboration")) {
                     refuse.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
                     isNew = false;
                 }
 
+                /* Give two different behaviours to the same fragment: if isNew is true it will display
+                 * the section related to the riders choice, while if the order is not a new order it will
+                 * be simply a review of the past order.
+                 */
                 if (isNew) {
                     callback.onCallback(isNew);
                 } else {
@@ -238,7 +254,6 @@ public class RiderChoiceFragment extends Fragment {
                     view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                     callback.onCallback(isNew);
                 }
-
             }
 
             @Override
@@ -248,25 +263,45 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
+    /* This method allows to download data from Firebase through different calls to Event Listeners
+     * at the end the custom Adapter is populated and are present also some methods for data change/delete.
+     */
     private void loadAdapter() {
+        /* Get all the riders in a certain range (here defined in 5 kilometers) */
         getRiders(new GetRidersCallback() {
+            /* Save the riders in a List of RiderComparable type */
             List<RiderComparable> list = new ArrayList<>();
 
             @Override
             public void onCallback(RiderComparable rider) {
-                list.add(rider);
-                Collections.sort(list, new Comparator<RiderComparable>() {
-                    public int compare(RiderComparable obj1, RiderComparable obj2) {
-                        // ## Ascending order
-                        return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance())); // To compare integer values
+                boolean exists = false;
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getName().equals(rider.getName())) {
+                        exists = true;
+                        list.set(i, rider);
                     }
-                });
-                adapter = new RiderAdapter(getContext(), list);
-                recyclerView.setAdapter(adapter);
-                view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                }
+                if(exists) {
+                    adapter.updateData(list);
+                } else {
+                    list.add(rider);
+                    /* Sort the riders in the list according to an ascending order (distance) */
+                    Collections.sort(list, new Comparator<RiderComparable>() {
+                        public int compare(RiderComparable obj1, RiderComparable obj2) {
+                            // ## Ascending order
+                            return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance()));
+                        }
+                    });
+                    /* Set the adapter and show the recycler view while make invisible the progress bar */
+                    adapter = new RiderAdapter(getContext(), view, list, order);
+                    recyclerView.setAdapter(adapter);
+                    view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                }
+
             }
 
+            /* On update method finds the rider which was update (or has been inserted in the GeoFire radius */
             @Override
             public void onUpdate(RiderComparable rider) {
                 for (int i = 0; i < list.size(); i++) {
@@ -276,13 +311,14 @@ public class RiderChoiceFragment extends Fragment {
                 }
                 Collections.sort(list, new Comparator<RiderComparable>() {
                     public int compare(RiderComparable obj1, RiderComparable obj2) {
-                        // ## Ascending order
-                        return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance())); // To compare integer values
+                        return Double.valueOf(obj1.getDistance()).compareTo(Double.valueOf(obj2.getDistance()));
                     }
                 });
+                /* This method of the adapter reload all the riders in order to update current shown items */
                 adapter.updateData(list);
             }
 
+            /* On exit method is called once a rider goes out of the GeoFire radius */
             @Override
             public void onExit(RiderComparable rider) {
                 for (int i = 0; i < list.size(); i++) {
@@ -293,184 +329,13 @@ public class RiderChoiceFragment extends Fragment {
                 adapter.updateData(list);
             }
         });
-
     }
 
-    private void refuse(final String orderID) {
-        Query refuseQuery = databaseReference.child("orders").child(orderID);
-
-        refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    /* Set order as refused */
-                    databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                                objectMap.put("status", "refused");
-                                databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-
-                                /* Send notification to user */
-                                final Map<String, Object> newNotification = new HashMap<String, Object>();
-                                newNotification.put("type", getString(R.string.typeNot_refused));
-
-                                Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                                String restaurantName = restaurantMap.get("name").toString();
-                                newNotification.put("description", getString(R.string.desc1) + restaurantName);
-
-                                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                                Date date = new Date();
-                                newNotification.put("date", dateFormat.format(date));
-
-                                databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void accept(final String orderID) {
-        Query selectDeliveryman = databaseReference.child("riders").limitToFirst(1);
-
-        selectDeliveryman.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    /* Rider selection */
-                    String temp = null;
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        temp = snapshot.getKey();
-
-                    }
-                    final String riderID = temp;
-
-                    Query updateQuery = databaseReference.child("orders").child(orderID);
-                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                            objectMap.put("status", "incoming");
-                            objectMap.put("deliverymanID", riderID);
-                            databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-                            incomingNotifications(objectMap.get("restaurantID").toString(), riderID, objectMap.get("customerID").toString(), orderID);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                } else {
-                    /* No riders available error */
-                    Query updateQuery = databaseReference.child("orders").child(orderID);
-
-                    updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                            databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()) {
-                                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                                        objectMap.put("status", "done");
-                                        databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-
-                                        /* Send notification to user */
-                                        final Map<String, Object> newNotification = new HashMap<String, Object>();
-                                        newNotification.put("type", getString(R.string.typeNot_noRider));
-
-                                        Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                                        String restaurantName = restaurantMap.get("name").toString();
-                                        newNotification.put("description", getString(R.string.desc1) + restaurantName + getString(R.string.desc2));
-
-                                        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                                        Date date = new Date();
-                                        newNotification.put("date", dateFormat.format(date));
-
-                                        databaseReference.child("notifications").child(objectMap.get("customerID").toString()).push().setValue(newNotification);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void incomingNotifications(String restaurantID, final String riderID, final String customerID, final String orderID) {
-        databaseReference.child("restaurants").child(restaurantID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    /* Send notification to user */
-                    final Map<String, Object> newNotification = new HashMap<String, Object>();
-                    newNotification.put("type", getString(R.string.typeNot_accepted));
-
-                    Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
-                    String restaurantName = restaurantMap.get("name").toString();
-                    newNotification.put("description", getString(R.string.desc3) + orderID.substring(1, 6) + getString(R.string.desc4) + restaurantName);
-
-                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Date date = new Date();
-                    newNotification.put("date", dateFormat.format(date));
-
-                    databaseReference.child("notifications").child(customerID).push().setValue(newNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            /* Send notification to rider */
-                            final Map<String, Object> notificationRider = new HashMap<String, Object>();
-                            notificationRider.put("type", getString(R.string.typeNot_incoming));
-                            notificationRider.put("description", getString(R.string.desc5) + orderID.substring(1, 6) + getString(R.string.desc6));
-                            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                            Date date = new Date();
-                            notificationRider.put("date", dateFormat.format(date));
-
-                            databaseReference.child("notifications").child(riderID).push().setValue(notificationRider);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
+    /* The convertLocation method is used to convert the restaurant address (written) into a set of GPS
+     * coordinates which are obtained through a callback after a query on the database
+     */
     private void convertLocation(final RestPositionCallback callback) {
-        location = new ValueEventListener() {
+        locationListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> rest = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -483,12 +348,13 @@ public class RiderChoiceFragment extends Fragment {
             }
         };
 
-        databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(location);
+        databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(locationListener);
     }
 
+    /* This method retrieves data about the riders */
     private void retrieveData(String key, final DataRetrieveCallback callback) {
-        reference3 = databaseReference.child("riders").child(key);
-        data = reference3.addValueEventListener(new ValueEventListener() {
+        riderReference = databaseReference.child("riders").child(key);
+        riderListener = riderReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -502,8 +368,10 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
+    /* This method retrieves all the riders which are in the GeoFire radius */
     private void getRiders(final GetRidersCallback callback) {
         GeoFire geoFire = new GeoFire(databaseReference.child("positions"));
+        /* This GeoQuery retrieves all the riders whose distance is in 5 kilometers from the restaurant location */
         geoQuery = geoFire.queryAtLocation(new GeoLocation(restaurant.getLatitude(), restaurant.getLongitude()), 5);
 
         eventListener = new GeoQueryEventListener() {
@@ -512,6 +380,7 @@ public class RiderChoiceFragment extends Fragment {
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
+                        /* This method retrieves the information of the rider and will add them to the item to be passed to the adapter */
                         rider = null;
                         rider = new RiderComparable();
                         rider.setAvailable((boolean) user.get("available"));
@@ -533,6 +402,7 @@ public class RiderChoiceFragment extends Fragment {
 
             @Override
             public void onKeyExited(String key) {
+                /* Case where a rider exits the geofire radius */
                 rider = null;
                 rider = new RiderComparable();
                 rider.setKey(key);
@@ -541,6 +411,9 @@ public class RiderChoiceFragment extends Fragment {
 
             @Override
             public void onKeyMoved(final String key, final GeoLocation location) {
+                /* Same thing as key entered is performed since is similar to a new incoming but the callback
+                 * method is another because it just update that modified rider.
+                 */
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
@@ -569,13 +442,13 @@ public class RiderChoiceFragment extends Fragment {
 
             @Override
             public void onGeoQueryError(DatabaseError error) {
-
             }
         };
 
         geoQuery.addGeoQueryEventListener(eventListener);
     }
 
+    /* Interfaces for callbacks */
     public interface RestPositionCallback {
         void onCallback(String value);
     }

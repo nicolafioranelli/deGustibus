@@ -21,11 +21,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder> {
 
     Context context;
+    View view;
     List<RiderComparable> riderList;
+    OrderData orderData;
 
-    public RiderAdapter(Context context, List<RiderComparable> riderList) {
+    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, OrderData orderData) {
         this.context = context;
+        this.view = view;
         this.riderList = riderList;
+        this.orderData = orderData;
     }
 
     @NonNull
@@ -46,15 +50,22 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                 .into(holder.imageView);
         if (!riderComparable.getAvailable()) {
             holder.status.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        } else {
+            holder.status.setColorFilter(context.getResources().getColor(R.color.colorDefault), PorterDuff.Mode.SRC_IN);
         }
         DecimalFormat df = new DecimalFormat("#.##");
         holder.distance.setText(df.format(riderComparable.getDistance()).concat(" km"));
 
-        if (!riderComparable.getAvailable()) {
+        if (riderComparable.getAvailable()) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     System.out.println(riderComparable.getKey());
+                    orderData.setRiderID(riderComparable.getKey());
+                    NewNotificationClass notification = new NewNotificationClass(context);
+                    notification.acceptAndSend(orderData);
+                    view.findViewById(R.id.select_rider).setVisibility(View.GONE);
+                    view.findViewById(R.id.recyclerView).setVisibility(View.GONE);
                 }
             });
         }
