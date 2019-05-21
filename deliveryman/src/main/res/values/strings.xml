@@ -125,4 +125,5 @@
     <string name="buttonDeliver">Deliver</string>
     <string name="errProfile">Complete your profile before continuing!</string>
     <string name="menu_available">Available</string>
+    <string name="showInMaps">map</string>
 </resources>

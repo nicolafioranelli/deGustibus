@@ -1,11 +1,16 @@
 package com.madness.deliveryman.incoming;
 
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +31,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class IncomingFragment extends Fragment {
@@ -95,14 +102,9 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
-                holder.restaurantAddress.setText(model.getRestaurantAddress());
-                holder.customerAddress.setText(model.getCustomerAddress());
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
-
-                // set map with restaurant address
-                holder.setMapLocation(model.getCustomerAddress());
-
+                holder.cli = model.getCustomerAddress();
 
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -126,7 +128,9 @@ public class IncomingFragment extends Fragment {
                         if (dataSnapshot.exists()) {
                             Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                             String restaurantName = objectMap.get("name").toString();
+                            String address = objectMap.get("address").toString();
                             holder.restaurant.setText(restaurantName);
+                            holder.res = address;
                         }
                     }
 
@@ -135,6 +139,39 @@ public class IncomingFragment extends Fragment {
 
                     }
                 });
+
+
+
+                // show restaurant position in maps
+                holder.restaurantPos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // new intent
+                        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ holder.res +"?z=" + 17);
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+                        startActivity(mapIntent);
+                    }
+                });
+
+                // show client position in maps
+                holder.clientPos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // new intent
+                        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ holder.cli +"?z=" + 17);
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+                        startActivity(mapIntent);
+
+                    }
+                });
+
+
+
+
+
+
                 holder.status.setText(model.getStatus());
                 System.out.println(model.getStatus());
                 if (model.getStatus().equals("incoming")) {
