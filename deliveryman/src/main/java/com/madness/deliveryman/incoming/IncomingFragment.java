@@ -100,6 +100,9 @@ public class IncomingFragment extends Fragment {
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
 
+                // set map with restaurant address
+                holder.setMapLocation(model.getCustomerAddress());
+
 
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
