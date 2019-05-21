@@ -56,13 +56,24 @@ public class RiderChoiceFragment extends Fragment {
     private Point restaurant;
     private RiderComparable rider;
     private Geocoder geocoder;
-    private String tempName;
-    private String tempPhoto;
+    private GeoQueryEventListener eventListener;
+    private GeoQuery geoQuery;
+    private boolean isNew;
+    private View view;
+    private ValueEventListener location;
+    private ValueEventListener custName;
+    private DatabaseReference reference;
+    private DatabaseReference reference2;
+    private ValueEventListener data;
+    private DatabaseReference reference3;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
     }
 
+    /* In the onCreate method all variables containing useful informations are set in a way that other
+     * methods can use them once called.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +82,9 @@ public class RiderChoiceFragment extends Fragment {
         user = firebaseAuth.getCurrentUser();
     }
 
-    /* During the creation of the view the title is set and layout is generated */
+    /* The onCreateView allows to inflate the view of the fragment, in particular here are load informations
+     * from Firebase related to the order and the riders in case is a new order.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,47 +95,61 @@ public class RiderChoiceFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+        view = rootView;
 
         String orderID = this.getArguments().getString("orderID");
-        loadData(orderID, rootView);
-
-        convertLocation(new RestPositionCallback() {
+        /* Here data about the order is loaded into the first part of the fragment, then if loadData
+         * returns true (this happens in case is a new order) the part related to the rider choice is
+         * displayed and computed, else no other operation is perfomed.
+         */
+        loadData(orderID, rootView, new isNewCallback() {
             @Override
-            public void onCallback(String value) {
-                geocoder = new Geocoder(getContext(), Locale.getDefault());
-                List<Address> fromLocationName = null;
-                Double latitude = null;
-                Double longitude = null;
-                try {
-                    fromLocationName = geocoder.getFromLocationName(value, 1);
-                    if (fromLocationName != null && fromLocationName.size() > 0) {
-                        Address a = fromLocationName.get(0);
-                        latitude = a.getLatitude();
-                        longitude = a.getLongitude();
+            public void onCallback(boolean value) {
+                if (value) {
+                    convertLocation(new RestPositionCallback() {
+                        @Override
+                        public void onCallback(String value) {
+                            geocoder = new Geocoder(getContext(), Locale.getDefault());
+                            List<Address> fromLocationName = null;
+                            Double latitude = null;
+                            Double longitude = null;
+                            try {
+                                fromLocationName = geocoder.getFromLocationName(value, 1);
+                                if (fromLocationName != null && fromLocationName.size() > 0) {
+                                    Address a = fromLocationName.get(0);
+                                    latitude = a.getLatitude();
+                                    longitude = a.getLongitude();
 
-                        restaurant = new Point();
-                        restaurant.setLatitude(latitude);
-                        restaurant.setLongitude(longitude);
-                    }
-                } catch (Exception e) {
-                    Log.e("MAD", "onCallback: ", e);
+                                    restaurant = new Point();
+                                    restaurant.setLatitude(latitude);
+                                    restaurant.setLongitude(longitude);
+                                }
+                            } catch (Exception e) {
+                                Log.e("MAD", "onCallback: ", e);
+                            }
+                            loadAdapter();
+                        }
+                    });
                 }
-                loadAdapter();
             }
         });
-
         return rootView;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        databaseReference.removeEventListener(summaryListener);
+        reference.removeEventListener(summaryListener);
+        if (eventListener != null) {
+            geoQuery.removeAllListeners();
+        }
+        databaseReference.child("restaurants").child(user.getUid()).removeEventListener(location);
+        reference2.removeEventListener(custName);
+        reference3.addValueEventListener(data);
     }
 
-
     /* Retrieve data from Firebase and load it into the summary at the beginning of the fragment */
-    private void loadData(final String id, final View view) {
+    private void loadData(final String id, final View view, final isNewCallback callback) {
         final TextView status = view.findViewById(R.id.status);
         final TextView customer = view.findViewById(R.id.customer);
         final TextView description = view.findViewById(R.id.description);
@@ -132,13 +159,15 @@ public class RiderChoiceFragment extends Fragment {
         final Button button = view.findViewById(R.id.orderButton);
         final Button refuse = view.findViewById(R.id.refuseButton);
 
-        summaryListener = databaseReference.child("orders").child(id).addValueEventListener(new ValueEventListener() {
+        reference = databaseReference.child("orders").child(id);
+        summaryListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> orderData = (HashMap<String, Object>) dataSnapshot.getValue();
 
                 /* Set the name of the customer */
-                databaseReference.child("customers").child(orderData.get("customerID").toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                reference2 = databaseReference.child("customers").child(orderData.get("customerID").toString());
+                custName = reference2.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
@@ -160,7 +189,7 @@ public class RiderChoiceFragment extends Fragment {
                 hour.setText(orderData.get("deliveryHour").toString());
                 if (orderData.get("status").toString().equals("new")) {
                     refuse.setVisibility(View.VISIBLE);
-                    button.setVisibility(View.VISIBLE);
+                    //button.setVisibility(View.VISIBLE);
                     status.setText(R.string.status_new);
                     refuse.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -174,30 +203,42 @@ public class RiderChoiceFragment extends Fragment {
                             accept(id);
                         }
                     });
+                    isNew = true;
                 } else if (orderData.get("status").toString().equals("refused")) {
                     refuse.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                     status.setText(R.string.status_refused);
+                    isNew = false;
                 } else if (orderData.get("status").toString().equals("incoming")) {
                     refuse.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
+                    isNew = false;
                 } else if (orderData.get("status").toString().equals("done")) {
                     refuse.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                     status.setText(R.string.status_done);
+                    isNew = false;
                 } else if (orderData.get("status").toString().equals("delivering")) {
                     refuse.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                     status.setText(getString(R.string.status_deliverying));
+                    isNew = false;
                 } else if (orderData.get("status").toString().equals("elaboration")) {
                     refuse.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
+                    isNew = false;
                 }
 
-                view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                if (isNew) {
+                    callback.onCallback(isNew);
+                } else {
+                    view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                    callback.onCallback(isNew);
+                }
+
             }
 
             @Override
@@ -222,6 +263,8 @@ public class RiderChoiceFragment extends Fragment {
                 });
                 adapter = new RiderAdapter(getContext(), list);
                 recyclerView.setAdapter(adapter);
+                view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
 
             @Override
@@ -427,7 +470,7 @@ public class RiderChoiceFragment extends Fragment {
     }
 
     private void convertLocation(final RestPositionCallback callback) {
-        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        location = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> rest = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -438,11 +481,14 @@ public class RiderChoiceFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(location);
     }
 
     private void retrieveData(String key, final DataRetrieveCallback callback) {
-        databaseReference.child("riders").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference3 = databaseReference.child("riders").child(key);
+        data = reference3.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -458,9 +504,9 @@ public class RiderChoiceFragment extends Fragment {
 
     private void getRiders(final GetRidersCallback callback) {
         GeoFire geoFire = new GeoFire(databaseReference.child("positions"));
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(restaurant.getLatitude(), restaurant.getLongitude()), 5);
+        geoQuery = geoFire.queryAtLocation(new GeoLocation(restaurant.getLatitude(), restaurant.getLongitude()), 5);
 
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+        eventListener = new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, final GeoLocation location) {
                 retrieveData(key, new DataRetrieveCallback() {
@@ -525,7 +571,9 @@ public class RiderChoiceFragment extends Fragment {
             public void onGeoQueryError(DatabaseError error) {
 
             }
-        });
+        };
+
+        geoQuery.addGeoQueryEventListener(eventListener);
     }
 
     public interface RestPositionCallback {
@@ -542,5 +590,9 @@ public class RiderChoiceFragment extends Fragment {
         void onUpdate(RiderComparable rider);
 
         void onExit(RiderComparable rider);
+    }
+
+    public interface isNewCallback {
+        void onCallback(boolean value);
     }
 }
