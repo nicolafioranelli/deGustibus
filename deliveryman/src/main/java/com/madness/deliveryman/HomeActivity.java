@@ -20,6 +20,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,12 +35,13 @@ import com.madness.deliveryman.incoming.IncomingFragment;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 import com.madness.deliveryman.profile.EditProfileFragment;
 import com.madness.deliveryman.profile.ProfileFragment;
+import com.madness.deliveryman.MapFragment;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener, OnMapReadyCallback {
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -196,6 +200,16 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
+            case R.id.nav_map:
+                try {
+                    fragmentClass = MapFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
         }
         item.setChecked(true);
 
@@ -235,7 +249,10 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
-            } else {
+            } else if(fragment instanceof MapFragment) {
+                navigationView.getMenu().findItem(R.id.nav_map).setChecked(true);
+            }
+            else{
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
         }
@@ -277,4 +294,8 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
 }
