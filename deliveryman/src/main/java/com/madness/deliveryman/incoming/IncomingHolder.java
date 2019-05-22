@@ -26,7 +26,7 @@ import java.util.Locale;
 public class IncomingHolder extends RecyclerView.ViewHolder {
 
     public TextView status, customer, restaurant, date, hour, price, customerAddress, restaurantAddres;
-    public Button button, refuse, clientPos, restaurantPos;
+    public Button button, refuse, map;
 
 
     public IncomingHolder(final View itemView) {
@@ -41,6 +41,6 @@ public class IncomingHolder extends RecyclerView.ViewHolder {
         refuse = itemView.findViewById(R.id.refuseButton);
         customerAddress = itemView.findViewById(R.id.customerAddress);
         restaurantAddres = itemView.findViewById(R.id.restaurantAddress);
-
+        map = itemView.findViewById(R.id.maps);
     }
 }

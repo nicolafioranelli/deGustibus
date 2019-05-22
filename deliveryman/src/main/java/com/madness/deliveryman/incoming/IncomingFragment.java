@@ -169,6 +169,43 @@ public class IncomingFragment extends Fragment {
                 });*/
 
 
+                if(model.getStatus().equals("incoming") || model.getStatus().equals("elaboration")){
+                    // show the position of the restaurant
+                    Log.d("INCOMING", "onBindViewHolder: " + holder.restaurantAddres.getText());
+
+                    holder.map.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // new intent
+                            Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.restaurantAddres.getText() + "&mode=w");
+                            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                            mapIntent.setPackage("com.google.android.apps.maps");
+                            startActivity(mapIntent);
+
+                        }
+                    });
+                }else if(model.getStatus().equals("delivering")){
+                    // show the position of the customer
+                    Log.d("DELIVERING", "onBindViewHolder: " + model.getCustomerAddress());
+                    holder.map.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // new intent
+                            Uri gmmIntentUri = Uri.parse("google.navigation:q="+ model.getCustomerAddress() + "&mode=w");
+                            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                            mapIntent.setPackage("com.google.android.apps.maps");
+                            startActivity(mapIntent);
+                        }
+                    });
+                }else if (model.getStatus().equals("done")||model.getStatus().equals("refused")){
+                    // hide the map
+                    holder.map.setVisibility(View.GONE);
+                }
+
+
+
+
+
                 holder.status.setText(model.getStatus());
 
                 if (model.getStatus().equals("incoming")) {
