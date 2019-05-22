@@ -147,7 +147,7 @@ public class IncomingFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         // new intent
-                        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ holder.res);
+                        Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.res + "&mode=w");
                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                         mapIntent.setPackage("com.google.android.apps.maps");
                         startActivity(mapIntent);
@@ -159,7 +159,7 @@ public class IncomingFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         // new intent
-                        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ holder.cli);
+                        Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.cli + "&mode=w");
                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                         mapIntent.setPackage("com.google.android.apps.maps");
                         startActivity(mapIntent);
