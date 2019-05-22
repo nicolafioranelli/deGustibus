@@ -104,7 +104,8 @@ public class IncomingFragment extends Fragment {
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
-                holder.cli = model.getCustomerAddress();
+                holder.customerAddress.setText(model.getCustomerAddress());
+                holder.price.setText("€ "+model.getTotalPrice());
 
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -130,7 +131,7 @@ public class IncomingFragment extends Fragment {
                             String restaurantName = objectMap.get("name").toString();
                             String address = objectMap.get("address").toString();
                             holder.restaurant.setText(restaurantName);
-                            holder.res = address;
+                            holder.restaurantAddres.setText(address);
                         }
                     }
 
@@ -143,7 +144,7 @@ public class IncomingFragment extends Fragment {
 
 
                 // show restaurant position in maps
-                holder.restaurantPos.setOnClickListener(new View.OnClickListener() {
+                /*holder.restaurantPos.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // new intent
@@ -165,15 +166,11 @@ public class IncomingFragment extends Fragment {
                         startActivity(mapIntent);
 
                     }
-                });
-
-
-
-
+                });*/
 
 
                 holder.status.setText(model.getStatus());
-                System.out.println(model.getStatus());
+
                 if (model.getStatus().equals("incoming")) {
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);
@@ -245,11 +242,6 @@ public class IncomingFragment extends Fragment {
 
             }
         });
-
-
-        // manage the map
-        // TODO
-
 
         return rootView;
     }

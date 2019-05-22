@@ -25,25 +25,22 @@ import java.util.Locale;
 
 public class IncomingHolder extends RecyclerView.ViewHolder {
 
-    public TextView status, customer, restaurant, date, hour, price;
+    public TextView status, customer, restaurant, date, hour, price, customerAddress, restaurantAddres;
     public Button button, refuse, clientPos, restaurantPos;
 
-    public String cli, res;
 
     public IncomingHolder(final View itemView) {
         super(itemView);
         status = itemView.findViewById(R.id.status);
         customer = itemView.findViewById(R.id.customer);
-        //customerAddress = itemView.findViewById(R.id.custAddress);
         restaurant = itemView.findViewById(R.id.restaurant);
-        //restaurantAddress = itemView.findViewById(R.id.restAddress);
         date = itemView.findViewById(R.id.date);
         hour = itemView.findViewById(R.id.hour);
         price = itemView.findViewById(R.id.price);
         button = itemView.findViewById(R.id.orderButton);
         refuse = itemView.findViewById(R.id.refuseButton);
-        clientPos = itemView.findViewById(R.id.customerMaps);
-        restaurantPos = itemView.findViewById(R.id.restaurantMaps);
+        customerAddress = itemView.findViewById(R.id.customerAddress);
+        restaurantAddres = itemView.findViewById(R.id.restaurantAddress);
 
     }
 }
