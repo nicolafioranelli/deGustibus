@@ -101,7 +101,7 @@
     <string name="desc1">"Oh no! Sembra che il tuo ordine sia stato rifiutato da "</string>
     <string name="desc2">" perchè non risulta disponibile alcun fattorino al momento!"</string>
     <string name="desc3">Il tuo ordine #</string>
-    <string name="desc4">" sia stato accettato da "</string>
+    <string name="desc4">" è stato accettato da "</string>
     <string name="desc5">C\'è un nuovo ordine (#</string>
     <string name="desc6">) in attesa di essere consegnato. Verifica le tue nuove consegne.</string>
     <string name="resStatus">"Stato: "</string>

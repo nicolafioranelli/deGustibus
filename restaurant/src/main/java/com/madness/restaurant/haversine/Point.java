@@ -1,4 +1,4 @@
-package com.madness.restaurant.Haversine;
+package com.madness.restaurant.haversine;
 
 public class Point {
 

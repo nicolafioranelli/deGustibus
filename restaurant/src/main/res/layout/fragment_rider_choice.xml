@@ -184,6 +184,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/select_rider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="@drawable/divider_drawable"
@@ -198,8 +199,6 @@
                 android:text="@string/select_rider"
                 android:textSize="15dp"
                 android:textStyle="bold" />
-
-
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
