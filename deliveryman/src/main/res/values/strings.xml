@@ -128,4 +128,9 @@
     <string name="showInMaps">map</string>
     <string name="new_notification">New notification!</string>
     <string name="notification_message">Open the notification section ...</string>
+    
+    <string name="gps">Please allow the GPS!</string>
+    <string name="err_name">Name is required!</string>
+    <string name="err_desc">Description in required!</string>
+    <string name="err_phone">Phone is required!</string>
 </resources>

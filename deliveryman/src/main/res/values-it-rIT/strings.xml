@@ -96,4 +96,8 @@
     <string name="showInMaps">mappa</string>
     <string name="new_notification">Nuova notifica!</string>
     <string name="notification_message">Apri la sezione notifiche ...</string>
+    <string name="gps">Per favore attiva il GPS!</string>
+    <string name="err_desc">Inserisci una descrizione!</string>
+    <string name="err_name">Inserisci il tuo nome!</string>
+    <string name="err_phone">Inserisci un telefono!</string>
 </resources>

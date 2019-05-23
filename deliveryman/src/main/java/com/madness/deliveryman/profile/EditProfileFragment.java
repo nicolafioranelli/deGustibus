@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.deliveryman.BuildConfig;
 import com.madness.deliveryman.GlideApp;
+import com.madness.deliveryman.HomeFragment;
 import com.madness.deliveryman.R;
 
 import java.io.ByteArrayOutputStream;
@@ -63,11 +65,16 @@ public class EditProfileFragment extends Fragment {
     private RadioButton button;
 
     private String cameraFilePath;
-    private SharedPreferences pref;
     private String vehicle;
 
     private Uri mImageUri = null;
     private String selector;
+
+    private DatabaseReference databaseReference;
+    private ValueEventListener listener;
+    private DatabaseReference listenerReference;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -77,8 +84,10 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
         setHasOptionsMenu(true);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
     }
 
     /* This method simply sets the title on the toolbar */
@@ -89,46 +98,11 @@ public class EditProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         getActivity().setTitle(getString(R.string.title_Edit));
-        return rootView;
-    }
 
-    /* The method retrieves all the elements in the view and populates them with the values
-     * available in the bundle or in the shared preferences.
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        img = getView().findViewById(R.id.imageview);
-
+        findViews(rootView);
         loadFromFirebase();
-
-        vehicles = getView().findViewById(R.id.rg_edit_vehicle);
-        vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                button = getView().findViewById(checkedId);
-                switch (button.getId()) {
-                    case R.id.rb_edit_bike: {
-                        vehicle = "bike";
-                    }
-                    break;
-                    case R.id.rb_edit_car: {
-                        vehicle = "car";
-                    }
-                    break;
-                    case R.id.rb_edit_motorbike: {
-                        vehicle = "motorbike";
-                    }
-                    break;
-                }
-            }
-        });
-
         getPhoto(getView());
+        return rootView;
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml) */
@@ -143,21 +117,42 @@ public class EditProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-            storeOnFirebase();
-            delPrefPhoto();
 
-            /* Handle save option and go back */
-            Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            return true;
+            if (TextUtils.isEmpty(fullname.getText()) |
+                    TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText())) {
+
+                fullname.setError(getResources().getString(R.string.err_name));
+                desc.setError(getResources().getString(R.string.err_desc));
+                phone.setError(getResources().getString(R.string.err_phone));
+            } else {
+                storeOnFirebase();
+                delPrefPhoto();
+
+                /* Handle save option and go back */
+                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                if (getArguments() != null) {
+                    try {
+                        Fragment fragment = null;
+                        Class fragmentClass;
+                        fragmentClass = HomeFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                    } catch (Exception e) {
+                    }
+                } else {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    return true;
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     private String getPrefPhoto() {
         SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
         return pref.getString("photo", null);
     }
 
@@ -350,8 +345,6 @@ public class EditProfileFragment extends Fragment {
      * the database under the child "riders" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
         DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();
         final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());
 
@@ -360,6 +353,15 @@ public class EditProfileFragment extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
+        if ((button = getView().findViewById(R.id.rb_edit_bike)).isChecked()) {
+            vehicle = "bike";
+        }
+        if ((button = getView().findViewById(R.id.rb_edit_car)).isChecked()) {
+            vehicle = "car";
+        } else if ((button = getView().findViewById(R.id.rb_edit_motorbike)).isChecked()) {
+            vehicle = "motorbike";
+        }
+
         map.put("vehicle", this.vehicle);
 
         if (mImageUri != null) {
@@ -389,54 +391,86 @@ public class EditProfileFragment extends Fragment {
                 Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
             }
         } else {
-            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            mDatabase.child("riders").child(user.getUid()).updateChildren(map);
+            databaseReference.child("riders").child(user.getUid()).updateChildren(map);
         }
     }
 
     private void loadFromFirebase() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("riders").child(user.getUid());
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        listenerReference = databaseReference.child("riders").child(user.getUid());
+        listener = listenerReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+                Map<String, Object> userData = (HashMap<String, Object>) dataSnapshot.getValue();
+                if (getArguments() == null) {
+                    /* Load items of the view */
+                    fullname.setText(userData.get("name").toString());
+                    email.setText(userData.get("email").toString());
+                    desc.setText(userData.get("desc").toString());
+                    phone.setText(userData.get("phone").toString());
 
-                /* Load items of the view */
-                fullname.setText(user.get("name").toString());
-                email.setText(user.get("email").toString());
-                desc.setText(user.get("desc").toString());
-                phone.setText(user.get("phone").toString());
+                    String pic = null;
+                    if (userData.get("photo") != null) {
+                        pic = userData.get("photo").toString();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
 
-                String pic = null;
-                if (user.get("photo") != null) {
-                    pic = user.get("photo").toString();
-                }
-                /* Glide */
-                GlideApp.with(getContext())
-                        .load(pic)
-                        .placeholder(R.drawable.user_profile)
-                        .into(img);
-
-                selector = user.get("vehicle").toString();
-                switch (selector) {
-                    case "bike": {
-                        button = getView().findViewById(R.id.rb_edit_bike);
-                        button.toggle();
+                    if (userData.get("vehicle") == null) {
+                        selector = "bike";
+                    } else {
+                        selector = userData.get("vehicle").toString();
                     }
-                    break;
-                    case "car": {
-                        button = getView().findViewById(R.id.rb_edit_car);
-                        button.toggle();
+                    switch (selector) {
+                        case "bike": {
+                            button = getView().findViewById(R.id.rb_edit_bike);
+                            button.toggle();
+                        }
+                        break;
+                        case "car": {
+                            button = getView().findViewById(R.id.rb_edit_car);
+                            button.toggle();
+                        }
+                        break;
+                        case "motorbike": {
+                            button = getView().findViewById(R.id.rb_edit_motorbike);
+                            button.toggle();
+                        }
+                        break;
                     }
-                    break;
-                    case "motorbike": {
-                        button = getView().findViewById(R.id.rb_edit_motorbike);
-                        button.toggle();
-                    }
-                    break;
+                    vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, int checkedId) {
+                            button = getView().findViewById(checkedId);
+                            switch (button.getId()) {
+                                case R.id.rb_edit_bike: {
+                                    vehicle = "bike";
+                                }
+                                break;
+                                case R.id.rb_edit_car: {
+                                    vehicle = "car";
+                                }
+                                break;
+                                case R.id.rb_edit_motorbike: {
+                                    vehicle = "motorbike";
+                                }
+                                break;
+                            }
+                        }
+                    });
+                } else {
+                    email.setText(user.getEmail());
+                    String pic = null;
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                    button = getView().findViewById(R.id.rb_edit_bike);
+                    vehicle = "bike";
+                    button.toggle();
                 }
                 getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
@@ -447,5 +481,20 @@ public class EditProfileFragment extends Fragment {
 
             }
         });
+    }
+
+    private void findViews(View view) {
+        fullname = view.findViewById(R.id.et_edit_fullName);
+        email = view.findViewById(R.id.et_edit_email);
+        desc = view.findViewById(R.id.et_edit_desc);
+        phone = view.findViewById(R.id.et_edit_phone);
+        img = view.findViewById(R.id.imageview);
+        vehicles = view.findViewById(R.id.rg_edit_vehicle);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerReference.removeEventListener(listener);
     }
 }

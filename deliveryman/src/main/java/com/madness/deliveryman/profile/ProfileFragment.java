@@ -38,8 +38,10 @@ public class ProfileFragment extends Fragment {
     private TextView phone;
     private TextView vehicle;
     private ImageView img;
-    private SharedPreferences pref;
     private ProfileListener listener;
+    private DatabaseReference databaseReference;
+    private ValueEventListener eventListener;
+    private DatabaseReference listenerReference;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -61,7 +63,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     /* Populates the menu with the edit button */
@@ -109,46 +111,50 @@ public class ProfileFragment extends Fragment {
     private void loadFromFirebase() {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("riders").child(user.getUid());
+        listenerReference = databaseReference.child("riders").child(user.getUid());
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+                try {
+                    Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
 
-                /* Load items of the view */
-                fullname.setText(user.get("name").toString());
-                email.setText(user.get("email").toString());
-                desc.setText(user.get("desc").toString());
-                phone.setText(user.get("phone").toString());
+                    /* Load items of the view */
+                    fullname.setText(user.get("name").toString());
+                    email.setText(user.get("email").toString());
+                    desc.setText(user.get("desc").toString());
+                    phone.setText(user.get("phone").toString());
 
-                String pic = null;
-                if (user.get("photo") != null) {
-                    pic = user.get("photo").toString();
-                }
-                /* Glide */
-                GlideApp.with(getContext())
-                        .load(pic)
-                        .placeholder(R.drawable.user_profile)
-                        .into(img);
+                    String pic = null;
+                    if (user.get("photo") != null) {
+                        pic = user.get("photo").toString();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
 
-                String selector = user.get("vehicle").toString();
-                switch (selector) {
-                    case "bike": {
-                        String v = getString(R.string.bike);
-                        vehicle.setText(v);
+                    String selector = user.get("vehicle").toString();
+                    switch (selector) {
+                        case "bike": {
+                            String v = getString(R.string.bike);
+                            vehicle.setText(v);
+                        }
+                        break;
+                        case "car": {
+                            String v = getString(R.string.car);
+                            vehicle.setText(v);
+                        }
+                        break;
+                        case "motorbike": {
+                            String v = getString(R.string.motorbike);
+                            vehicle.setText(v);
+                        }
+                        break;
                     }
-                    break;
-                    case "car": {
-                        String v = getString(R.string.car);
-                        vehicle.setText(v);
-                    }
-                    break;
-                    case "motorbike": {
-                        String v = getString(R.string.motorbike);
-                        vehicle.setText(v);
-                    }
-                    break;
+                }catch (Exception e) {
+
                 }
                 getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
@@ -166,4 +172,15 @@ public class ProfileFragment extends Fragment {
         void editProfileClick();
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerReference.removeEventListener(eventListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        listenerReference.removeEventListener(eventListener);
+    }
 }

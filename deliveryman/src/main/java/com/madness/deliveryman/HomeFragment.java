@@ -55,8 +55,8 @@ public class HomeFragment extends Fragment {
             databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (objectMap.get("name")!=null) {
                         userName.setText(objectMap.get("name").toString());
                         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                         rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);

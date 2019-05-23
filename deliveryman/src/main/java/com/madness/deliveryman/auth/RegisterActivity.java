@@ -91,7 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(RegisterActivity.this, getString(R.string.reg_compl), Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
-                                    startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+                                    Intent mIntent = new Intent(RegisterActivity.this, HomeActivity.class);
+                                    Bundle mBundle = new Bundle();
+                                    mBundle.putBoolean("newCreation", true);
+                                    System.out.println("HEre");
+                                    mIntent.putExtras(mBundle);
+                                    startActivity(mIntent);
                                     finish();
                                 }
                             }

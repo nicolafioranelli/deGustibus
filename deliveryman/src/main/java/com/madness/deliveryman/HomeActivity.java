@@ -27,7 +27,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -51,11 +50,12 @@ import com.madness.deliveryman.profile.ProfileFragment;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Thread.sleep;
-
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener {
 
+    private static final int REQUEST_PERMISSIONS = 100;
+    private final String CHANNEL_ID = "channelDeliveryMan";
+    private final int NOTIFICATION_ID = 001;
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private NavigationView navigationView;
@@ -65,13 +65,29 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private boolean gps_permission;
-    private static final int REQUEST_PERMISSIONS = 100;
     private Tracker tracker;
     private LocationCallback locationCallback;
-    private final String CHANNEL_ID = "channelDeliveryMan";
-    private final int NOTIFICATION_ID = 001;
+    private boolean avail;
+    private Switch available;
+    private DatabaseReference databaseReference;
+    private DatabaseReference listenerReference;
+    private ValueEventListener listener;
 
+    /* Check if connection is enabled! */
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
+            if (networkInfo != null && networkInfo.isConnected()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +95,9 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        available = new Switch(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -90,11 +109,38 @@ public class HomeActivity extends AppCompatActivity
                 if (user == null) {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finish(); // it terminate the activity
-                } else {
-
                 }
             }
         };
+
+        fragmentManager = getSupportFragmentManager();
+        if (getIntent().hasExtra("newCreation")) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = EditProfileFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+
+                Bundle args = new Bundle();
+                args.putBoolean("isNew", true);
+                fragment.setArguments(args);
+
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(1).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        }
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -105,17 +151,23 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-            databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+        try {
+            listenerReference = databaseReference.child("riders").child(user.getUid());
+            listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (objectMap.get("name") != null) {
                         userName.setText(objectMap.get("name").toString());
+                        avail = (boolean) objectMap.get("available");
+                        if (avail) {
+                            available.setChecked(true);
+                        } else {
+                            available.setChecked(false);
+                        }
                     }
+
                 }
 
                 @Override
@@ -123,24 +175,8 @@ public class HomeActivity extends AppCompatActivity
 
                 }
             });
-        }
-
-        fragmentManager = getSupportFragmentManager();
-
-        /* Instantiate home fragment */
-        if (savedInstanceState == null) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
+        } catch (Exception e) {
+            Log.e("MAD", "onCreate: ", e);
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -150,11 +186,9 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-
         if (user != null) {
-
             // it manages the use position
-            tracker = new Tracker(this,user.getUid(),locationCallback);
+            tracker = new Tracker(this, user.getUid(), locationCallback);
 
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
@@ -185,18 +219,15 @@ public class HomeActivity extends AppCompatActivity
         }
 
 
-        Switch available = new Switch(this);
         // register a listener on the switch button in the navigation drawer
         navigationView.getMenu().findItem(R.id.nav_available).setActionView(available);
-
         available.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            Map<String,Object> m = new HashMap<String,Object>();
+            Map<String, Object> m = new HashMap<String, Object>();
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // update the database
-                m.put("available",isChecked);
+                m.put("available", isChecked);
                 FirebaseDatabase.getInstance().getReference()
                         .child("riders")
                         .child(user.getUid())
@@ -204,11 +235,11 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        if(user != null){
+        if (user != null) {
             // at the beginning the user is not available
             available.setChecked(false);
-            Map<String,Object> m = new HashMap<String,Object>();
-            m.put("available",false);
+            Map<String, Object> m = new HashMap<String, Object>();
+            m.put("available", false);
             FirebaseDatabase.getInstance().getReference()
                     .child("riders")
                     .child(user.getUid())
@@ -219,13 +250,13 @@ public class HomeActivity extends AppCompatActivity
         createNotificationChannel();
 
         // listen for notifications
-        if(user != null) FirebaseDatabase.getInstance().getReference()
+        if (user != null) FirebaseDatabase.getInstance().getReference()
                 .child("notifications")
                 .child(user.getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             makeNotification(getString(R.string.new_notification), getString(R.string.notification_message));
                         }
                     }
@@ -254,7 +285,7 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    private void makeNotification(String type, String description){
+    private void makeNotification(String type, String description) {
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, HomeActivity.class);
@@ -272,7 +303,6 @@ public class HomeActivity extends AppCompatActivity
         builder.setContentIntent(pendingIntent);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
-
     }
 
     @Override
@@ -280,12 +310,11 @@ public class HomeActivity extends AppCompatActivity
         super.onNewIntent(intent);
         String extras = intent.getStringExtra("notification");
         if (extras != null && extras.equals("open")) {
-            fragment =  new NotificationsFragment();
+            fragment = new NotificationsFragment();
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
         }
     }
-
 
     @Override
     public void onStart() {
@@ -315,7 +344,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         // stop tracking
-        if(tracker != null && tracker.isStartUpdates())
+        if (tracker != null && tracker.isStartUpdates())
             tracker.stopLocationUpdates();
     }
 
@@ -432,22 +461,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    /* Check if connection is enabled! */
-    public static boolean isNetworkAvailable(Context context) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-            if (networkInfo != null && networkInfo.isConnected()) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     // TODO change strings
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -458,18 +471,23 @@ public class HomeActivity extends AppCompatActivity
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     tracker.storeTheFirstPosition();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please allow the GPS", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.gps), Toast.LENGTH_LONG).show();
                 }
             }
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        listenerReference.removeEventListener(listener);
+    }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
         // resume the tracking
-        if(tracker!= null && tracker.isStartUpdates()){
+        if (tracker != null && tracker.isStartUpdates()) {
             tracker.startLocationUpdates();
         }
     }

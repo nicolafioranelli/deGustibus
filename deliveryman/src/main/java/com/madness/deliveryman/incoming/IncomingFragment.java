@@ -73,7 +73,6 @@ public class IncomingFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println(dataSnapshot);
             }
 
             @Override
@@ -244,7 +243,6 @@ public class IncomingFragment extends Fragment {
                         }
                     });
                 } else if (model.getStatus().equals("delivering")) {
-                    System.out.println(model.getStatus());
                     holder.status.setText(R.string.status_delivering);
                     holder.button.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.VISIBLE);
