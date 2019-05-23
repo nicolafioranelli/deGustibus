@@ -70,4 +70,6 @@
     <string name="summary">Riepilogo</string>
     <string name="total">"Totale: "</string>
     <string name="errProfile">Completa il tuo profilo prima di poter continuare!</string>
+    <string name="new_notification">Nuova notifica!</string>
+    <string name="notification_message">Apri la sezione notifiche ...</string>
 </resources>

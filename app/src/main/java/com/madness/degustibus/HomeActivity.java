@@ -43,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.auth.LoginActivity;
 import com.madness.degustibus.home.HomeFragment;
+import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
 import com.madness.degustibus.profile.EditProfileFragment;
@@ -161,7 +162,7 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
-                            makeNotification("new notification", "notification");
+                            makeNotification(getString(R.string.new_notification), getString(R.string.notification_message));
                         }
                     }
 
@@ -191,17 +192,34 @@ public class HomeActivity extends AppCompatActivity
 
     private void makeNotification(String type, String description){
 
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("notification", "open");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
             // show a new notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
             builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
             builder.setContentTitle(type);
             builder.setContentText(description);
             builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            builder.setContentIntent(pendingIntent);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String extras = intent.getStringExtra("notification");
+        if (extras != null && extras.equals("open")) {
+            fragment =  new NotificationsFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+        }
+    }
 
     @Override
     public void onStart() {
