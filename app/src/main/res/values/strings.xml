@@ -108,4 +108,5 @@
     <string name="total">"Total: "</string>
     <string name="order">Complete order</string>
     <string name="errProfile">Complete your profile before continuing!</string>
+    <string name="channel_name" translatable="false">channel</string>
 </resources>
