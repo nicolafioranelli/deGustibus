@@ -105,7 +105,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
@@ -160,8 +160,9 @@ public class HomeActivity extends AppCompatActivity
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        makeNotification();
-                        Toast.makeText(getApplicationContext(),"notification",Toast.LENGTH_SHORT).show();
+                        if(dataSnapshot.exists()){
+                            makeNotification("new notification", "notification");
+                        }
                     }
 
                     @Override
@@ -188,14 +189,14 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    private void makeNotification(){
+    private void makeNotification(String type, String description){
 
             // show a new notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
             builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
-            builder.setContentTitle("title");
-            builder.setContentText("text");
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);s
+            builder.setContentTitle(type);
+            builder.setContentText(description);
+            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
 
