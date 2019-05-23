@@ -145,37 +145,55 @@ public class ProfileFragment extends Fragment {
         databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
+                if(dataSnapshot.exists()) {
+                    ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
 
-                fullname.setText(profile.getName());
-                email.setText(profile.getEmail());
-                desc.setText(profile.getDesc());
-                phone.setText(profile.getPhone());
-                address.setText(profile.getAddress());
-                mondayOpen.setText(profile.getMondayOpen());
-                mondayClose.setText(profile.getMondayClose());
-                tuesdayOpen.setText(profile.getTuesdayOpen());
-                tuesdayClose.setText(profile.getTuesdayClose());
-                wednesdayOpen.setText(profile.getWednesdayOpen());
-                wednesdayClose.setText(profile.getWednesdayClose());
-                thursdayOpen.setText(profile.getThursdayOpen());
-                thursdayClose.setText(profile.getThursdayClose());
-                fridayOpen.setText(profile.getFridayOpen());
-                fridayClose.setText(profile.getFridayClose());
-                saturdayOpen.setText(profile.getSaturdayOpen());
-                saturdayClose.setText(profile.getSaturdayClose());
-                sundayOpen.setText(profile.getSundayOpen());
-                sundayClose.setText(profile.getSundayClose());
+                    fullname.setText(profile.getName());
+                    email.setText(profile.getEmail());
+                    desc.setText(profile.getDesc());
+                    phone.setText(profile.getPhone());
+                    address.setText(profile.getAddress());
+                    mondayOpen.setText(profile.getMondayOpen());
+                    mondayClose.setText(profile.getMondayClose());
+                    tuesdayOpen.setText(profile.getTuesdayOpen());
+                    tuesdayClose.setText(profile.getTuesdayClose());
+                    wednesdayOpen.setText(profile.getWednesdayOpen());
+                    wednesdayClose.setText(profile.getWednesdayClose());
+                    thursdayOpen.setText(profile.getThursdayOpen());
+                    thursdayClose.setText(profile.getThursdayClose());
+                    fridayOpen.setText(profile.getFridayOpen());
+                    fridayClose.setText(profile.getFridayClose());
+                    saturdayOpen.setText(profile.getSaturdayOpen());
+                    saturdayClose.setText(profile.getSaturdayClose());
+                    sundayOpen.setText(profile.getSundayOpen());
+                    sundayClose.setText(profile.getSundayClose());
 
-                String pic = null;
-                if (profile.getPhoto() != null) {
-                    pic = profile.getPhoto();
+                    String pic = null;
+                    if (profile.getPhoto() != null) {
+                        pic = profile.getPhoto();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                } else {
+                    email.setText(user.getEmail());
+                    mondayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    mondayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    tuesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    tuesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    wednesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    wednesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    thursdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    thursdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    fridayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    fridayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    saturdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    saturdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    sundayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
                 }
-                /* Glide */
-                GlideApp.with(getContext())
-                        .load(pic)
-                        .placeholder(R.drawable.user_profile)
-                        .into(img);
 
                 getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
