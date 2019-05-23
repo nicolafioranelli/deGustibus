@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,25 +27,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
-import com.madness.restaurant.daily.DailyClass;
+import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.picker.TimePickerFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +71,7 @@ public class EditProfile extends Fragment {
     private EditText desc;
     private EditText phone;
     private EditText address;
+    private Switch aSwitch;
     private TextView defaultOpen;
     private TextView defaultClose;
     private TextView mondayOpen;
@@ -84,6 +95,10 @@ public class EditProfile extends Fragment {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private Uri mImageUri;
+    private DatabaseReference databaseReference;
+    private FirebaseUser user;
+    private ValueEventListener listener;
+    private DatabaseReference referenceListener;
 
     public EditProfile() {
         // Required empty public constructor
@@ -93,10 +108,12 @@ public class EditProfile extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
-        editor = pref.edit();
-        setHasOptionsMenu(true);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
+        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+        setHasOptionsMenu(true);
     }
 
     /* This method simply sets the title on the toolbar */
@@ -104,46 +121,36 @@ public class EditProfile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Edit));
+        findViews(rootView);
+
+        aSwitch = rootView.findViewById(R.id.switchGenWork);
+        aSwitch.setChecked(true);
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    rootView.findViewById(R.id.specificHours).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.textSpecHour).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.textGenHour).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.genHours).setVisibility(View.VISIBLE);
+                } else {
+                    rootView.findViewById(R.id.specificHours).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.textSpecHour).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.textGenHour).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.genHours).setVisibility(View.GONE);
+                }
+            }
+        });
         return rootView;
     }
 
-    /* The method retrieves all the elements in the view and populates them with the values
-     * available in the bundle or in the shared preferences.
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        address = getView().findViewById(R.id.et_edit_address);
-        defaultOpen = getView().findViewById(R.id.et_edit_defaultOpen);
-        defaultClose = getView().findViewById(R.id.et_edit_defaultClose);
-        mondayOpen = getView().findViewById(R.id.et_edit_mondayOpen);
-        mondayClose = getView().findViewById(R.id.et_edit_mondayClose);
-        tuesdayOpen = getView().findViewById(R.id.et_edit_tuesdayOpen);
-        tuesdayClose = getView().findViewById(R.id.et_edit_tuesdayClose);
-        wednesdayOpen = getView().findViewById(R.id.et_edit_wednesdayOpen);
-        wednesdayClose = getView().findViewById(R.id.et_edit_wednesdayClose);
-        thursdayOpen = getView().findViewById(R.id.et_edit_thursdayOpen);
-        thursdayClose = getView().findViewById(R.id.et_edit_thursdayClose);
-        fridayOpen = getView().findViewById(R.id.et_edit_fridayOpen);
-        fridayClose = getView().findViewById(R.id.et_edit_fridayClose);
-        saturdayOpen = getView().findViewById(R.id.et_edit_saturdayOpen);
-        saturdayClose = getView().findViewById(R.id.et_edit_saturdayClose);
-        sundayOpen = getView().findViewById(R.id.et_edit_sundayOpen);
-        sundayClose = getView().findViewById(R.id.et_edit_sundayClose);
-        img = getView().findViewById(R.id.imageviewedit);
-        //loadFromDatabase();
 
-        if (savedInstanceState != null) {
-            loadBundle(savedInstanceState);
-        } else {
-            loadSharedPrefs();
-        }
+        loadFromFirebase();
         takeTimeTextViews();
         getPhoto(view);
     }
@@ -159,134 +166,45 @@ public class EditProfile extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_edit) {
-            /* Define shared preferences and insert values */
-            editor.putString("name", fullname.getText().toString());
-            editor.putString("email", email.getText().toString());
-            editor.putString("desc", desc.getText().toString());
-            editor.putString("phone", phone.getText().toString());
-            editor.putString("address", address.getText().toString());
-            editor.putString("defaultOpen", defaultOpen.getText().toString());
-            editor.putString("defaultClose", defaultClose.getText().toString());
-            editor.putString("mondayOpen", mondayOpen.getText().toString());
-            editor.putString("mondayClose", mondayClose.getText().toString());
-            editor.putString("tuesdayOpen", tuesdayOpen.getText().toString());
-            editor.putString("tuesdayClose", tuesdayClose.getText().toString());
-            editor.putString("wednesdayOpen", wednesdayOpen.getText().toString());
-            editor.putString("wednesdayClose", wednesdayClose.getText().toString());
-            editor.putString("thursdayOpen", thursdayOpen.getText().toString());
-            editor.putString("thursdayClose", thursdayClose.getText().toString());
-            editor.putString("fridayOpen", fridayOpen.getText().toString());
-            editor.putString("fridayClose", fridayClose.getText().toString());
-            editor.putString("saturdayOpen", saturdayOpen.getText().toString());
-            editor.putString("saturdayClose", saturdayClose.getText().toString());
-            editor.putString("sundayOpen", sundayOpen.getText().toString());
-            editor.putString("sundayClose", sundayClose.getText().toString());
-            if (getPrefPhoto() != null) {
-                editor.putString("photo", getPrefPhoto());
-            }
-            editor.apply();
-            storeOnFirebase();
-            delPrefPhoto();
+            if (TextUtils.isEmpty(fullname.getText()) | TextUtils.isEmpty(email.getText()) |
+                    TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText()) |
+                    TextUtils.isEmpty(address.getText())) {
 
-            /* Handle save option and go back */
-            Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            return true;
+                fullname.setError(getResources().getString(R.string.name));
+                email.setError(getResources().getString(R.string.email));
+                desc.setError(getResources().getString(R.string.descr));
+                phone.setError(getResources().getString(R.string.phone));
+                address.setError(getResources().getString(R.string.address));
+            } else {
+                storeOnFirebase();
+                delPrefPhoto();
+
+                /* Handle save option and go back */
+                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                if (getArguments() != null) {
+                    try {
+                        Fragment fragment = null;
+                        Class fragmentClass;
+                        fragmentClass = HomeFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                    } catch (Exception e) {
+
+                    }
+                    return true;
+                } else {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    return true;
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /* Method to load shared preferences */
-    private void loadSharedPrefs() {
-        fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
-        email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.frProfile_defPhone)));
-        address.setText(pref.getString("address", getResources().getString(R.string.frProfile_defAddress)));
-        defaultOpen.setText(pref.getString("defaultOpen", getResources().getString(R.string.frProfile_defOpen)));
-        defaultClose.setText(pref.getString("defaultClose", getResources().getString(R.string.frProfile_defClose)));
-        mondayOpen.setText(pref.getString("mondayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        mondayClose.setText(pref.getString("mondayClose", getResources().getString(R.string.frProfile_defClose)));
-        tuesdayOpen.setText(pref.getString("tuesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        tuesdayClose.setText(pref.getString("tuesdayClose", getResources().getString(R.string.frProfile_defClose)));
-        wednesdayOpen.setText(pref.getString("wednesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        wednesdayClose.setText(pref.getString("wednesdayClose", getResources().getString(R.string.frProfile_defClose)));
-        thursdayOpen.setText(pref.getString("thursdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        thursdayClose.setText(pref.getString("thursdayClose", getResources().getString(R.string.frProfile_defClose)));
-        fridayOpen.setText(pref.getString("fridayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        fridayClose.setText(pref.getString("fridayClose", getResources().getString(R.string.frProfile_defClose)));
-        saturdayOpen.setText(pref.getString("saturdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.frProfile_defClose)));
-        sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.frProfile_defClose)));
-        /* check if a photo is set */
-        if (pref.getString("photo", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photo", null)));
-        }
-    }
-
-    private void loadBundle(Bundle bundle) {
-        fullname.setText(bundle.getString("name"));
-        email.setText(bundle.getString("email"));
-        desc.setText(bundle.getString("desc"));
-        phone.setText(bundle.getString("phone"));
-        address.setText(bundle.getString("address"));
-        defaultOpen.setText(bundle.getString("defaultOpen"));
-        defaultClose.setText(bundle.getString("defaultClose"));
-        mondayOpen.setText(bundle.getString("mondayOpen"));
-        mondayClose.setText(bundle.getString("mondayClose"));
-        tuesdayOpen.setText(bundle.getString("tuesdayOpen"));
-        tuesdayClose.setText(bundle.getString("tuesdayClose"));
-        tuesdayClose.setText(bundle.getString("tuesdayClose"));
-        wednesdayOpen.setText(bundle.getString("wednesdayOpen"));
-        wednesdayClose.setText(bundle.getString("wednesdayClose"));
-        thursdayOpen.setText(bundle.getString("thursdayOpen"));
-        thursdayClose.setText(bundle.getString("thursdayClose"));
-        fridayOpen.setText(bundle.getString("fridayOpen"));
-        fridayClose.setText(bundle.getString("fridayClose"));
-        saturdayOpen.setText(bundle.getString("saturdayOpen"));
-        saturdayClose.setText(bundle.getString("saturdayClose"));
-        sundayOpen.setText(bundle.getString("sundayOpen"));
-        sundayClose.setText(bundle.getString("sundayClose"));
-        if (bundle.getString("photo") != null) {
-            img.setImageURI(Uri.parse(bundle.getString("photo")));
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putString("name", fullname.getText().toString());
-        outState.putString("email", email.getText().toString());
-        outState.putString("desc", desc.getText().toString());
-        outState.putString("phone", phone.getText().toString());
-        outState.putString("address", address.getText().toString());
-        outState.putString("defaultOpen", defaultOpen.getText().toString());
-        outState.putString("defaultClose", defaultClose.getText().toString());
-        outState.putString("mondayOpen", mondayOpen.getText().toString());
-        outState.putString("mondayClose", mondayClose.getText().toString());
-        outState.putString("tuesdayOpen", tuesdayOpen.getText().toString());
-        outState.putString("tuesdayClose", tuesdayClose.getText().toString());
-        outState.putString("wednesdayOpen", wednesdayOpen.getText().toString());
-        outState.putString("wednesdayClose", wednesdayClose.getText().toString());
-        outState.putString("thursdayOpen", thursdayOpen.getText().toString());
-        outState.putString("thursdayClose", thursdayClose.getText().toString());
-        outState.putString("fridayOpen", fridayOpen.getText().toString());
-        outState.putString("fridayClose", fridayClose.getText().toString());
-        outState.putString("saturdayOpen", saturdayOpen.getText().toString());
-        outState.putString("saturdayClose", saturdayClose.getText().toString());
-        outState.putString("sundayOpen", sundayOpen.getText().toString());
-        outState.putString("sundayClose", sundayClose.getText().toString());
-        if (getPrefPhoto() == null) {
-            outState.putString("photo", pref.getString("photo", null));
-        } else {
-            outState.putString("photo", getPrefPhoto());
-        }
-    }
 
     /* The method allows to set the listeners in the corresponding items in order to get the
      * time pickers once clicked.
@@ -579,16 +497,14 @@ public class EditProfile extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
                     mImageUri = Uri.parse(getPrefPhoto());
-                    img.setImageURI(photo);
-                    setPrefPhoto(photo.toString());
+                    Glide.with(getContext()).load(mImageUri).into(img);
+                    setPrefPhoto(mImageUri.toString());
                     break;
                 case 1:
-                    Uri selectedImage = data.getData();
                     mImageUri = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
+                    setPrefPhoto(mImageUri.toString());
+                    Glide.with(getContext()).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -604,7 +520,6 @@ public class EditProfile extends Fragment {
 
     private String getPrefPhoto() {
         SharedPreferences pref = getActivity().getSharedPreferences("profilePhoto", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
         return pref.getString("profilePhoto", null);
     }
 
@@ -738,18 +653,14 @@ public class EditProfile extends Fragment {
      * the database under the child "restaurants" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
-
         final Map<String, Object> map = new HashMap<>();
-
         map.put("name", fullname.getText().toString());
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", address.getText().toString());
-        //map.put("defaultOpen",defaultOpen.getText().toString());
-        //map.put("defaultClose",defaultClose.getText().toString());
+        map.put("defaultOpen", defaultOpen.getText().toString());
+        map.put("defaultClose", defaultClose.getText().toString());
         map.put("mondayOpen", mondayOpen.getText().toString());
         map.put("mondayClose", mondayClose.getText().toString());
         map.put("tuesdayOpen", tuesdayOpen.getText().toString());
@@ -765,32 +676,138 @@ public class EditProfile extends Fragment {
         map.put("sundayOpen", sundayOpen.getText().toString());
         map.put("sundayClose", sundayClose.getText().toString());
 
-        final DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();  // generate a new key in /offers/{uID}
-        final String newItemKey = newItem.getKey();
+        DatabaseReference newItem = databaseReference.child(user.getUid()).push();  // generate a new key in /offers/{uID}
         final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());  // generate a new child in /
 
-        // store the picture into firestore
+        // Store the picture into firestore
         if (mImageUri != null) {
-            fileReference.putFile(mImageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                              @Override
-                                              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                  fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                      @Override
-                                                      public void onSuccess(Uri uri) {
-                                                          String imageUrl = uri.toString();
-                                                          map.put("photo", imageUrl);
-                                                          DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                                                          mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
+            try {
+                Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageUri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                byte[] data = baos.toByteArray();
+                //uploading the image
+                fileReference.putBytes(data)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                  @Override
+                                                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                      fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                          @Override
+                                                          public void onSuccess(Uri uri) {
+                                                              String imageUrl = uri.toString();
+                                                              map.put("photo", imageUrl);
+                                                              databaseReference.child("restaurants").child(user.getUid()).updateChildren(map);
 
-                                                      }
-                                                  });
+                                                          }
+                                                      });
+                                                  }
                                               }
-                                          }
-                    );
+                        );
+            } catch (Exception e) {
+                Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
+            }
         } else {
-            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            mDatabase.child("restaurants").child(user.getUid()).updateChildren(map);
+            databaseReference.child("restaurants").child(user.getUid()).updateChildren(map);
         }
+    }
+
+    private void loadFromFirebase() {
+        referenceListener = databaseReference.child("restaurants").child(user.getUid());
+        listener = referenceListener.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
+
+                    fullname.setText(profile.getName());
+                    email.setText(profile.getEmail());
+                    desc.setText(profile.getDesc());
+                    phone.setText(profile.getPhone());
+                    address.setText(profile.getAddress());
+                    defaultOpen.setText(profile.getDefaultOpen());
+                    defaultClose.setText(profile.getDefaultClose());
+                    mondayOpen.setText(profile.getMondayOpen());
+                    mondayClose.setText(profile.getMondayClose());
+                    tuesdayOpen.setText(profile.getTuesdayOpen());
+                    tuesdayClose.setText(profile.getTuesdayClose());
+                    wednesdayOpen.setText(profile.getWednesdayOpen());
+                    wednesdayClose.setText(profile.getWednesdayClose());
+                    thursdayOpen.setText(profile.getThursdayOpen());
+                    thursdayClose.setText(profile.getThursdayClose());
+                    fridayOpen.setText(profile.getFridayOpen());
+                    fridayClose.setText(profile.getFridayClose());
+                    saturdayOpen.setText(profile.getSaturdayOpen());
+                    saturdayClose.setText(profile.getSaturdayClose());
+                    sundayOpen.setText(profile.getSundayOpen());
+                    sundayClose.setText(profile.getSundayClose());
+
+                    String pic = null;
+                    if (profile.getPhoto() != null) {
+                        pic = profile.getPhoto();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                } else {
+                    email.setText(user.getEmail());
+                    defaultOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    defaultClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    mondayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    mondayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    tuesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    tuesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    wednesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    wednesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    thursdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    thursdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    fridayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    fridayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    saturdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    saturdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    sundayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                }
+                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void findViews(View view) {
+        fullname = view.findViewById(R.id.et_edit_fullName);
+        email = view.findViewById(R.id.et_edit_email);
+        desc = view.findViewById(R.id.et_edit_desc);
+        phone = view.findViewById(R.id.et_edit_phone);
+        address = view.findViewById(R.id.et_edit_address);
+        defaultOpen = view.findViewById(R.id.et_edit_defaultOpen);
+        defaultClose = view.findViewById(R.id.et_edit_defaultClose);
+        mondayOpen = view.findViewById(R.id.et_edit_mondayOpen);
+        mondayClose = view.findViewById(R.id.et_edit_mondayClose);
+        tuesdayOpen = view.findViewById(R.id.et_edit_tuesdayOpen);
+        tuesdayClose = view.findViewById(R.id.et_edit_tuesdayClose);
+        wednesdayOpen = view.findViewById(R.id.et_edit_wednesdayOpen);
+        wednesdayClose = view.findViewById(R.id.et_edit_wednesdayClose);
+        thursdayOpen = view.findViewById(R.id.et_edit_thursdayOpen);
+        thursdayClose = view.findViewById(R.id.et_edit_thursdayClose);
+        fridayOpen = view.findViewById(R.id.et_edit_fridayOpen);
+        fridayClose = view.findViewById(R.id.et_edit_fridayClose);
+        saturdayOpen = view.findViewById(R.id.et_edit_saturdayOpen);
+        saturdayClose = view.findViewById(R.id.et_edit_saturdayClose);
+        sundayOpen = view.findViewById(R.id.et_edit_sundayOpen);
+        sundayClose = view.findViewById(R.id.et_edit_sundayClose);
+        img = view.findViewById(R.id.imageviewedit);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        referenceListener.removeEventListener(listener);
     }
 }

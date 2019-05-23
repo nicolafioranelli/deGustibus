@@ -154,4 +154,13 @@
     <string name="errProfile">Complete your profile before continuing!</string>
     <string name="select_rider">Select your rider:</string>
     <string name="title_Order">Order</string>
+
+    <string name="genHours">Set general opening hours for all days.</string>
+    <string name="specHours">Set different opening hours for each day.</string>
+
+    <string name="name">Name is required!</string>
+    <string name="email">Email is required!</string>
+    <string name="phone">Phone is required!</string>
+    <string name="descr">Description is required!</string>
+    <string name="address">Address is required!</string>
 </resources>
