@@ -118,4 +118,11 @@
     <string name="title_Order">Ordine</string>
     <string name="new_notification">Nuova notifica!</string>
     <string name="notification_message">Apri la sezione notifiche ...</string>
+    <string name="genHours">Imposta l\'orario lavorativo generale valido per tutta la settimana.</string>
+    <string name="specHours">Imposta orari lavorativi diversi per ogni giorno della settimana.</string>
+    <string name="descr">La descrizione è obbligatoria!</string>
+    <string name="email">La mail è obbligatoria!</string>
+    <string name="name">Il nome è obbligatorio!</string>
+    <string name="phone">Il telefono è obbligatorio!</string>
+    <string name="address">L\'indirizzo è obbligatorio!</string>
 </resources>

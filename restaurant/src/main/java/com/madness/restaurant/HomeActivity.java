@@ -87,6 +87,36 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
+        fragmentManager = getSupportFragmentManager();
+        if(getIntent().hasExtra("newCreation")) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = EditProfile.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+
+                Bundle args = new Bundle();
+                args.putBoolean("isNew", true);
+                fragment.setArguments(args);
+
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(1).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(0).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        }
+
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -116,9 +146,9 @@ public class HomeActivity extends AppCompatActivity
             });
         }
 
-        fragmentManager = getSupportFragmentManager();
 
-        /* Instantiate home fragment */
+
+        /* Instantiate home fragment
         if (savedInstanceState == null) {
             try {
                 fragment = null;
@@ -132,7 +162,7 @@ public class HomeActivity extends AppCompatActivity
             }
         } else {
             fragment = getSupportFragmentManager().findFragmentByTag("HOME");
-        }
+        }*/
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override

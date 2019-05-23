@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +15,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 
 /**
@@ -43,8 +52,9 @@ public class ProfileFragment extends Fragment {
     private TextView sundayOpen;
     private TextView sundayClose;
     private ImageView img;
-    private SharedPreferences pref;
     private ProfileListener listener;
+    private DatabaseReference databaseReference;
+    private FirebaseUser user;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -65,8 +75,23 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
+    }
+
+    /* Once the view is created, this method sets the title on the toolbar */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment and add the title
+        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        getActivity().setTitle(getResources().getString(R.string.title_Profile));
+
+        findViews(rootView);
+        loadFromFirebase();
+        return rootView;
     }
 
     /* Populates the menu with the edit button */
@@ -93,63 +118,92 @@ public class ProfileFragment extends Fragment {
         listener.onItemClicked();
     }
 
-    /* Once the view is created, this method sets the title on the toolbar */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment and add the title
-        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
-        getActivity().setTitle(getResources().getString(R.string.title_Profile));
-        return rootView;
+    private void findViews(View view) {
+        fullname = view.findViewById(R.id.tv_show_fullName);
+        email = view.findViewById(R.id.tv_show_email);
+        desc = view.findViewById(R.id.tv_show_desc);
+        phone = view.findViewById(R.id.tv_show_phone);
+        address = view.findViewById(R.id.tv_show_address);
+        mondayOpen = view.findViewById(R.id.tv_show_mondayOpen);
+        mondayClose = view.findViewById(R.id.tv_show_mondayClose);
+        tuesdayOpen = view.findViewById(R.id.tv_show_tuesdayOpen);
+        tuesdayClose = view.findViewById(R.id.tv_show_tuesdayClose);
+        wednesdayOpen = view.findViewById(R.id.tv_show_wednesdayOpen);
+        wednesdayClose = view.findViewById(R.id.tv_show_wednesdayClose);
+        thursdayOpen = view.findViewById(R.id.tv_show_thursdayOpen);
+        thursdayClose = view.findViewById(R.id.tv_show_thursdayClose);
+        fridayOpen = view.findViewById(R.id.tv_show_fridayOpen);
+        fridayClose = view.findViewById(R.id.tv_show_fridayClose);
+        saturdayOpen = view.findViewById(R.id.tv_show_saturdayOpen);
+        saturdayClose = view.findViewById(R.id.tv_show_saturdayClose);
+        sundayOpen = view.findViewById(R.id.tv_show_sundayOpen);
+        sundayClose = view.findViewById(R.id.tv_show_sundayClose);
+        img = view.findViewById(R.id.imageview);
     }
 
-    /* All the items contained in the fragment are here populated with the stored values */
-    @Override
-    public void onResume() {
-        fullname = getView().findViewById(R.id.tv_show_fullName);
-        email = getView().findViewById(R.id.tv_show_email);
-        desc = getView().findViewById(R.id.tv_show_desc);
-        phone = getView().findViewById(R.id.tv_show_phone);
-        address = getView().findViewById(R.id.tv_show_address);
-        mondayOpen = getView().findViewById(R.id.tv_show_mondayOpen);
-        mondayClose = getView().findViewById(R.id.tv_show_mondayClose);
-        tuesdayOpen = getView().findViewById(R.id.tv_show_tuesdayOpen);
-        tuesdayClose = getView().findViewById(R.id.tv_show_tuesdayClose);
-        wednesdayOpen = getView().findViewById(R.id.tv_show_wednesdayOpen);
-        wednesdayClose = getView().findViewById(R.id.tv_show_wednesdayClose);
-        thursdayOpen = getView().findViewById(R.id.tv_show_thursdayOpen);
-        thursdayClose = getView().findViewById(R.id.tv_show_thursdayClose);
-        fridayOpen = getView().findViewById(R.id.tv_show_fridayOpen);
-        fridayClose = getView().findViewById(R.id.tv_show_fridayClose);
-        saturdayOpen = getView().findViewById(R.id.tv_show_saturdayOpen);
-        saturdayClose = getView().findViewById(R.id.tv_show_saturdayClose);
-        sundayOpen = getView().findViewById(R.id.tv_show_sundayOpen);
-        sundayClose = getView().findViewById(R.id.tv_show_sundayClose);
-        img = getView().findViewById(R.id.imageview);
+    private void loadFromFirebase() {
+        databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
 
-        fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
-        email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.frProfile_defPhone)));
-        address.setText(pref.getString("address", getResources().getString(R.string.frProfile_defAddress)));
-        mondayOpen.setText(pref.getString("mondayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        mondayClose.setText(pref.getString("mondayClose", getResources().getString(R.string.frProfile_defClose)));
-        tuesdayOpen.setText(pref.getString("tuesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        tuesdayClose.setText(pref.getString("tuesdayClose", getResources().getString(R.string.frProfile_defClose)));
-        wednesdayOpen.setText(pref.getString("wednesdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        wednesdayClose.setText(pref.getString("wednesdayClose", getResources().getString(R.string.frProfile_defClose)));
-        thursdayOpen.setText(pref.getString("thursdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        thursdayClose.setText(pref.getString("thursdayClose", getResources().getString(R.string.frProfile_defClose)));
-        fridayOpen.setText(pref.getString("fridayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        fridayClose.setText(pref.getString("fridayClose", getResources().getString(R.string.frProfile_defClose)));
-        saturdayOpen.setText(pref.getString("saturdayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        saturdayClose.setText(pref.getString("saturdayClose", getResources().getString(R.string.frProfile_defClose)));
-        sundayOpen.setText(pref.getString("sundayOpen", getResources().getString(R.string.frProfile_defOpen)));
-        sundayClose.setText(pref.getString("sundayClose", getResources().getString(R.string.frProfile_defClose)));
-        if (pref.getString("photo", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photo", null)));
-        }
-        super.onResume();
+                    fullname.setText(profile.getName());
+                    email.setText(profile.getEmail());
+                    desc.setText(profile.getDesc());
+                    phone.setText(profile.getPhone());
+                    address.setText(profile.getAddress());
+                    mondayOpen.setText(profile.getMondayOpen());
+                    mondayClose.setText(profile.getMondayClose());
+                    tuesdayOpen.setText(profile.getTuesdayOpen());
+                    tuesdayClose.setText(profile.getTuesdayClose());
+                    wednesdayOpen.setText(profile.getWednesdayOpen());
+                    wednesdayClose.setText(profile.getWednesdayClose());
+                    thursdayOpen.setText(profile.getThursdayOpen());
+                    thursdayClose.setText(profile.getThursdayClose());
+                    fridayOpen.setText(profile.getFridayOpen());
+                    fridayClose.setText(profile.getFridayClose());
+                    saturdayOpen.setText(profile.getSaturdayOpen());
+                    saturdayClose.setText(profile.getSaturdayClose());
+                    sundayOpen.setText(profile.getSundayOpen());
+                    sundayClose.setText(profile.getSundayClose());
+
+                    String pic = null;
+                    if (profile.getPhoto() != null) {
+                        pic = profile.getPhoto();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                } else {
+                    email.setText(user.getEmail());
+                    mondayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    mondayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    tuesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    tuesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    wednesdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    wednesdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    thursdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    thursdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    fridayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    fridayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    saturdayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    saturdayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    sundayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
+                    sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                }
+
+                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /* Interface for the listener */
