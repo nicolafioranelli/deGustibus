@@ -41,7 +41,6 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> result) {
         ArrayList<LatLng> points;
-        System.out.println("result" + result);
         PolylineOptions lineOptions = null;
 
         // Traversing through all the routes

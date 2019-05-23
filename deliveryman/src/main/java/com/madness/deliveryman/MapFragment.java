@@ -87,8 +87,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         LoadFromFirebase();
-        getDeviceLocation();
-
 
         return rootView;
     }
@@ -105,9 +103,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onResume() {
         super.onResume();
-        getDeviceLocation();
-        BackgroundTask task=new BackgroundTask();
-        task.execute();
+
 
     }
 
@@ -138,12 +134,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         }
         //Initialize Google Play Services
         googleMap.setMyLocationEnabled(true);
-        mapOperations();
+        getDeviceLocation(googleMap);
 
     }
     private void mapOperations (){
         //if there is a order
-        if (incomingData != null && currentLocation != null) {
+        if (incomingData != null ) {
             //take customer address and restaurant id
             customerAddress = incomingData.getCustomerAddress();
             String restaurantID = incomingData.getRestaurantID();
@@ -224,7 +220,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     }
 
     //getting the device current location
-    private void getDeviceLocation() {
+    private void getDeviceLocation(final GoogleMap Gmap) {
         //get current position from firebase
         GeoFire geoFire = new GeoFire(FirebaseDatabase
                 .getInstance()
@@ -234,6 +230,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
             @Override
             public void onLocationResult(String key, GeoLocation location) {
                 currentLocation = new LatLng(location.latitude,location.longitude);
+                mapOperations();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -324,18 +321,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
             }
         });
     }
-    private class BackgroundTask extends AsyncTask<Void, Void, Void>
-    {
-        @Override
-        protected Void doInBackground(Void... arg0)
-        {
-            System.out.println("BACKGROUNDDDDDD");
-            if (currentLocation != null){
-                mapOperations();
-            }
 
-
-            return null;
-        }
-    }
 }
