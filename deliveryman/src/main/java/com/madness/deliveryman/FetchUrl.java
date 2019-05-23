@@ -24,6 +24,7 @@ class FetchUrl extends AsyncTask<String, Void, String> {
         String data = "";
         try {
             // Fetching the data from web service
+
             data = downloadUrl(strings[0]);
         } catch (Exception e) {
 

@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,27 +17,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.LocationCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,9 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback  {
 
     private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -65,18 +52,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     private GoogleMap googleMap;
     private String restaurantAddress;
     private String customerAddress;
-    private String key = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
     private DatabaseReference databaseReference;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseUser user;
     private IncomingData incomingData;
-    private FusedLocationProviderClient mFusedeLocationProviderClient;
     private Address address;
     LatLng currentLocation;
-    Location deviceLocation;
     ArrayList<LatLng> MarkerPoints;
-    GoogleApiClient mGoogleApiClient;
-    LocationRequest mLocationRequest;
 
 
     private OnFragmentInteractionListener mListener;
@@ -92,9 +74,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         getLocationPermission();
         //get user
         user = FirebaseAuth.getInstance().getCurrentUser();
-        // Initializing
-        MarkerPoints = new ArrayList<>();
     }
+
 
 
     @Override
@@ -106,6 +87,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         databaseReference = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
         LoadFromFirebase();
+        getDeviceLocation();
+
+
         return rootView;
     }
 
@@ -116,7 +100,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getDeviceLocation();
+        BackgroundTask task=new BackgroundTask();
+        task.execute();
 
     }
 
@@ -139,8 +130,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
-
-
         //check for permissions
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -149,151 +138,68 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         }
         //Initialize Google Play Services
         googleMap.setMyLocationEnabled(true);
+        mapOperations();
 
-        getDeviceLocation();
-
-        //if data is not null
-        if (incomingData != null) {
+    }
+    private void mapOperations (){
+        //if there is a order
+        if (incomingData != null && currentLocation != null) {
+            //take customer address and restaurant id
             customerAddress = incomingData.getCustomerAddress();
+            String restaurantID = incomingData.getRestaurantID();
 
-
-            //check status of order
             if (incomingData.getStatus().equals("elaboration")) {
-                address = geoLocate(restaurantAddress);
-                LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
-                map.addMarker(new MarkerOptions()
-                        .position(destination)
-                        .title("Restaurant"));
-                moveCamera(destination, 15);
-                //find path
-           /* String url = getDirectionsUrl(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), destination);
-            FetchUrl fetchUrl = new FetchUrl();
-            fetchUrl.setMap(map);
-            fetchUrl.execute(url);*/
+                //get resturant address from resturant ID by firebase
+                Query query = databaseReference.child("restaurants/" + restaurantID + "/address");
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        restaurantAddress = (String) dataSnapshot.getValue();
+                        //find Location of restaurant Address
+                        address = geoLocate(restaurantAddress);
+                        //converte Location into LatLong
+                        LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
+                        //adding the restaurant marker into the map
+                        googleMap.addMarker(new MarkerOptions()
+                                .position(destination)
+                                .title("Restaurant"));
+                        //set position and zoom of the camera
+                        moveCamera(currentLocation, 15);
+                        //create a URL to make a request to find the path
+                        String url = getDirectionsUrl(currentLocation, destination);
+                        FetchUrl fetchUrl = new FetchUrl();
+                        fetchUrl.setMap(googleMap);
+                        fetchUrl.execute(url);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             } else if (incomingData.getStatus().equals("delivering")) {
+                //find Location of customer address
                 address = geoLocate(customerAddress);
+                //converte Location into LatLong
                 LatLng customer = new LatLng(address.getLatitude(), address.getLongitude());
-                map.addMarker(new MarkerOptions()
+                //adding the restaurant marker into the map
+                googleMap.addMarker(new MarkerOptions()
                         .position(customer)
                         .title("Customer"));
-                moveCamera(customer, 15);
-                //find path
-           /* String url = getDirectionsUrl(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), customer);
-            FetchUrl fetchUrl = new FetchUrl();
-            fetchUrl.setMap(map);
-            fetchUrl.execute(url);*/
-           }
-        }
-    }
+                //set position  and zoom of the camera
+                moveCamera(currentLocation, 15);
+                //create a URL to make a request to find the path
+                String url = getDirectionsUrl(currentLocation, customer);
+                FetchUrl fetchUrl = new FetchUrl();
+                fetchUrl.setMap(googleMap);
+                fetchUrl.execute(url);
+            }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this.getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
-
-    public void mapOperation(Location devLoc){
-        System.out.println("location" + devLoc);
-        currentLocation = new LatLng(devLoc.getLatitude(),devLoc.getLongitude());
-        LatLng point = currentLocation;
-        // Already two locations
-        if (MarkerPoints.size() > 1) {
-            MarkerPoints.clear();
-            googleMap.clear();
-        }
-        // Adding current location to the ArrayList
-        MarkerPoints.add(currentLocation);
-
-        // Creating MarkerOptions
-        MarkerOptions options = new MarkerOptions();
-        options.position(currentLocation);
-
-        // adding destination
-        if (incomingData.getStatus().equals("elaboration")) {
-            address = geoLocate(restaurantAddress);
-            LatLng restaurant = new LatLng(address.getLatitude(), address.getLongitude());
-            MarkerPoints.add(restaurant);
-            options.position(restaurant);
-
-        }
-        else if (incomingData.getStatus().equals("delivering")){
-            address = geoLocate(customerAddress);
-            LatLng customer = new LatLng(address.getLatitude(), address.getLongitude());
-            MarkerPoints.add(customer);
-            options.position(customer);
-        }
-        /**
-         * For the start location, the color of marker is GREEN and
-         * for the end location, the color of marker is RED.
-         */
-        if (MarkerPoints.size() == 1) {
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        } else if (MarkerPoints.size() == 2) {
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        }
-        googleMap.addMarker(options);
-
-        // Checks, whether start and end locations are captured
-        if (MarkerPoints.size() >= 2) {
-            LatLng origin = MarkerPoints.get(0);
-            LatLng dest = MarkerPoints.get(1);
-
-            // Getting URL to the Google Directions API
-            String url = getDirectionsUrl(origin, dest);
-            FetchUrl FetchUrl = new FetchUrl();
-
-            // Start downloading json data from Google Directions API
-            FetchUrl.execute(url);
-            //move map camera
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         }
 
     }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-       /* mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
-
-        deviceLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (deviceLocation != null) {
-            currentLocation = new LatLng(deviceLocation.getLatitude(),deviceLocation.getLongitude());
-            mapOperation();
-        }*/
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -319,39 +225,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
     //getting the device current location
     private void getDeviceLocation() {
-        mFusedeLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
-        //check permissions
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //if permissions are denied stop
-            return;
-        }
-            Task location = mFusedeLocationProviderClient.getLastLocation();
-            location.addOnCompleteListener(new OnCompleteListener(){
-
-                //once the current position in finded
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    //take address of customer and restaurant from firebase
-                   /* LoadFromFirebase();
-
-                    if(incomingData !=null){
-                        // finding destinations
-                        customerAddress = incomingData.getCustomerAddress();
-                        String restaurantID = incomingData.getRestaurantID();
-                        //get resturant address from resturant ID by firebase
-                        Query query = databaseReference.child("restaurants/" + restaurantID + "/address");
-                        query.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {restaurantAddress = (String) dataSnapshot.getValue();}
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {            }
-                        });
-                    }
-                    mapOperation((Location)task.getResult());*/
-                }
-            });
+        //get current position from firebase
+        GeoFire geoFire = new GeoFire(FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("positions"));
+        geoFire.getLocation(user.getUid(), new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                currentLocation = new LatLng(location.latitude,location.longitude);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     //moving the camera to latLng with zoom
@@ -362,8 +249,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     //runtime permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-       // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         mLocationPermissionGaranted = false;
         switch (requestCode){
             case LOCATION_PERMISSION_REQUEST_CODE:{
@@ -410,7 +295,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         // Sensor enabled
         String sensor = "sensor=false";
         //set mode
-        String mode = "mode=bicycling";
+        String mode = "mode=driving";
         // Building the parameters to the web service
         String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
         // Output format
@@ -421,7 +306,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     }
 
     public void LoadFromFirebase (){
-        // obtain the url /offers/{restaurantIdentifier}
+        // get data from orders in firebase
         Query query = databaseReference.child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -434,40 +319,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-        String restaurantID = incomingData.getRestaurantID();
-
-        //get resturant address from resturant ID by firebase
-         query = databaseReference.child("restaurants/" + restaurantID + "/address");
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                restaurantAddress = (String) dataSnapshot.getValue();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-         query = databaseReference.child("positions/" + user.getUid() + "/l");
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentLocation = (LatLng) dataSnapshot.getValue();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
     }
+    private class BackgroundTask extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            System.out.println("BACKGROUNDDDDDD");
+            if (currentLocation != null){
+                mapOperations();
+            }
 
+
+            return null;
+        }
+    }
 }
