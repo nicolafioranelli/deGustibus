@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity
     FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
-    private final String CHANNEL_ID = "channel";
+    private final String CHANNEL_ID = "channelApp";
     private final int NOTIFICATION_ID = 001;
 
     @Override
@@ -178,7 +178,7 @@ public class HomeActivity extends AppCompatActivity
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
+            String name = CHANNEL_ID;
             String description = "desc";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
@@ -194,7 +194,8 @@ public class HomeActivity extends AppCompatActivity
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
+                                                                                            // it simply call the `onNewIntent()` method
         intent.putExtra("notification", "open");
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

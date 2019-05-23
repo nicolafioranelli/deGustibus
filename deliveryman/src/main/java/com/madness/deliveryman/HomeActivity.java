@@ -1,11 +1,15 @@
 package com.madness.deliveryman;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,6 +17,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -62,6 +68,8 @@ public class HomeActivity extends AppCompatActivity
     private static final int REQUEST_PERMISSIONS = 100;
     private Tracker tracker;
     private LocationCallback locationCallback;
+    private final String CHANNEL_ID = "channelDeliveryMan";
+    private final int NOTIFICATION_ID = 001;
 
 
 
@@ -208,6 +216,74 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
+        createNotificationChannel();
+
+        // listen for notifications
+        if(user != null) FirebaseDatabase.getInstance().getReference()
+                .child("notifications")
+                .child(user.getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            makeNotification(getString(R.string.new_notification), getString(R.string.notification_message));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = CHANNEL_ID;
+            String description = "desc";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void makeNotification(String type, String description){
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
+        // it simply call the `onNewIntent()` method
+        intent.putExtra("notification", "open");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // show a new notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
+        builder.setContentTitle(type);
+        builder.setContentText(description);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String extras = intent.getStringExtra("notification");
+        if (extras != null && extras.equals("open")) {
+            fragment =  new NotificationsFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+        }
     }
 
 

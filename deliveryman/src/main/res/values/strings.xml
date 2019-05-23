@@ -126,4 +126,6 @@
     <string name="errProfile">Complete your profile before continuing!</string>
     <string name="menu_available">Available</string>
     <string name="showInMaps">map</string>
+    <string name="new_notification">New notification!</string>
+    <string name="notification_message">Open the notification section ...</string>
 </resources>
