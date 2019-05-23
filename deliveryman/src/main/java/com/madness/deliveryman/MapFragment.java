@@ -105,7 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
-        //LoadFromFirebase();
+        LoadFromFirebase();
         return rootView;
     }
 
@@ -152,24 +152,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         getDeviceLocation();
 
-       /* //if data is not null
+        //if data is not null
         if (incomingData != null) {
             customerAddress = incomingData.getCustomerAddress();
-            String restaurantID = incomingData.getRestaurantID();
 
-            //get resturant address from resturant ID by firebase
-            Query query = databaseReference.child("restaurants/" + restaurantID + "/address");
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    restaurantAddress = (String) dataSnapshot.getValue();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
 
             //check status of order
             if (incomingData.getStatus().equals("elaboration")) {
@@ -184,7 +170,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             FetchUrl fetchUrl = new FetchUrl();
             fetchUrl.setMap(map);
             fetchUrl.execute(url);*/
-          /*  } else if (incomingData.getStatus().equals("delivering")) {
+            } else if (incomingData.getStatus().equals("delivering")) {
                 address = geoLocate(customerAddress);
                 LatLng customer = new LatLng(address.getLatitude(), address.getLongitude());
                 map.addMarker(new MarkerOptions()
@@ -196,8 +182,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             FetchUrl fetchUrl = new FetchUrl();
             fetchUrl.setMap(map);
             fetchUrl.execute(url);*/
-        /*    }
-        }*/
+           }
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -347,7 +333,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 @Override
                 public void onComplete(@NonNull Task task) {
                     //take address of customer and restaurant from firebase
-                    LoadFromFirebase();
+                   /* LoadFromFirebase();
 
                     if(incomingData !=null){
                         // finding destinations
@@ -363,7 +349,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                             public void onCancelled(@NonNull DatabaseError databaseError) {            }
                         });
                     }
-                    mapOperation((Location)task.getResult());
+                    mapOperation((Location)task.getResult());*/
                 }
             });
     }
@@ -447,6 +433,33 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                         incomingData = snapshot.getValue(IncomingData.class);
                     }
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        String restaurantID = incomingData.getRestaurantID();
+
+        //get resturant address from resturant ID by firebase
+         query = databaseReference.child("restaurants/" + restaurantID + "/address");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                restaurantAddress = (String) dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+         query = databaseReference.child("positions/" + user.getUid() + "/l");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentLocation = (LatLng) dataSnapshot.getValue();
             }
 
             @Override
