@@ -165,7 +165,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    Intent mIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putBoolean("newCreation", true);
+                    mIntent.putExtras(mBundle);
+                    startActivity(mIntent);
                     finish();
                 }
                 else{

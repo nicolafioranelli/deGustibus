@@ -24,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 
+import java.security.spec.ECField;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,13 +57,17 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    if (objectMap.get("name")!=null) {
-                        userName.setText(objectMap.get("name").toString());
-                        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                        rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
-                    } else {
-                        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                        rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                    try {
+                        if (objectMap.get("name") != null) {
+                            userName.setText(objectMap.get("name").toString());
+                            rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                            rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                        } else {
+                            rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                            rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                        }
+                    } catch (Exception e) {
+
                     }
                 }
 

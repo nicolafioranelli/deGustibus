@@ -134,8 +134,12 @@ public class HomeActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        userName.setText(objectMap.get("name").toString());
+                        try {
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            userName.setText(objectMap.get("name").toString());
+                        } catch (Exception e) {
+
+                        }
                     }
                 }
 

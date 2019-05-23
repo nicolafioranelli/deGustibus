@@ -72,4 +72,8 @@
     <string name="errProfile">Completa il tuo profilo prima di poter continuare!</string>
     <string name="new_notification">Nuova notifica!</string>
     <string name="notification_message">Apri la sezione notifiche ...</string>
+    <string name="err_addr">Inserisci un indirizzo!</string>
+    <string name="err_desc">Inserisci una descrizione!</string>
+    <string name="err_name">Inserisci il tuo nome!</string>
+    <string name="err_phone">Inserisci un numero di telefono!</string>
 </resources>

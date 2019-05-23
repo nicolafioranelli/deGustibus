@@ -158,16 +158,19 @@ public class HomeActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    if (objectMap.get("name") != null) {
-                        userName.setText(objectMap.get("name").toString());
-                        avail = (boolean) objectMap.get("available");
-                        if (avail) {
-                            available.setChecked(true);
-                        } else {
-                            available.setChecked(false);
+                    try {
+                        if (objectMap.get("name") != null) {
+                            userName.setText(objectMap.get("name").toString());
+                            avail = (boolean) objectMap.get("available");
+                            if (avail) {
+                                available.setChecked(true);
+                            } else {
+                                available.setChecked(false);
+                            }
                         }
-                    }
+                    } catch (Exception e) {
 
+                    }
                 }
 
                 @Override
@@ -461,7 +464,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    // TODO change strings
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,13 +30,24 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madness.degustibus.BuildConfig;
+import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
+import com.madness.degustibus.home.HomeFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +65,13 @@ public class EditProfileFragment extends Fragment {
     private EditText address;
     private ImageView img;
     private String cameraFilePath;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
+    private Uri mImageUri;
+
+    private DatabaseReference databaseReference;
+    private ValueEventListener listener;
+    private DatabaseReference listenerReference;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -63,9 +81,10 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
-        editor = pref.edit();
         setHasOptionsMenu(true);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
     }
 
     /* This method simply sets the title on the toolbar */
@@ -75,24 +94,11 @@ public class EditProfileFragment extends Fragment {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         getActivity().setTitle(getString(R.string.title_EditProfile));
+
+        findViews(rootView);
+        loadFromFirebase();
+        getPhoto(getView());
         return rootView;
-    }
-
-    /* The method retrieves all the elements in the view and populates them with the values
-     * available in the bundle or in the shared preferences.
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //restore the content
-        if (savedInstanceState != null) {
-            loadBundle(savedInstanceState);
-        } else {
-            loadSharedPrefs();
-        }
-
-        getPhoto(view);
     }
 
     /* Menu inflater for toolbar (adds elements inserted in res/menu/main_menu.xml) */
@@ -106,32 +112,38 @@ public class EditProfileFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_save) {
-            fullname = getView().findViewById(R.id.et_edit_fullName);
-            email = getView().findViewById(R.id.et_edit_email);
-            desc = getView().findViewById(R.id.et_edit_desc);
-            phone = getView().findViewById(R.id.et_edit_phone);
-            address = getView().findViewById(R.id.et_edit_address);
 
-            /* Define shared preferences and insert values */
-            editor.putString("name", fullname.getText().toString());
-            editor.putString("email", email.getText().toString());
-            editor.putString("desc", desc.getText().toString());
-            editor.putString("phone", phone.getText().toString());
-            editor.putString("address", address.getText().toString());
-            if (getPrefPhoto() != null) {
-                editor.putString("photo", getPrefPhoto());
+            if (TextUtils.isEmpty(fullname.getText()) |
+                    TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText())) {
+
+                fullname.setError(getResources().getString(R.string.err_name));
+                desc.setError(getResources().getString(R.string.err_desc));
+                phone.setError(getResources().getString(R.string.err_phone));
+                address.setError(getResources().getString(R.string.err_addr));
+            } else {
+                storeOnFirebase();
+                delPrefPhoto();
+
+                /* Handle save option and go back */
+                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                if (getArguments() != null) {
+                    try {
+                        Fragment fragment = null;
+                        Class fragmentClass;
+                        fragmentClass = HomeFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                    } catch (Exception e) {
+                    }
+                } else {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    return true;
+                }
             }
-            editor.apply();
-            storeOnFirebase();
-            delPrefPhoto();
-
-            /* Handle save option and go back */
-            Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -139,7 +151,6 @@ public class EditProfileFragment extends Fragment {
 
     private String getPrefPhoto() {
         SharedPreferences pref = getActivity().getSharedPreferences("photo", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
         return pref.getString("photo", null);
     }
 
@@ -156,68 +167,6 @@ public class EditProfileFragment extends Fragment {
         SharedPreferences.Editor editor = pref.edit();
         editor.remove("photo");
         editor.apply();
-    }
-
-    private void loadSharedPrefs() {
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        address = getView().findViewById(R.id.et_edit_address);
-        img = getView().findViewById(R.id.imageview);
-
-        fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
-        email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.frProfile_defPhone)));
-        address.setText(pref.getString("address", getResources().getString(R.string.frProfile_defAddr)));
-        /* check if a photo is set */
-        if (pref.getString("photo", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photo", null)));
-        }
-    }
-
-    private void loadBundle(Bundle bundle) {
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        address = getView().findViewById(R.id.et_edit_address);
-        img = getView().findViewById(R.id.imageview);
-
-        fullname.setText(bundle.getString("name"));
-        email.setText(bundle.getString("email"));
-        desc.setText(bundle.getString("desc"));
-        phone.setText(bundle.getString("phone"));
-        address.setText(bundle.getString("address"));
-        if (bundle.getString("photo") != null) {
-            img.setImageURI(Uri.parse(bundle.getString("photo")));
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Save away the original text, so we still have it if the activity
-        // needs to be killed while paused.
-        super.onSaveInstanceState(outState);
-
-        fullname = getView().findViewById(R.id.et_edit_fullName);
-        email = getView().findViewById(R.id.et_edit_email);
-        desc = getView().findViewById(R.id.et_edit_desc);
-        phone = getView().findViewById(R.id.et_edit_phone);
-        address = getView().findViewById(R.id.et_edit_address);
-        img = getView().findViewById(R.id.imageview);
-
-        outState.putString("name", fullname.getText().toString());
-        outState.putString("email", email.getText().toString());
-        outState.putString("desc", desc.getText().toString());
-        outState.putString("phone", phone.getText().toString());
-        outState.putString("address", address.getText().toString());
-        if (getPrefPhoto() == null) {
-            outState.putString("photo", pref.getString("photo", null));
-        } else {
-            outState.putString("photo", getPrefPhoto());
-        }
     }
 
     /* This method is used to retrieve the photo via camera or gallery and it is the same
@@ -259,14 +208,14 @@ public class EditProfileFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 0:
-                    Uri photo = Uri.parse(getPrefPhoto());
-                    img.setImageURI(photo);
-                    setPrefPhoto(photo.toString());
+                    mImageUri = Uri.parse(getPrefPhoto());
+                    Glide.with(getContext()).load(mImageUri).into(img);
+                    setPrefPhoto(mImageUri.toString());
                     break;
                 case 1:
-                    Uri selectedImage = data.getData();
-                    img.setImageURI(selectedImage);
-                    setPrefPhoto(selectedImage.toString());
+                    mImageUri = data.getData();
+                    setPrefPhoto(mImageUri.toString());
+                    Glide.with(getContext()).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -394,19 +343,109 @@ public class EditProfileFragment extends Fragment {
      * the database under the child "customers" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();
+        final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());
 
-        Map<String, Object> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
         map.put("name", fullname.getText().toString());
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", address.getText().toString());
-        map.put("photo", getPrefPhoto());
 
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("customers").child(user.getUid()).updateChildren(map);
+        if (mImageUri != null) {
+            try {
+                Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageUri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                byte[] data = baos.toByteArray();
+                //uploading the image
+                fileReference.putBytes(data)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String imageUrl = uri.toString();
+                                        map.put("photo", imageUrl);
+                                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                                        mDatabase.child("customers").child(user.getUid()).updateChildren(map);
+
+                                    }
+                                });
+                            }
+                        });
+            } catch (Exception e) {
+                Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
+            }
+        } else {
+            databaseReference.child("customers").child(user.getUid()).updateChildren(map);
+        }
     }
 
+    private void loadFromFirebase() {
+        listenerReference = databaseReference.child("customers").child(user.getUid());
+        listener = listenerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Object> userData = (HashMap<String, Object>) dataSnapshot.getValue();
+                if (getArguments() == null) {
+                    /* Load items of the view */
+                    fullname.setText(userData.get("name").toString());
+                    email.setText(userData.get("email").toString());
+                    desc.setText(userData.get("desc").toString());
+                    phone.setText(userData.get("phone").toString());
+                    address.setText(userData.get("address").toString());
+
+                    String pic = null;
+                    if (userData.get("photo") != null) {
+                        pic = userData.get("photo").toString();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                } else {
+                    email.setText(user.getEmail());
+                    String pic = null;
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                }
+                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void findViews(View view) {
+        fullname = view.findViewById(R.id.et_edit_fullName);
+        email = view.findViewById(R.id.et_edit_email);
+        desc = view.findViewById(R.id.et_edit_desc);
+        phone = view.findViewById(R.id.et_edit_phone);
+        address = view.findViewById(R.id.et_edit_address);
+        img = view.findViewById(R.id.imageview);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerReference.removeEventListener(listener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        listenerReference.removeEventListener(listener);
+    }
 }

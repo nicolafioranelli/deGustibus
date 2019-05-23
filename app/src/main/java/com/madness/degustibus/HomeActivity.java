@@ -1,20 +1,17 @@
 package com.madness.degustibus;
 
 import android.app.DatePickerDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,7 +25,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -63,18 +59,37 @@ public class HomeActivity extends AppCompatActivity
         ProfileFragment.ProfileListener,
         OrderFragment.NewOrderInterface,
         TimePickerDialog.OnTimeSetListener,
-        DatePickerDialog.OnDateSetListener{
+        DatePickerDialog.OnDateSetListener {
 
+    private final String CHANNEL_ID = "channelApp";
+    private final int NOTIFICATION_ID = 001;
     Toolbar toolbar;
     DrawerLayout drawer;
     NavigationView navigationView;
     Fragment fragment;
     FragmentManager fragmentManager;
-    FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
-    private final String CHANNEL_ID = "channelApp";
-    private final int NOTIFICATION_ID = 001;
+    private DatabaseReference listenerReference;
+    private ValueEventListener listener;
+
+    /* Check if connection is enabled! */
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+            if (networkInfo != null && networkInfo.isConnected()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +97,9 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
-
         firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = firebaseAuth.getCurrentUser();
 
         /* Check if there is an user authenticated, in case no user launch the login screen */
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -97,6 +113,35 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
+        fragmentManager = getSupportFragmentManager();
+        if (getIntent().hasExtra("newCreation")) {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = EditProfileFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+
+                Bundle args = new Bundle();
+                args.putBoolean("isNew", true);
+                fragment.setArguments(args);
+
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                navigationView.getMenu().getItem(1).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        }
+
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -106,17 +151,19 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null) {
+        try {
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-            databaseReference.child("customers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            listenerReference = databaseReference.child("customers").child(user.getUid());
+            listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if(objectMap.get("name") != null)   // TODO fix, it is always null
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    try {
+                        if (objectMap.get("name") != null) {
                             userName.setText(objectMap.get("name").toString());
+                        }
+                    } catch (Exception e) {
+
                     }
                 }
 
@@ -125,24 +172,8 @@ public class HomeActivity extends AppCompatActivity
 
                 }
             });
-        }
+        } catch (Exception e) {
 
-        fragmentManager = getSupportFragmentManager();
-
-        /* Instantiate home fragment */
-        if (savedInstanceState == null) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -151,17 +182,16 @@ public class HomeActivity extends AppCompatActivity
                 updateMenu();
             }
         });
-
         createNotificationChannel();
 
         // listen for notifications
-        if(user != null) FirebaseDatabase.getInstance().getReference()
+        if (user != null) FirebaseDatabase.getInstance().getReference()
                 .child("notifications")
                 .child(user.getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             makeNotification(getString(R.string.new_notification), getString(R.string.notification_message));
                         }
                     }
@@ -190,24 +220,23 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    private void makeNotification(String type, String description){
-
+    private void makeNotification(String type, String description) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
-                                                                                            // it simply call the `onNewIntent()` method
+        // it simply call the `onNewIntent()` method
         intent.putExtra("notification", "open");
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            // show a new notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-            builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
-            builder.setContentTitle(type);
-            builder.setContentText(description);
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            builder.setContentIntent(pendingIntent);
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-            notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+        // show a new notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
+        builder.setContentTitle(type);
+        builder.setContentText(description);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
 
     }
 
@@ -216,7 +245,7 @@ public class HomeActivity extends AppCompatActivity
         super.onNewIntent(intent);
         String extras = intent.getStringExtra("notification");
         if (extras != null && extras.equals("open")) {
-            fragment =  new NotificationsFragment();
+            fragment = new NotificationsFragment();
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
         }
@@ -332,7 +361,7 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), getString(R.string.err_connection), Toast.LENGTH_LONG).show();
         }
 
-        if(user!=null) {
+        if (user != null) {
             FirebaseDatabase.getInstance().getReference().child("customers").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -367,7 +396,7 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, "Complete offer");
-        ft.addToBackStack("COMPLETEOFFER"); // TODO change it
+        ft.addToBackStack("COMPLETEOFFER");
         ft.commit();
     }
 
@@ -389,19 +418,13 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    /* Check if connection is enabled! */
-    public static boolean isNetworkAvailable(Context context) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         try {
-            ConnectivityManager cm = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-            if (networkInfo != null && networkInfo.isConnected()) {
-                return true;
-            }
+            listenerReference.removeEventListener(listener);
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
-        return false;
     }
 }

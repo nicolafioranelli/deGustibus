@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,7 +16,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileFragment extends Fragment {
 
@@ -27,6 +40,9 @@ public class ProfileFragment extends Fragment {
     private ImageView img;
     private SharedPreferences pref;
     private ProfileListener listener;
+    private DatabaseReference databaseReference;
+    private ValueEventListener eventListener;
+    private DatabaseReference listenerReference;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -48,7 +64,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        pref = this.getActivity().getSharedPreferences("DEGUSTIBUS", Context.MODE_PRIVATE);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     /* Populates the menu with the edit button */
@@ -80,8 +96,8 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         fullname = getView().findViewById(R.id.tv_show_fullName);
         email = getView().findViewById(R.id.tv_show_email);
         desc = getView().findViewById(R.id.tv_show_desc);
@@ -89,14 +105,48 @@ public class ProfileFragment extends Fragment {
         address = getView().findViewById(R.id.tv_show_address);
         img = getView().findViewById(R.id.imageview);
 
-        fullname.setText(pref.getString("name", getResources().getString(R.string.frProfile_defName)));
-        email.setText(pref.getString("email", getResources().getString(R.string.frProfile_defEmail)));
-        desc.setText(pref.getString("desc", getResources().getString(R.string.frProfile_defDesc)));
-        phone.setText(pref.getString("phone", getResources().getString(R.string.frProfile_defPhone)));
-        address.setText(pref.getString("address", getResources().getString(R.string.frProfile_defAddr)));
-        if (pref.getString("photo", null) != null) {
-            img.setImageURI(Uri.parse(pref.getString("photo", null)));
-        }
+        loadFromFirebase();
+    }
+
+    private void loadFromFirebase() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        listenerReference = databaseReference.child("customers").child(user.getUid());
+
+        eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                    /* Load items of the view */
+                    fullname.setText(user.get("name").toString());
+                    email.setText(user.get("email").toString());
+                    desc.setText(user.get("desc").toString());
+                    phone.setText(user.get("phone").toString());
+                    address.setText(user.get("address").toString());
+
+                    String pic = null;
+                    if (user.get("photo") != null) {
+                        pic = user.get("photo").toString();
+                    }
+                    /* Glide */
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+                }catch (Exception e) {
+
+                }
+                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /* Interface for the listener */

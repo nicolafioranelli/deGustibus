@@ -111,4 +111,9 @@
     <string name="channel_name" translatable="false">channel</string>
     <string name="new_notification">New notification!</string>
     <string name="notification_message">Open the notification section ...</string>
+
+    <string name="err_name">Name is required!</string>
+    <string name="err_desc">Description is required!</string>
+    <string name="err_phone">Phone is required!</string>
+    <string name="err_addr">Address is required!</string>
 </resources>

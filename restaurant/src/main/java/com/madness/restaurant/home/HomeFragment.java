@@ -60,9 +60,13 @@ public class HomeFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        userName.setText(objectMap.get("name").toString());
-                        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                        rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                        try {
+                            userName.setText(objectMap.get("name").toString());
+                            rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                            rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
+                        } catch (Exception e) {
+
+                        }
                     } else {
                         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                         rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
