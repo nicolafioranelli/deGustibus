@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * A class to parse the Google Places in JSON format
+ */
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
     GoogleMap map;
 
@@ -26,7 +29,7 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
         try {
             jObject = new JSONObject(jsonData[0]);
             DataParser parser = new DataParser();
-
+            //start parsing data
             routes = parser.parse(jObject);
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,6 +43,7 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
         ArrayList<LatLng> points;
         System.out.println("result" + result);
         PolylineOptions lineOptions = null;
+
         // Traversing through all the routes
         for (int i = 0; i < result.size(); i++) {
             points = new ArrayList<>();
@@ -63,14 +67,15 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
 
         // Drawing polyline in the Google Map for the i-th route
         if (lineOptions != null) {
-            System.out.println("PRIMO FATTO");
             map.addPolyline(lineOptions);
 
         }
-        System.out.println("PRIMO NON FATTO");
     }
+
     void setMap (GoogleMap map){
         this.map = map;
     }
+
+
 }
 
