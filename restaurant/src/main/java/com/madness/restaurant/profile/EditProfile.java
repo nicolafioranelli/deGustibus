@@ -93,7 +93,6 @@ public class EditProfile extends Fragment {
     private ImageView img;
     private String cameraFilePath;
     private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
     private Uri mImageUri;
     private DatabaseReference databaseReference;
     private FirebaseUser user;
@@ -167,12 +166,11 @@ public class EditProfile extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_edit) {
-            if (TextUtils.isEmpty(fullname.getText()) | TextUtils.isEmpty(email.getText()) |
+            if (TextUtils.isEmpty(fullname.getText()) |
                     TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText()) |
                     TextUtils.isEmpty(address.getText())) {
 
                 fullname.setError(getResources().getString(R.string.name));
-                email.setError(getResources().getString(R.string.email));
                 desc.setError(getResources().getString(R.string.descr));
                 phone.setError(getResources().getString(R.string.phone));
                 address.setError(getResources().getString(R.string.address));

@@ -146,24 +146,6 @@ public class HomeActivity extends AppCompatActivity
             });
         }
 
-
-
-        /* Instantiate home fragment
-        if (savedInstanceState == null) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            fragment = getSupportFragmentManager().findFragmentByTag("HOME");
-        }*/
-
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
