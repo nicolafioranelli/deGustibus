@@ -83,17 +83,6 @@ public class IncomingFragment extends Fragment {
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Query query = databaseReference.child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
 
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         FirebaseRecyclerOptions<IncomingData> options =
                 new FirebaseRecyclerOptions.Builder<IncomingData>()
                         .setQuery(query, IncomingData.class)

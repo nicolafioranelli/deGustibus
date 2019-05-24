@@ -22,6 +22,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,19 +65,6 @@ public class ReservationFragment extends Fragment {
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Query query = databaseReference.child("orders").orderByChild("customerID").equalTo(user.getUid());
-
-        /*query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-
-        //TODO remove also in deliveryman
 
         FirebaseRecyclerOptions<ReservationData> options =
                 new FirebaseRecyclerOptions.Builder<ReservationData>()
@@ -118,6 +109,28 @@ public class ReservationFragment extends Fragment {
                     }
                 });
 
+                if(0 == model.getDeliverymanID().compareTo("null")){
+                    holder.deliveryman.setText(R.string.no_rider);
+                }else{
+                    databaseReference.child("riders").child(model.getDeliverymanID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                String riderName = objectMap.get("name").toString();
+                                holder.deliveryman.setText(riderName);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+
+
                 if (model.getStatus().equals("incoming")) {
                     holder.status.setText(R.string.status_incoming);
                 } else if (model.getStatus().equals("refused")) {
@@ -129,6 +142,15 @@ public class ReservationFragment extends Fragment {
                 } else if (model.getStatus().equals("delivering")) {
                     holder.status.setText(R.string.status_delivering);
                 }
+
+                //setup recieved listener
+
+                holder.recieved.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        recieveFood(position,model.getRestaurantID());
+                    }
+                });
 
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
@@ -173,6 +195,43 @@ public class ReservationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         databaseReference.removeEventListener(emptyListener);
+    }
+
+    private void recieveFood(final int position, final String restaurantID) {
+
+        Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
+
+        updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    /* Set order as done */
+
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    objectMap.put("status", "done");
+                    databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
+
+                    /* Send notification to user */
+                    final Map<String, Object> newNotification = new HashMap<String, Object>();
+                    newNotification.put("type", getString(R.string.typeNot_done));
+
+                    newNotification.put("description", getString(R.string.desc3) + adapter.getRef(position).getKey().substring(1, 6) + getString(R.string.desc9));
+
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    Date date = new Date();
+                    newNotification.put("date", dateFormat.format(date));
+
+                    databaseReference.child("notifications").child(restaurantID).push().setValue(newNotification);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 }

@@ -99,7 +99,6 @@
 
     <string name="select">Please, select at least one element!</string>
     <string name="done">Done!</string>
-    <string name="typeNot_new">New order</string>
     <string name="desc">You have received a new order! Check in your reservation box</string>
 
     <string name="summary">Summary</string>
@@ -112,21 +111,43 @@
     <string name="new_notification">New notification!</string>
     <string name="notification_message">Open the notification section ...</string>
 
+    <string name="typeNot_new">New order</string>
+    <string name="typeNot_refused">Refused order</string>
+    <string name="typeNot_incoming">Incoming order</string>
+    <string name="typeNot_accepted">Order accepted</string>
+    <string name="typeNot_deliverying">Delivering order</string>
+    <string name="typeNot_done">Delivered</string>
+    <string name="typeNot_noRider">No rider available</string>
+    <string name="desc1">Oh no! It seems your order has been refused by</string>
+    <string name="desc2">" because no rider is currently available!"</string>
+    <string name="desc3">Your order #</string>
+    <string name="desc4">has been confirmed by</string>
+    <string name="desc5">You have received a new order #</string>
+    <string name="desc6">to be delivered. \\nCheck details in your incoming box.</string>
+    <string name="desc7">Your order has been accepted by </string>
+    <string name="desc8">Your order will be delivered by </string>
+    <string name="desc9"> has been delivered!</string>
+
     <string name="err_name">Name is required!</string>
     <string name="err_desc">Description is required!</string>
     <string name="err_phone">Phone is required!</string>
     <string name="err_addr">Address is required!</string>
     <string name="title_orders">Orders</string>
-    <string name="resStatus">Status</string>
-    <string name="resDeliveryman">Deliveryman</string>
-    <string name="resRestaurant">Restaurant</string>
-    <string name="resDate">Date</string>
-    <string name="resHour">Hour</string>
-    <string name="resTotal">Total</string>
+    <string name="resStatus">Status:</string>
+    <string name="resDeliveryman">Deliveryman:</string>
+    <string name="resRestaurant">Restaurant:</string>
+    <string name="resDate">Date:</string>
+    <string name="resHour">Hour:</string>
+    <string name="resTotal">Total:</string>
     <string name="menu_reservations">Reservations</string>
     <string name="status_incoming">Incoming</string>
     <string name="status_refused">Refused</string>
     <string name="status_done">Done</string>
     <string name="status_elaboration">elaboration</string>
     <string name="status_delivering">Delivering</string>
+    <string name="no_rider">Not assigned</string>
+    <string name="recieved">Received</string>
+    <string name="buttonPick">Pick</string>
+    <string name="buttonDeliver">Deliver</string>
+    <string name="typeNot_new">New Order</string>
 </resources>

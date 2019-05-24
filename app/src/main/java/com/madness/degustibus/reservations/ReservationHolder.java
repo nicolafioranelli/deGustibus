@@ -8,7 +8,8 @@ import com.madness.degustibus.R;
 
 public class ReservationHolder extends RecyclerView.ViewHolder {
 
-    public TextView status, deliveryman, restaurant, date, hour, price, customerAddress, restaurantAddres;
+    public TextView status, deliveryman, restaurant, date, hour, price, restaurantAddres;
+    public Button recieved;
 
 
     public ReservationHolder(final View itemView) {
@@ -20,5 +21,6 @@ public class ReservationHolder extends RecyclerView.ViewHolder {
         hour = itemView.findViewById(R.id.hour);
         price = itemView.findViewById(R.id.price);
         restaurantAddres = itemView.findViewById(R.id.restaurantAddress);
+        recieved = itemView.findViewById(R.id.recievedButton);
     }
 }
