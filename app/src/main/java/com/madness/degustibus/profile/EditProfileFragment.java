@@ -26,24 +26,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -62,7 +54,6 @@ import com.madness.degustibus.home.HomeFragment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +63,6 @@ public class EditProfileFragment extends Fragment {
     private EditText email;
     private EditText desc;
     private EditText phone;
-    private TextView address;
     private ImageView img;
     private String cameraFilePath;
     private Uri mImageUri;
@@ -126,13 +116,13 @@ public class EditProfileFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_save) {
 
-            if (TextUtils.isEmpty(fullname.getText()) |
+            if (TextUtils.isEmpty(fullname.getText()) | TextUtils.isEmpty(autocompleteView.getText()) |
                     TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText())) {
 
                 fullname.setError(getResources().getString(R.string.err_name));
                 desc.setError(getResources().getString(R.string.err_desc));
                 phone.setError(getResources().getString(R.string.err_phone));
-                address.setError(getResources().getString(R.string.err_addr));
+                autocompleteView.setError(getResources().getString(R.string.err_addr));
             } else {
                 storeOnFirebase();
                 delPrefPhoto();
@@ -409,7 +399,6 @@ public class EditProfileFragment extends Fragment {
                         email.setText(userData.get("email").toString());
                         desc.setText(userData.get("desc").toString());
                         phone.setText(userData.get("phone").toString());
-                        address.setText(userData.get("address").toString());
                         autocompleteView.setText(userData.get("address").toString());
 
                         String pic = null;
@@ -450,9 +439,20 @@ public class EditProfileFragment extends Fragment {
         email = view.findViewById(R.id.et_edit_email);
         desc = view.findViewById(R.id.et_edit_desc);
         phone = view.findViewById(R.id.et_edit_phone);
-        address = view.findViewById(R.id.et_edit_address);
         img = view.findViewById(R.id.imageview);
         autocompleteView = view.findViewById(R.id.autocomplete);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerReference.removeEventListener(listener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        listenerReference.removeEventListener(listener);
     }
 
     /* Class for the autocomplete Text view */
@@ -510,17 +510,5 @@ public class EditProfileFragment extends Fragment {
             };
             return filter;
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listenerReference.removeEventListener(listener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        listenerReference.removeEventListener(listener);
     }
 }

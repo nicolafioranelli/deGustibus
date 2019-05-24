@@ -62,7 +62,7 @@ public class CompletedOrderFragment extends Fragment {
     private FirebaseUser user;
     private float totalAmount;
     private TextView totalAmountTextView;
-    private EditText customerAddress;
+    private TextView customerAddress;
     private DialogFragment timePicker;
     private DialogFragment datePicker;
     private TextView setDate;
@@ -222,7 +222,8 @@ public class CompletedOrderFragment extends Fragment {
         customerAddress = getView().findViewById(R.id.costumer_address);
         totalPrice = getView().findViewById(R.id.total_price);
 
-        customerAddress.setText(pref.getString("addressCustomer", getResources().getString(R.string.es_street)));
+        HashMap<String, Object> userData = (HashMap<String, Object>) getArguments().getSerializable("user");
+        customerAddress.setText(userData.get("address").toString());
         totalPrice.setText(pref.getString("totPrice","20.5"));
         super.onResume();
     }

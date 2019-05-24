@@ -109,10 +109,10 @@
                 android:theme="@style/TextView" />
 
             <AutoCompleteTextView
+                android:id="@+id/autocomplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/autocomplete"
-                android:hint="Type in your Location" />
+                android:hint="@string/frProfile_addr" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
