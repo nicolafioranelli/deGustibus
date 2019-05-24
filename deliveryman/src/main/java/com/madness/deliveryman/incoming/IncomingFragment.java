@@ -153,33 +153,24 @@ public class IncomingFragment extends Fragment {
                     }
                 });
 
-
-                if(model.getStatus().equals("incoming") || model.getStatus().equals("elaboration")){
+                if(model.getStatus().equals("incoming")){
+                    holder.map.setVisibility(View.GONE);
+                }
+                else if(model.getStatus().equals("elaboration")){
                     // show the position of the restaurant
-                    Log.d("INCOMING", "onBindViewHolder: " + holder.restaurantAddres.getText());
-
+                    holder.map.setVisibility(View.VISIBLE);
                     holder.map.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // new intent
-                            /*Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.restaurantAddres.getText() + "&mode=w");
-                            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                            mapIntent.setPackage("com.google.android.apps.maps");
-                            startActivity(mapIntent);*/
                             mapsInterface.callMaps(holder.restaurant.getText().toString(),holder.restaurantAddres.getText().toString());
                         }
                     });
                 }else if(model.getStatus().equals("delivering")){
                     // show the position of the customer
-                    Log.d("DELIVERING", "onBindViewHolder: " + model.getCustomerAddress());
+                    holder.map.setVisibility(View.VISIBLE);
                     holder.map.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // new intent
-                            /*Uri gmmIntentUri = Uri.parse("google.navigation:q="+ model.getCustomerAddress() + "&mode=w");
-                            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                            mapIntent.setPackage("com.google.android.apps.maps");
-                            startActivity(mapIntent);*/
                             mapsInterface.callMaps(holder.customer.getText().toString(),holder.customerAddress.getText().toString());
                         }
                     });
@@ -232,14 +223,8 @@ public class IncomingFragment extends Fragment {
                 } else if (model.getStatus().equals("delivering")) {
                     holder.status.setText(R.string.status_delivering);
                     holder.button.setVisibility(View.GONE);
-                    holder.refuse.setVisibility(View.VISIBLE);
+                    holder.refuse.setVisibility(View.GONE);
                     holder.refuse.setText(R.string.buttonDeliver);
-                    holder.refuse.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            deliver(position, model.getRestaurantID());
-                        }
-                    });
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }

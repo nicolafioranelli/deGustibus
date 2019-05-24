@@ -47,7 +47,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
 
     private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 15f;
+    private static final float DEFAULT_ZOOM = 13;
 
     private MapView mapView;
     private GoogleMap googleMap;
@@ -137,60 +137,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
 
     }
     private void mapOperations (){
-        //if there is a order
-        /*if (incomingData != null ) {
-            //take customer address and restaurant id
-            customerAddress = incomingData.getCustomerAddress();
-            String restaurantID = incomingData.getRestaurantID();
 
-            if (incomingData.getStatus().equals("elaboration")) {
-                //get resturant address from resturant ID by firebase
-                Query query = databaseReference.child("restaurants/" + restaurantID + "/address");
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        restaurantAddress = (String) dataSnapshot.getValue();
-                        //find Location of restaurant Address
-                        address = geoLocate(restaurantAddress);
-                        //converte Location into LatLong
-                        LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
-                        //adding the restaurant marker into the map
-                        googleMap.addMarker(new MarkerOptions()
-                                .position(destination)
-                                .title("Restaurant"));
-                        //set position and zoom of the camera
-                        moveCamera(currentLocation, 15);
-                        //create a URL to make a request to find the path
-                        String url = getDirectionsUrl(currentLocation, destination);
-                        FetchUrl fetchUrl = new FetchUrl();
-                        fetchUrl.setMap(googleMap);
-                        fetchUrl.execute(url);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            } else if (incomingData.getStatus().equals("delivering")) {
-                //find Location of customer address
-                address = geoLocate(customerAddress);
-                //converte Location into LatLong
-                LatLng customer = new LatLng(address.getLatitude(), address.getLongitude());
-                //adding the restaurant marker into the map
-                googleMap.addMarker(new MarkerOptions()
-                        .position(customer)
-                        .title("Customer"));
-                //set position  and zoom of the camera
-                moveCamera(currentLocation, 15);
-                //create a URL to make a request to find the path
-                String url = getDirectionsUrl(currentLocation, customer);
-                FetchUrl fetchUrl = new FetchUrl();
-                fetchUrl.setMap(googleMap);
-                fetchUrl.execute(url);
-            }
-
-        }*/
 
         locationAddress = getArguments().getString("address");
         name = getArguments().getString("name");
@@ -203,7 +150,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
                 .position(destination)
                 .title(name));
         //set position and zoom of the camera
-        moveCamera(currentLocation, 15);
+        moveCamera(currentLocation, DEFAULT_ZOOM);
         //create a URL to make a request to find the path
         String url = getDirectionsUrl(currentLocation, destination);
         FetchUrl fetchUrl = new FetchUrl();
