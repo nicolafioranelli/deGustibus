@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.deliveryman.map;
 
 import android.Manifest;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,7 +34,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madness.deliveryman.R;
 import com.madness.deliveryman.incoming.IncomingData;
+import com.madness.deliveryman.map.FetchUrl;
 
 import java.io.IOException;
 import java.util.ArrayList;

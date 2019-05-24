@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.deliveryman.map;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.madness.deliveryman.map.DataParser;
 
 import org.json.JSONObject;
 

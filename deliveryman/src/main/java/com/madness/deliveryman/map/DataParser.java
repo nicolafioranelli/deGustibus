@@ -1,4 +1,4 @@
-package com.madness.deliveryman;
+package com.madness.deliveryman.map;
 
 import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONArray;

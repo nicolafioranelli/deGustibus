@@ -35,7 +35,6 @@ import android.widget.Toast;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -49,7 +48,7 @@ import com.madness.deliveryman.location.Tracker;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 import com.madness.deliveryman.profile.EditProfileFragment;
 import com.madness.deliveryman.profile.ProfileFragment;
-import com.madness.deliveryman.MapFragment;
+import com.madness.deliveryman.map.MapFragment;
 
 import java.util.HashMap;
 import java.util.Map;
