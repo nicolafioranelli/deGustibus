@@ -333,12 +333,16 @@ public class HomeActivity extends AppCompatActivity
         super.onStop();
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
+        }
+        try {
             Map<String, Object> m = new HashMap<String, Object>();
             m.put("available",false);
             FirebaseDatabase.getInstance().getReference()
                     .child("riders")
                     .child(user.getUid())
                     .updateChildren(m);
+        } catch (Exception e) {
+
         }
     }
 
@@ -408,18 +412,6 @@ public class HomeActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 break;
-
-                // TODO remove it
-            case R.id.nav_map:
-                try {
-                    fragmentClass = MapFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
         }
         item.setChecked(true);
 
@@ -459,10 +451,7 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
-            } else if(fragment instanceof MapFragment) {
-                navigationView.getMenu().findItem(R.id.nav_map).setChecked(true);
-            }
-            else{
+            } else{
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
         }
