@@ -76,4 +76,5 @@
     <string name="err_desc">Inserisci una descrizione!</string>
     <string name="err_name">Inserisci il tuo nome!</string>
     <string name="err_phone">Inserisci un numero di telefono!</string>
+    <string name="title_orders">Ordini</string>
 </resources>

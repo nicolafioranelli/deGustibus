@@ -182,9 +182,6 @@ public class IncomingFragment extends Fragment {
 
 
 
-
-                holder.status.setText(model.getStatus());
-
                 if (model.getStatus().equals("incoming")) {
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);

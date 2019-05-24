@@ -116,4 +116,17 @@
     <string name="err_desc">Description is required!</string>
     <string name="err_phone">Phone is required!</string>
     <string name="err_addr">Address is required!</string>
+    <string name="title_orders">Orders</string>
+    <string name="resStatus">Status</string>
+    <string name="resDeliveryman">Deliveryman</string>
+    <string name="resRestaurant">Restaurant</string>
+    <string name="resDate">Date</string>
+    <string name="resHour">Hour</string>
+    <string name="resTotal">Total</string>
+    <string name="menu_reservations">Reservations</string>
+    <string name="status_incoming">Incoming</string>
+    <string name="status_refused">Refused</string>
+    <string name="status_done">Done</string>
+    <string name="status_elaboration">elaboration</string>
+    <string name="status_delivering">Delivering</string>
 </resources>

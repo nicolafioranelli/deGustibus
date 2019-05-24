@@ -44,6 +44,7 @@ import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
 import com.madness.degustibus.profile.EditProfileFragment;
 import com.madness.degustibus.profile.ProfileFragment;
+import com.madness.degustibus.reservations.ReservationFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -309,6 +310,16 @@ public class HomeActivity extends AppCompatActivity
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_reservations:
+                try {
+                    fragmentClass = ReservationFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Reservations").addToBackStack("HOME").commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
