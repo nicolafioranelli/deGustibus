@@ -108,11 +108,11 @@
                 android:text="@string/frProfile_addr"
                 android:theme="@style/TextView" />
 
-            <EditText
-                android:id="@+id/et_edit_address"
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPostalAddress" />
+                android:id="@+id/autocomplete"
+                android:hint="Type in your Location" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

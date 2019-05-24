@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +39,6 @@ public class ProfileFragment extends Fragment {
     private TextView phone;
     private TextView address;
     private ImageView img;
-    private SharedPreferences pref;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private ValueEventListener eventListener;
@@ -135,11 +135,12 @@ public class ProfileFragment extends Fragment {
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
-                }catch (Exception e) {
 
+                    getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                    getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                }catch (Exception e) {
+                    Log.e("MAD", "onDataChange: ", e);
                 }
-                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -152,5 +153,17 @@ public class ProfileFragment extends Fragment {
     /* Interface for the listener */
     public interface ProfileListener {
         void editProfileClick();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerReference.removeEventListener(eventListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        listenerReference.removeEventListener(eventListener);
     }
 }
