@@ -44,10 +44,16 @@ public class NewNotificationClass {
         databaseReference.child("orders").child(orderData.getOrderKey()).updateChildren(updateObject).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                databaseReference = FirebaseDatabase.getInstance().getReference();
+                Map<String, Object> availObject = new HashMap<>();
+                availObject.put("available", false);
+                databaseReference.child("riders").child(orderData.getRiderID()).updateChildren(availObject);
                 /* Perform notification insertion */
                 newNotificationOrderComplete(orderData);
             }
         });
+
+
 
     }
 
