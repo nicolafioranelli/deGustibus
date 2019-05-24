@@ -333,6 +333,12 @@ public class HomeActivity extends AppCompatActivity
         super.onStop();
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
+            Map<String, Object> m = new HashMap<String, Object>();
+            m.put("available",false);
+            FirebaseDatabase.getInstance().getReference()
+                    .child("riders")
+                    .child(user.getUid())
+                    .updateChildren(m);
         }
     }
 
@@ -500,7 +506,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        listenerReference.removeEventListener(listener);
+        try {
+            listenerReference.removeEventListener(listener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

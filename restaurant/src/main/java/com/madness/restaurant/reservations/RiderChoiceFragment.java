@@ -380,22 +380,26 @@ public class RiderChoiceFragment extends Fragment {
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
-                        /* This method retrieves the information of the rider and will add them to the item to be passed to the adapter */
-                        rider = null;
-                        rider = new RiderComparable();
-                        rider.setAvailable((boolean) user.get("available"));
-                        rider.setName(user.get("name").toString());
-                        rider.setPhoto(user.get("photo").toString());
-                        rider.setKey(key);
-                        Point customer = new Point();
-                        customer.setLatitude(location.latitude);
-                        customer.setLongitude(location.longitude);
+                            /* This method retrieves the information of the rider and will add them to the item to be passed to the adapter */
+                            rider = null;
+                            rider = new RiderComparable();
+                            rider.setAvailable((boolean) user.get("available"));
+                            rider.setName(user.get("name").toString());
+                            try {
+                                rider.setPhoto(user.get("photo").toString());
+                            } catch (Exception e) {
+                                rider.setPhoto("default");
+                            }
+                            rider.setKey(key);
+                            Point customer = new Point();
+                            customer.setLatitude(location.latitude);
+                            customer.setLongitude(location.longitude);
 
-                        // Get haversine class and call method to calculate distance, then display it on the recycler view
-                        ComputeDistance computeDistance = new ComputeDistance();
-                        rider.setDistance(computeDistance.getDistance(customer, restaurant));
+                            // Get haversine class and call method to calculate distance, then display it on the recycler view
+                            ComputeDistance computeDistance = new ComputeDistance();
+                            rider.setDistance(computeDistance.getDistance(customer, restaurant));
 
-                        callback.onCallback(rider);
+                            callback.onCallback(rider);
                     }
                 });
             }

@@ -44,8 +44,15 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
     public void onBindViewHolder(@NonNull RiderHolder holder, int position) {
         final RiderComparable riderComparable = riderList.get(position);
         holder.name.setText(riderComparable.getName());
+        String pic;
+        if(riderComparable.getPhoto().equals("default")) {
+            pic = null;
+        } else {
+            pic = riderComparable.getPhoto();
+        }
+
         GlideApp.with(holder.imageView.getContext())
-                .load(riderComparable.getPhoto())
+                .load(pic)
                 .placeholder(R.drawable.user_profile)
                 .into(holder.imageView);
         if (!riderComparable.getAvailable()) {
