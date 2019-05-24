@@ -161,7 +161,7 @@ public class Tracker {
                 .child("positions"));
 
         geoFire.setLocation(
-                "5RM1aR8nYSRG3FiPbpy4eYsPkIB3",
+                userId,
                 new GeoLocation(latitude, longitude),
                 new GeoFire.CompletionListener() {
             @Override
