@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -129,18 +130,24 @@ public class ReservationFragment extends Fragment {
                     });
                 }
 
-
-
-                if (model.getStatus().equals("incoming")) {
+                if (model.getStatus().equals("new")) {
+                    holder.status.setText(R.string.status_new);
+                    holder.recieved.setVisibility(View.GONE);
+                } else if (model.getStatus().equals("incoming")) {
+                    holder.recieved.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_incoming);
                 } else if (model.getStatus().equals("refused")) {
+                    holder.recieved.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_refused);
                 } else if (model.getStatus().equals("done")) {
+                    holder.recieved.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_done);
                 } else if (model.getStatus().equals("elaboration")) {
+                    holder.recieved.setVisibility(View.GONE);
                     holder.status.setText(R.string.status_elaboration);
                 } else if (model.getStatus().equals("delivering")) {
                     holder.status.setText(R.string.status_delivering);
+                    holder.recieved.setVisibility(View.VISIBLE);
                 }
 
                 //setup recieved listener
@@ -148,7 +155,7 @@ public class ReservationFragment extends Fragment {
                 holder.recieved.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        recieveFood(position,model.getRestaurantID());
+                        recieveFood(position,model.getRestaurantID(), model.getDeliverymanID());
                     }
                 });
 
@@ -197,7 +204,7 @@ public class ReservationFragment extends Fragment {
         databaseReference.removeEventListener(emptyListener);
     }
 
-    private void recieveFood(final int position, final String restaurantID) {
+    private void recieveFood(final int position, final String restaurantID, final String riderID) {
 
         Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
 
@@ -223,6 +230,9 @@ public class ReservationFragment extends Fragment {
 
                     databaseReference.child("notifications").child(restaurantID).push().setValue(newNotification);
 
+                    Map<String, Object> riderMap = new HashMap<>();
+                    riderMap.put("available", true);
+                    databaseReference.child("riders").child(riderID).updateChildren(riderMap);
                 }
             }
 

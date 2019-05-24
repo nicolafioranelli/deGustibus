@@ -62,7 +62,6 @@
     <string name="title_Complete">Completa ordine</string>
     <string name="title_Order">Nuovo ordine</string>
     <string name="done">Fatto!</string>
-    <string name="typeNot_new">Nuovo ordine</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
     <string name="address">Indirizzo di consegna</string>
     <string name="order">Completa ordine</string>
@@ -77,7 +76,6 @@
     <string name="err_name">Inserisci il tuo nome!</string>
     <string name="err_phone">Inserisci un numero di telefono!</string>
     <string name="title_orders">Ordini</string>
-    <string name="typeNot_new">Nuovo ordine</string>
     <string name="typeNot_refused">Ordine rifutato</string>
     <string name="typeNot_incoming">Nuova consegna</string>
     <string name="typeNot_accepted">Ordine accettato</string>
@@ -104,8 +102,11 @@
     <string name="resRestaurant">Ristorante:</string>
     <string name="resStatus">Stato:</string>
     <string name="resTotal">Totale:</string>
+    <string name="status_new">In attesa</string>
     <string name="status_done">Consegnato</string>
     <string name="status_elaboration">In elaborazione</string>
     <string name="status_incoming">Spedito</string>
     <string name="status_refused">Rifiutato</string>
+    <string name="status_delivering">In consegna</string>
+    <string name="typeNot_new">Nuovo ordine</string>
 </resources>

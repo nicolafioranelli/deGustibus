@@ -111,7 +111,6 @@
     <string name="new_notification">New notification!</string>
     <string name="notification_message">Open the notification section ...</string>
 
-    <string name="typeNot_new">New order</string>
     <string name="typeNot_refused">Refused order</string>
     <string name="typeNot_incoming">Incoming order</string>
     <string name="typeNot_accepted">Order accepted</string>
@@ -140,6 +139,7 @@
     <string name="resHour">Hour:</string>
     <string name="resTotal">Total:</string>
     <string name="menu_reservations">Reservations</string>
+    <string name="status_new">Waiting for restaurant</string>
     <string name="status_incoming">Incoming</string>
     <string name="status_refused">Refused</string>
     <string name="status_done">Done</string>
@@ -149,5 +149,5 @@
     <string name="recieved">Received</string>
     <string name="buttonPick">Pick</string>
     <string name="buttonDeliver">Deliver</string>
-    <string name="typeNot_new">New Order</string>
+    <string name="typeNot_new">New</string>
 </resources>
