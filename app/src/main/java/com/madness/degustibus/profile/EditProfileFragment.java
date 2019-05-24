@@ -26,7 +26,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -49,12 +53,9 @@ import com.madness.degustibus.home.HomeFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-/**
- * A simple {@link Fragment} subclass.
- */
 
 public class EditProfileFragment extends Fragment {
 
@@ -62,10 +63,10 @@ public class EditProfileFragment extends Fragment {
     private EditText email;
     private EditText desc;
     private EditText phone;
-    private EditText address;
     private ImageView img;
     private String cameraFilePath;
     private Uri mImageUri;
+    private AutoCompleteTextView autocompleteView;
 
     private DatabaseReference databaseReference;
     private ValueEventListener listener;
@@ -98,6 +99,7 @@ public class EditProfileFragment extends Fragment {
         findViews(rootView);
         loadFromFirebase();
         getPhoto(getView());
+        autocompleteView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         return rootView;
     }
 
@@ -114,13 +116,13 @@ public class EditProfileFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_save) {
 
-            if (TextUtils.isEmpty(fullname.getText()) |
+            if (TextUtils.isEmpty(fullname.getText()) | TextUtils.isEmpty(autocompleteView.getText()) |
                     TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText())) {
 
                 fullname.setError(getResources().getString(R.string.err_name));
                 desc.setError(getResources().getString(R.string.err_desc));
                 phone.setError(getResources().getString(R.string.err_phone));
-                address.setError(getResources().getString(R.string.err_addr));
+                autocompleteView.setError(getResources().getString(R.string.err_addr));
             } else {
                 storeOnFirebase();
                 delPrefPhoto();
@@ -351,7 +353,7 @@ public class EditProfileFragment extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
-        map.put("address", address.getText().toString());
+        map.put("address", autocompleteView.getText().toString());
 
         if (mImageUri != null) {
             try {
@@ -392,21 +394,25 @@ public class EditProfileFragment extends Fragment {
                 Map<String, Object> userData = (HashMap<String, Object>) dataSnapshot.getValue();
                 if (getArguments() == null) {
                     /* Load items of the view */
-                    fullname.setText(userData.get("name").toString());
-                    email.setText(userData.get("email").toString());
-                    desc.setText(userData.get("desc").toString());
-                    phone.setText(userData.get("phone").toString());
-                    address.setText(userData.get("address").toString());
+                    try {
+                        fullname.setText(userData.get("name").toString());
+                        email.setText(userData.get("email").toString());
+                        desc.setText(userData.get("desc").toString());
+                        phone.setText(userData.get("phone").toString());
+                        autocompleteView.setText(userData.get("address").toString());
 
-                    String pic = null;
-                    if (userData.get("photo") != null) {
-                        pic = userData.get("photo").toString();
+                        String pic = null;
+                        if (userData.get("photo") != null) {
+                            pic = userData.get("photo").toString();
+                        }
+                        /* Glide */
+                        GlideApp.with(getContext())
+                                .load(pic)
+                                .placeholder(R.drawable.user_profile)
+                                .into(img);
+                    } catch (Exception e) {
+
                     }
-                    /* Glide */
-                    GlideApp.with(getContext())
-                            .load(pic)
-                            .placeholder(R.drawable.user_profile)
-                            .into(img);
                 } else {
                     email.setText(user.getEmail());
                     String pic = null;
@@ -433,8 +439,8 @@ public class EditProfileFragment extends Fragment {
         email = view.findViewById(R.id.et_edit_email);
         desc = view.findViewById(R.id.et_edit_desc);
         phone = view.findViewById(R.id.et_edit_phone);
-        address = view.findViewById(R.id.et_edit_address);
         img = view.findViewById(R.id.imageview);
+        autocompleteView = view.findViewById(R.id.autocomplete);
     }
 
     @Override
@@ -447,5 +453,62 @@ public class EditProfileFragment extends Fragment {
     public void onStop() {
         super.onStop();
         listenerReference.removeEventListener(listener);
+    }
+
+    /* Class for the autocomplete Text view */
+    class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
+        ArrayList<String> resultList;
+        Context mContext;
+        int mResource;
+        PlaceAPI mPlaceAPI = new PlaceAPI();
+
+        public PlacesAutoCompleteAdapter(Context context, int resource) {
+            super(context, resource);
+            mContext = context;
+            mResource = resource;
+        }
+
+        @Override
+        public int getCount() {
+            // Last item will be the footer
+            return resultList.size();
+        }
+
+        @Override
+        public String getItem(int position) {
+            return resultList.get(position);
+        }
+
+        @Override
+        public Filter getFilter() {
+            final Filter filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults filterResults = new FilterResults();
+                    synchronized (filterResults) {
+                        if (constraint != null) {
+                            resultList = mPlaceAPI.autocomplete(constraint.toString());
+                            filterResults.values = resultList;
+                            filterResults.count = resultList.size();
+                        }
+                    }
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    try {
+                        if (results != null && results.count > 0) {
+                            notifyDataSetChanged();
+                        } else {
+                            notifyDataSetInvalidated();
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+            };
+            return filter;
+        }
     }
 }

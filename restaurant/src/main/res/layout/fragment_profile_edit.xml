@@ -112,11 +112,11 @@
                     android:text="@string/frProfile_address"
                     android:theme="@style/TextView" />
 
-                <EditText
-                    android:id="@+id/et_edit_address"
+                <AutoCompleteTextView
+                    android:id="@+id/autocomplete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress" />
+                    android:hint="@string/frProfile_address" />
 
                 <Switch
                     android:id="@+id/switchGenWork"

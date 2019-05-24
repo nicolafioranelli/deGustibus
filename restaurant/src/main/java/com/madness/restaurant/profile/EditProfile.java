@@ -27,8 +27,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -55,6 +59,7 @@ import com.madness.restaurant.picker.TimePickerFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +75,7 @@ public class EditProfile extends Fragment {
     private EditText email;
     private EditText desc;
     private EditText phone;
-    private EditText address;
+    private AutoCompleteTextView autocompleteView;
     private Switch aSwitch;
     private TextView defaultOpen;
     private TextView defaultClose;
@@ -142,6 +147,8 @@ public class EditProfile extends Fragment {
                 }
             }
         });
+
+        autocompleteView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         return rootView;
     }
 
@@ -168,12 +175,12 @@ public class EditProfile extends Fragment {
         if (id == R.id.action_edit) {
             if (TextUtils.isEmpty(fullname.getText()) |
                     TextUtils.isEmpty(desc.getText()) | TextUtils.isEmpty(phone.getText()) |
-                    TextUtils.isEmpty(address.getText())) {
+                    TextUtils.isEmpty(autocompleteView.getText())) {
 
                 fullname.setError(getResources().getString(R.string.name));
                 desc.setError(getResources().getString(R.string.descr));
                 phone.setError(getResources().getString(R.string.phone));
-                address.setError(getResources().getString(R.string.address));
+                autocompleteView.setError(getResources().getString(R.string.address));
             } else {
                 storeOnFirebase();
                 delPrefPhoto();
@@ -656,7 +663,7 @@ public class EditProfile extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
-        map.put("address", address.getText().toString());
+        map.put("address", autocompleteView.getText().toString());
         map.put("defaultOpen", defaultOpen.getText().toString());
         map.put("defaultClose", defaultClose.getText().toString());
         map.put("mondayOpen", mondayOpen.getText().toString());
@@ -721,7 +728,7 @@ public class EditProfile extends Fragment {
                     email.setText(profile.getEmail());
                     desc.setText(profile.getDesc());
                     phone.setText(profile.getPhone());
-                    address.setText(profile.getAddress());
+                    autocompleteView.setText(profile.getAddress());
                     defaultOpen.setText(profile.getDefaultOpen());
                     defaultClose.setText(profile.getDefaultClose());
                     mondayOpen.setText(profile.getMondayOpen());
@@ -783,7 +790,7 @@ public class EditProfile extends Fragment {
         email = view.findViewById(R.id.et_edit_email);
         desc = view.findViewById(R.id.et_edit_desc);
         phone = view.findViewById(R.id.et_edit_phone);
-        address = view.findViewById(R.id.et_edit_address);
+        autocompleteView = view.findViewById(R.id.autocomplete);
         defaultOpen = view.findViewById(R.id.et_edit_defaultOpen);
         defaultClose = view.findViewById(R.id.et_edit_defaultClose);
         mondayOpen = view.findViewById(R.id.et_edit_mondayOpen);
@@ -807,5 +814,62 @@ public class EditProfile extends Fragment {
     public void onDetach() {
         super.onDetach();
         referenceListener.removeEventListener(listener);
+    }
+
+    /* Class for the autocomplete Text view */
+    class PlacesAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
+        ArrayList<String> resultList;
+        Context mContext;
+        int mResource;
+        PlaceAPI mPlaceAPI = new PlaceAPI();
+
+        public PlacesAutoCompleteAdapter(Context context, int resource) {
+            super(context, resource);
+            mContext = context;
+            mResource = resource;
+        }
+
+        @Override
+        public int getCount() {
+            // Last item will be the footer
+            return resultList.size();
+        }
+
+        @Override
+        public String getItem(int position) {
+            return resultList.get(position);
+        }
+
+        @Override
+        public Filter getFilter() {
+            final Filter filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults filterResults = new FilterResults();
+                    synchronized (filterResults) {
+                        if (constraint != null) {
+                            resultList = mPlaceAPI.autocomplete(constraint.toString());
+                            filterResults.values = resultList;
+                            filterResults.count = resultList.size();
+                        }
+                    }
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    try {
+                        if (results != null && results.count > 0) {
+                            notifyDataSetChanged();
+                        } else {
+                            notifyDataSetInvalidated();
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+            };
+            return filter;
+        }
     }
 }

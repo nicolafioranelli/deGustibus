@@ -75,6 +75,7 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseUser user;
     private DatabaseReference listenerReference;
     private ValueEventListener listener;
+    private HashMap<String, Object> userData;
 
     /* Check if connection is enabled! */
     public static boolean isNetworkAvailable(Context context) {
@@ -158,10 +159,10 @@ public class HomeActivity extends AppCompatActivity
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    userData = (HashMap<String, Object>) dataSnapshot.getValue();
                     try {
-                        if (objectMap.get("name") != null) {
-                            userName.setText(objectMap.get("name").toString());
+                        if (userData.get("name") != null) {
+                            userName.setText(userData.get("name").toString());
                         }
                     } catch (Exception e) {
 
@@ -402,6 +403,7 @@ public class HomeActivity extends AppCompatActivity
 
         Bundle args = new Bundle();
         args.putString("id", userIdentifier);
+        args.putSerializable("user", userData);
         fragment.setArguments(args);
 
         fragmentManager = getSupportFragmentManager();
