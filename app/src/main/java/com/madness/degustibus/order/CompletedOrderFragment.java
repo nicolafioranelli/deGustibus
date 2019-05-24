@@ -50,20 +50,11 @@ import java.util.Map;
  */
 public class CompletedOrderFragment extends Fragment {
 
-    private TextView productsPrice;
-    private TextView shippingPrice;
     private TextView totalPrice;
     private Button complete_btn;
-    private Fragment fragment;
     private ArrayList<Dish> dishList = new ArrayList<>();
-    private HashMap<String,String> order=new HashMap<>();
     private Dish dish;
-    private String descr = "";
-    private double prodPrice= 0.0;
-    private double shipPrice= 2.5;
-    private double totPrice = 0.0;
     private RecyclerView recyclerView;
-    private CartDataAdapter mAdapter;
     private SharedPreferences pref;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
