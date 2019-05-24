@@ -51,8 +51,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
 
     private MapView mapView;
     private GoogleMap googleMap;
-    private String restaurantAddress;
-    private String customerAddress;
+    private String locationAddress;
+    private String name;
     private DatabaseReference databaseReference;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseUser user;
@@ -104,8 +104,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onResume() {
         super.onResume();
-
-
     }
 
 
@@ -140,7 +138,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     }
     private void mapOperations (){
         //if there is a order
-        if (incomingData != null ) {
+        /*if (incomingData != null ) {
             //take customer address and restaurant id
             customerAddress = incomingData.getCustomerAddress();
             String restaurantID = incomingData.getRestaurantID();
@@ -192,8 +190,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
                 fetchUrl.execute(url);
             }
 
-        }
+        }*/
 
+        locationAddress = getArguments().getString("address");
+        name = getArguments().getString("name");
+        //find the address
+        address = geoLocate(locationAddress);
+        //converte Location into LatLong
+        LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
+        //adding the restaurant marker into the map
+        googleMap.addMarker(new MarkerOptions()
+                .position(destination)
+                .title(name));
+        //set position and zoom of the camera
+        moveCamera(currentLocation, 15);
+        //create a URL to make a request to find the path
+        String url = getDirectionsUrl(currentLocation, destination);
+        FetchUrl fetchUrl = new FetchUrl();
+        fetchUrl.setMap(googleMap);
+        fetchUrl.execute(url);
     }
 
     public interface OnFragmentInteractionListener {

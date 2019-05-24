@@ -1,5 +1,6 @@
 package com.madness.deliveryman.incoming;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -43,6 +44,8 @@ public class IncomingFragment extends Fragment {
     private ValueEventListener emptyListener;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
+    private Maps mapsInterface;
+    private HashMap<String, Object> map;
 
     public IncomingFragment() {
         // Required empty public constructor();
@@ -52,6 +55,16 @@ public class IncomingFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof Maps){
+            mapsInterface = (Maps) context;
+        }else{
+            throw new ClassCastException(context.toString() + "must implement maplistener");
+        }
     }
 
     /* During the creation of the view the title is set and layout is generated */
@@ -141,33 +154,6 @@ public class IncomingFragment extends Fragment {
                 });
 
 
-
-                // show restaurant position in maps
-                /*holder.restaurantPos.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // new intent
-                        Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.res + "&mode=w");
-                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                        mapIntent.setPackage("com.google.android.apps.maps");
-                        startActivity(mapIntent);
-                    }
-                });
-
-                // show client position in maps
-                holder.clientPos.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // new intent
-                        Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.cli + "&mode=w");
-                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                        mapIntent.setPackage("com.google.android.apps.maps");
-                        startActivity(mapIntent);
-
-                    }
-                });*/
-
-
                 if(model.getStatus().equals("incoming") || model.getStatus().equals("elaboration")){
                     // show the position of the restaurant
                     Log.d("INCOMING", "onBindViewHolder: " + holder.restaurantAddres.getText());
@@ -176,11 +162,11 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             // new intent
-                            Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.restaurantAddres.getText() + "&mode=w");
+                            /*Uri gmmIntentUri = Uri.parse("google.navigation:q="+ holder.restaurantAddres.getText() + "&mode=w");
                             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                             mapIntent.setPackage("com.google.android.apps.maps");
-                            startActivity(mapIntent);
-
+                            startActivity(mapIntent);*/
+                            mapsInterface.callMaps(holder.restaurant.getText().toString(),holder.restaurantAddres.getText().toString());
                         }
                     });
                 }else if(model.getStatus().equals("delivering")){
@@ -190,10 +176,11 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             // new intent
-                            Uri gmmIntentUri = Uri.parse("google.navigation:q="+ model.getCustomerAddress() + "&mode=w");
+                            /*Uri gmmIntentUri = Uri.parse("google.navigation:q="+ model.getCustomerAddress() + "&mode=w");
                             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                             mapIntent.setPackage("com.google.android.apps.maps");
-                            startActivity(mapIntent);
+                            startActivity(mapIntent);*/
+                            mapsInterface.callMaps(holder.customer.getText().toString(),holder.customerAddress.getText().toString());
                         }
                     });
                 }else if (model.getStatus().equals("done")||model.getStatus().equals("refused")){
@@ -484,6 +471,10 @@ public class IncomingFragment extends Fragment {
             }
         });
 
+    }
+
+    public interface Maps{
+        public void callMaps(String name, String address);
     }
 
 }
