@@ -251,39 +251,35 @@ public class NewDailyOffer extends Fragment {
 
             // store the picture into firestore
             if (mImageUri != null) {
-                fileReference.putFile(mImageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                  @Override
-                                                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                      fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                          @Override
-                                                          public void onSuccess(Uri uri) {
-                                                              imageUrl = uri.toString();
+                fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                imageUrl = uri.toString();
+                                // create a new daily class container
+                                DailyClass dailyClass = new DailyClass(
+                                  dishname.getText().toString(),  // dishname from textview
+                                  desc.getText().toString(),      // desc from textview
+                                  avail.getText().toString(),     // avail from textviev
+                                  price.getText().toString(),     // price from textview
+                                  imageUrl,       // url from previous storage on firestore
+                                  user.getUid(),                  // TODO REMOVE IT
+                                  newItemKey                // unique key already generated with `push()`
+                                );
 
-                                                              // create a new daily class container
-                                                              DailyClass dailyClass = new DailyClass(
-                                                                      dishname.getText().toString(),  // dishname from textview
-                                                                      desc.getText().toString(),      // desc from textview
-                                                                      avail.getText().toString(),     // avail from textviev
-                                                                      price.getText().toString(),     // price from textview
-                                                                      imageUrl,       // url from previous storage on firestore
-                                                                      user.getUid(),                  // TODO REMOVE IT
-                                                                      newItemKey                // unique key already generated with `push()`
-                                                              );
+                                newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                  @Override
+                                  public void onSuccess(Void aVoid) {
+                                      // Ok!
+                                    }
+                              });
 
-                                                              newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                  @Override
-                                                                  public void onSuccess(Void aVoid) {
-                                                                      // Ok!
-                                                                  }
-                                                              });
-
-                                                          }
-                                                      });
-                                                  }
-                                              }
-                        );
-
+                            }
+                        });
+                    }
+                });
             } else {
                 // create a new daily class container
                 DailyClass dailyClass = new DailyClass(
@@ -310,37 +306,35 @@ public class NewDailyOffer extends Fragment {
             // store the picture into firestore
             if (mImageUri != null) {
                 fileReference.putFile(mImageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                  @Override
-                                                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                      fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                          @Override
-                                                          public void onSuccess(Uri uri) {
-                                                              imageUrl = uri.toString();
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    imageUrl = uri.toString();
+                                        // create a new daily class container
+                                        DailyClass dailyClass = new DailyClass(
+                                            dishname.getText().toString(),  // dishname from textview
+                                            desc.getText().toString(),      // desc from textview
+                                            avail.getText().toString(),     // avail from textviev
+                                            price.getText().toString(),     // price from textview
+                                            imageUrl,       // url from previous storage on firestore
+                                            user.getUid(),                  // TODO REMOVE IT
+                                            id
+                                        );
 
-                                                              // create a new daily class container
-                                                              DailyClass dailyClass = new DailyClass(
-                                                                      dishname.getText().toString(),  // dishname from textview
-                                                                      desc.getText().toString(),      // desc from textview
-                                                                      avail.getText().toString(),     // avail from textviev
-                                                                      price.getText().toString(),     // price from textview
-                                                                      imageUrl,       // url from previous storage on firestore
-                                                                      user.getUid(),                  // TODO REMOVE IT
-                                                                      id
-                                                              );
+                                        updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                //Ok!
+                                            }
+                                        });
 
-                                                              updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                  @Override
-                                                                  public void onSuccess(Void aVoid) {
-                                                                      //Ok!
-                                                                  }
-                                                              });
-
-                                                          }
-                                                      });
-                                                  }
-                                              }
-                        );
+                                }
+                            });
+                        }
+                    });
             } else {
                 // create a new daily class container
                 DailyClass dailyClass = new DailyClass(
