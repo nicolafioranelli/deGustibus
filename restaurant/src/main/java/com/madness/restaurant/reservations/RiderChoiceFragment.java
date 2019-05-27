@@ -1,5 +1,6 @@
 package com.madness.restaurant.reservations;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -398,6 +399,15 @@ public class RiderChoiceFragment extends Fragment {
                             // Get haversine class and call method to calculate distance, then display it on the recycler view
                             ComputeDistance computeDistance = new ComputeDistance();
                             rider.setDistance(computeDistance.getDistance(customer, restaurant));
+
+                            try {
+                                rider.setCount(Integer.valueOf(user.get("count").toString()));
+                                rider.setRating(Float.valueOf(user.get("rating").toString()));
+                            }catch (Exception e){
+                                rider.setCount(0);
+                                rider.setRating(0);
+                            }
+
 
                             callback.onCallback(rider);
                     }

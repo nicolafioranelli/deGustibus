@@ -7,16 +7,20 @@ public class RiderComparable {
     private String name;
     private String photo;
     private String key;
+    private int count;
+    private float rating;
 
     public RiderComparable() {
     }
 
-    public RiderComparable(Boolean available, Double distance, String name, String photo, String key) {
+    public RiderComparable(Boolean available, Double distance, String name, String photo, String key, int count, float rating) {
         this.available = available;
         this.distance = distance;
         this.name = name;
         this.photo = photo;
         this.key = key;
+        this.count = count;
+        this.rating = rating;
     }
 
     public Boolean getAvailable() {
@@ -58,4 +62,12 @@ public class RiderComparable {
     public void setKey(String key) {
         this.key = key;
     }
+
+    public int getCount() {return count;}
+
+    public void setCount(int count) {this.count = count; }
+
+    public float getRating() { return rating;}
+
+    public void setRating(float rating) { this.rating = rating;}
 }

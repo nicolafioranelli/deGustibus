@@ -8,13 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -24,6 +31,8 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
     View view;
     List<RiderComparable> riderList;
     OrderData orderData;
+    int counter;
+    int total;
 
     public RiderAdapter(Context context, View view, List<RiderComparable> riderList, OrderData orderData) {
         this.context = context;
@@ -51,18 +60,27 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
             pic = riderComparable.getPhoto();
         }
 
+        // set picture
         GlideApp.with(holder.imageView.getContext())
                 .load(pic)
                 .placeholder(R.drawable.user_profile)
                 .into(holder.imageView);
+        // set availability color
         if (!riderComparable.getAvailable()) {
             holder.status.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         } else {
             holder.status.setColorFilter(context.getResources().getColor(R.color.colorDefault), PorterDuff.Mode.SRC_IN);
         }
+        // set the distance
         DecimalFormat df = new DecimalFormat("#.##");
         holder.distance.setText(df.format(riderComparable.getDistance()).concat(" km"));
 
+        //compute the score
+        float score = riderComparable.getRating() / (float) riderComparable.getCount();
+        holder.score.setRating(score);
+
+
+        // if it is available, register the click listener
         if (riderComparable.getAvailable()) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,6 +113,7 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
         public TextView name, distance;
         public CircleImageView imageView;
         public ImageView status;
+        public RatingBar score;
 
         public RiderHolder(final View itemView) {
             super(itemView);
@@ -102,6 +121,8 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
             status = itemView.findViewById(R.id.status);
             name = itemView.findViewById(R.id.rider);
             distance = itemView.findViewById(R.id.distance);
+            score = itemView.findViewById(R.id.ratingBar);
+
         }
     }
 }
