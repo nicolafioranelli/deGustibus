@@ -45,6 +45,9 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation 'com.firebase:geofire-android:2.3.1'
+
+
+    implementation 'com.algolia:algoliasearch-android:3.+'
 }
 
 

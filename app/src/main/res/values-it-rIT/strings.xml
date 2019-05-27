@@ -109,4 +109,6 @@
     <string name="status_refused">Rifiutato</string>
     <string name="status_delivering">In consegna</string>
     <string name="typeNot_new">Nuovo ordine</string>
+    <string name="order_button">Ordina</string>
+    <string name="search_hint">Cerca</string>
 </resources>

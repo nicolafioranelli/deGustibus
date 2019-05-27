@@ -150,4 +150,7 @@
     <string name="buttonPick">Pick</string>
     <string name="buttonDeliver">Deliver</string>
     <string name="typeNot_new">New</string>
+
+    <string name="search_hint">Search</string>
+    <string name="order_button">Order</string>
 </resources>
