@@ -48,7 +48,8 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="50">
+            android:layout_weight="50"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/rider"
@@ -57,6 +58,13 @@
                 android:text="Rider Name"
                 android:textSize="18dp"
                 android:textStyle="bold" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5" />
         </LinearLayout>
 
         <LinearLayout
