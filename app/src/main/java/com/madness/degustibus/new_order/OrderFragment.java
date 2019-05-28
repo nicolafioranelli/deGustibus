@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,16 +31,18 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
-import com.madness.degustibus.order.Dish;
-import com.madness.degustibus.order.ReservationClass;
+import com.madness.degustibus.new_home.HomeFragment;
 import com.madness.degustibus.picker.DatePickerFragment;
 import com.madness.degustibus.picker.TimePickerFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +70,9 @@ public class OrderFragment extends Fragment {
     private DialogFragment datePicker;
     private ProfileClass userProfile;
     private Button complete_btn;
+    private MenuItem item;
+    private ArrayList<MenuItem> menu;
+    private boolean order = true;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -77,6 +84,7 @@ public class OrderFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        menu = new ArrayList<>();
     }
 
     @Override
@@ -127,7 +135,7 @@ public class OrderFragment extends Fragment {
         Date currentDate = Calendar.getInstance().getTime();        // get the current date time
         Calendar newCalendar = Calendar.getInstance();              // create a new calendar
         newCalendar.setTime(currentDate);                           // set it with the current date time
-        newCalendar.add(Calendar.HOUR,1);                    // add one hour
+        newCalendar.add(Calendar.HOUR, 1);                    // add one hour
         Date newDefaultDeliveryTime = newCalendar.getTime();        // create the default date time
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");   // date format
@@ -141,7 +149,7 @@ public class OrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 datePicker = new DatePickerFragment();
-                datePicker.show(getFragmentManager(),"datePicker");
+                datePicker.show(getFragmentManager(), "datePicker");
             }
         });
 
@@ -149,7 +157,7 @@ public class OrderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 timePicker = new TimePickerFragment();
-                timePicker.show(getFragmentManager(),"timePicker");
+                timePicker.show(getFragmentManager(), "timePicker");
             }
         });
 
@@ -159,23 +167,78 @@ public class OrderFragment extends Fragment {
         complete_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (totalAmount == 0) {
+                    Toast.makeText(getContext(), getString(R.string.select), Toast.LENGTH_SHORT).show();
+                } else {
+                    HashMap<String, Object> cart = new HashMap<>();
+                    ReservationClass reservation = new ReservationClass(
+                            user.getUid(),
+                            restaurantID,
+                            "null",
+                            setDate.getText().toString(),
+                            setTime.getText().toString(),
+                            totalPrice.getText().toString(),
+                            userProfile.getAddress(),
+                            address.getText().toString(),
+                            "new",
+                            "null",
+                            "null",
+                            "null",
+                            "null"
+                    );
 
+                    for (MenuItem item : menu) {
+                        if (item.getQuantity() > 0) {
+                            HashMap<String, Object> dish = new HashMap<>();
+                            dish.put("name", item.getDish());
+                            dish.put("quantity", item.getQuantity());
+                            dish.put("rating", item.getRating());
+                            cart.put(item.getId(), dish); // <id_plate, data>
+                            databaseReference.child("offers").child(restaurantID).child(item.getId()).child("popular").setValue(item.getPopular() + 1);
+                            databaseReference.child("offers").child(restaurantID).child(item.getId()).child("avail").setValue(item.getAvail() - item.getQuantity());
+                        }
+                    }
+
+                    DatabaseReference df = databaseReference.child("orders").push();
+                    df.setValue(reservation);
+                    df.child("cart").updateChildren(cart);
+
+                    increaseRestAndNotify();
+
+                    Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    System.out.println(fragmentManager.getBackStackEntryCount());
+                    performNoBackStackTransaction();
+                    /*
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.popBackStackImmediate("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE);*/
+                }
             }
         });
     }
 
-    private void loadMenu(){
+    private void loadMenu() {
         Query query = databaseReference.child("offers").child(restaurantID).orderByChild("popular");
 
         FirebaseRecyclerOptions<MenuClass> options =
                 new FirebaseRecyclerOptions.Builder<MenuClass>()
-                        .setQuery(query, MenuClass.class)
+                        .setQuery(query, new SnapshotParser<MenuClass>() {
+                            @NonNull
+                            @Override
+                            public MenuClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                MenuClass elem = snapshot.getValue(MenuClass.class);
+                                HashMap<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
+                                item = new MenuItem(0, snapshot.getKey(), map.get("dish").toString(), 0, Integer.parseInt(map.get("popular").toString()), Integer.parseInt(map.get("avail").toString()));
+                                menu.add(item);
+                                return elem;
+                            }
+                        })
                         .build();
+
 
         adapter = new FirebaseRecyclerAdapter<MenuClass, MenuHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final MenuHolder holder, final int position, @NonNull final MenuClass model) {
-                System.out.println("onBind: " + model.getDish());
                 holder.title.setText(model.getDish());
                 holder.description.setText(model.getDescription());
                 holder.price.setText(model.getPrice().toString() + " €");
@@ -193,11 +256,16 @@ public class OrderFragment extends Fragment {
                 holder.plus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        if (order) {
+                            Collections.reverse(menu);
+                            order = false;
+                        }
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
                         // check for the availability of the product
-                        if(n < maxQuantity){
-                            n ++;
+                        if (n < maxQuantity) {
+                            n++;
                             holder.quantity.setText(String.valueOf(n));
+                            menu.get(position).setQuantity(n);
                             totalAmount += model.getPrice();
                             totalPrice.setText(String.format("%.2f", totalAmount));
                         }
@@ -209,11 +277,16 @@ public class OrderFragment extends Fragment {
                 holder.minus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n =Integer.parseInt(holder.quantity.getText().toString());
+                        if (order) {
+                            Collections.reverse(menu);
+                            order = false;
+                        }
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
                         // check for non negative numbers
-                        if(n > 0){
-                            n --;
+                        if (n > 0) {
+                            n--;
                             holder.quantity.setText(String.valueOf(n));
+                            menu.get(position).setQuantity(n);
                             totalAmount -= model.getPrice();
                             totalPrice.setText(String.format("%.2f", totalAmount));
                         }
@@ -232,12 +305,13 @@ public class OrderFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void loadUserData(){
+    private void loadUserData() {
         listenerReference = databaseReference.child("customers").child(user.getUid());
-                eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
+        eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(ProfileClass.class);
+                address.setText(userProfile.getAddress());
             }
 
             @Override
@@ -245,6 +319,47 @@ public class OrderFragment extends Fragment {
 
             }
         });
+    }
+
+    private void increaseRestAndNotify() {
+        final DatabaseReference ref = databaseReference.child("restaurants").child(restaurantID).child("popular");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Object value = dataSnapshot.getValue();
+                ref.setValue(Integer.parseInt(value.toString()) + 1);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        /* Send notification to user */
+        final Map<String, Object> newNotification = new HashMap<String, Object>();
+        newNotification.put("type", getString(R.string.typeNot_new));
+        newNotification.put("description", getString(R.string.desc));
+
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        newNotification.put("date", dateFormat.format(date));
+
+        FirebaseDatabase.getInstance().getReference().child("notifications").child(restaurantID).push().setValue(newNotification);
+    }
+
+    public void performNoBackStackTransaction() {
+        final FragmentManager fragmentManager = getFragmentManager();
+
+        try {
+            Fragment fragment = null;
+            Class fragmentClass;
+            fragmentClass = com.madness.degustibus.new_home.HomeFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+        } catch (Exception e) {
+            Log.e("MAD", "onCreate: ", e);
+        }
     }
 
     public void setDeliveryDate(int year, int month, int dayOfMonth) {
@@ -269,6 +384,11 @@ public class OrderFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        try {
+            adapter.stopListening();
+            listenerReference.removeEventListener(eventListener);
+        } catch (Exception e) {
+
+        }
     }
 }

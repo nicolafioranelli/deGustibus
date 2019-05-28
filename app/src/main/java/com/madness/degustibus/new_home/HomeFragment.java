@@ -83,14 +83,6 @@ public class HomeFragment extends Fragment {
         //itemSearch.expandActionView(); //open SearchBar on startup
         searchBox.clearFocus();
 
-        searcher.registerResultListener(new AlgoliaResultsListener() {
-            @Override
-            public void onResults(@NonNull SearchResults results, boolean isLoadingMore) {
-                System.out.println(results.toString());
-
-            }
-        });
-
         hits.setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView recyclerView, int position, View v) {
@@ -99,6 +91,12 @@ public class HomeFragment extends Fragment {
                 homeInterface.viewRestaurantDetails(restaurant);
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        searcher.destroy();
     }
 
     @Override
