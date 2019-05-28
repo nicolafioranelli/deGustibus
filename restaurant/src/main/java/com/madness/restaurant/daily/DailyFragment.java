@@ -10,12 +10,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -154,26 +156,13 @@ public class DailyFragment extends Fragment {
             }
 
             @Override
-            public void onRightClicked(int position) {
-                databaseReference = db.getReference();
-                Query removeQuery = databaseReference.child("offers")
+            public void onRightClicked(final int position) {
+                FirebaseDatabase.getInstance().getReference()
+                        .child("offers")
                         .child(user.getUid())
-                        .orderByChild("identifier")
-                        .equalTo(adapter.getRef(position).getKey());
+                        .child(adapter.getRef(position).getKey())
+                        .removeValue();
 
-                removeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                            singleSnapshot.getRef().removeValue();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
                 super.onRightClicked(position);
             }
         }), this.getContext());
