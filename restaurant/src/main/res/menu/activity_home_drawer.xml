@@ -21,8 +21,13 @@
             android:icon="@drawable/ic_menu_reservations"
             android:title="@string/menu_reservations"/>
         <item
+            android:id="@+id/nav_insights"
+            android:icon="@drawable/ic_chart_black_24dp"
+            android:title="@string/menu_insights"/>
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/menu_settings"/>
+
     </group>
 </menu>

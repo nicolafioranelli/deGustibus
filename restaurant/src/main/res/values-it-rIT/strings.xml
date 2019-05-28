@@ -125,4 +125,5 @@
     <string name="name">Il nome è obbligatorio!</string>
     <string name="phone">Il telefono è obbligatorio!</string>
     <string name="address">L\'indirizzo è obbligatorio!</string>
+    <string name="menu_insights">Statistiche</string>
 </resources>
