@@ -3,56 +3,39 @@ package com.madness.restaurant.insights;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
-import com.madness.restaurant.notifications.NotificationsFragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class InsightsFragment extends Fragment {
 
-    private PieChart chart;
+    private PieChart pieChart;
+    private BarChart barChart;
 
     protected final String[] parties = new String[] {
             "Party A", "Party B", "Party C", "Party D", "Party E", "Party F", "Party G", "Party H",
@@ -80,37 +63,61 @@ public class InsightsFragment extends Fragment {
 
 
         halfPieConfigurations(rootView);
+        barChartConfigurations(rootView);
 
         return rootView;
     }
 
+    private void barChartConfigurations(View rootView) {
+        barChart = rootView.findViewById(R.id.barChart);
+        barChart.setBackgroundColor(Color.TRANSPARENT);
+        //barChart.setOnChartValueSelectedListener(this);
+        barChart.getDescription().setEnabled(false);        // no description
+        barChart.setMaxVisibleValueCount(40);               // if more than 40 entries are displayed in the chart,
+                                                            // no values will be drawn
+        barChart.setPinchZoom(false);
+        barChart.setDrawGridBackground(false);
+        barChart.setDrawBarShadow(false);
+        barChart.setDrawValueAboveBar(false);
+        barChart.setHighlightFullBarEnabled(false);
+        YAxis leftAxis = barChart.getAxisLeft();            // change the position of the y-labels
+        leftAxis.setAxisMinimum(0f);                        // set minimun value on y
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getLegend().setEnabled(false);             // hide the legend
+
+        /*XAxis xLabels = barChart.getXAxis();
+        xLabels.setPosition(XAxisPosition.TOP);*/
+
+        // chart.setDrawLegend(false);
+    }
+
     private void halfPieConfigurations(View rootView){
-        chart = rootView.findViewById(R.id.pieChart);
-        chart.setBackgroundColor(Color.TRANSPARENT);
+        pieChart = rootView.findViewById(R.id.pieChart);
+        pieChart.setBackgroundColor(Color.TRANSPARENT);
         //moveOffScreen();
-        chart.setUsePercentValues(true);
-        chart.getDescription().setEnabled(false);
-        /*chart.setCenterTextTypeface(tfLight);*/           // font settings
-        chart.setCenterText(generateCenterSpannableText()); // text in the middle of the chart
-        chart.setDrawHoleEnabled(true);                     // whole in the center
-        chart.setHoleColor(Color.TRANSPARENT);                    // whole color
-        chart.setTransparentCircleColor(Color.WHITE);       // inner circle
-        chart.setTransparentCircleAlpha(110);
-        chart.setHoleRadius(58f);
-        chart.setTransparentCircleRadius(61f);
-        chart.setDrawCenterText(true);                      // draw the text
-        chart.setRotationEnabled(false);                    // disable chart rotation
-        chart.setHighlightPerTapEnabled(true);              // clickable
-        chart.setMaxAngle(180f);                            // HALF CHART
-        chart.setRotationAngle(180f);
-        chart.setCenterTextOffset(0, -20);
+        pieChart.setUsePercentValues(true);
+        pieChart.getDescription().setEnabled(false);
+        /*pieChart.setCenterTextTypeface(tfLight);*/           // font settings
+        pieChart.setCenterText(generateCenterSpannableText()); // text in the middle of the pieChart
+        pieChart.setDrawHoleEnabled(true);                     // whole in the center
+        pieChart.setHoleColor(Color.TRANSPARENT);                    // whole color
+        pieChart.setTransparentCircleColor(Color.WHITE);       // inner circle
+        pieChart.setTransparentCircleAlpha(110);
+        pieChart.setHoleRadius(58f);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.setDrawCenterText(true);                      // draw the text
+        pieChart.setRotationEnabled(false);                    // disable pieChart rotation
+        pieChart.setHighlightPerTapEnabled(true);              // clickable
+        pieChart.setMaxAngle(180f);                            // HALF CHART
+        pieChart.setRotationAngle(180f);
+        pieChart.setCenterTextOffset(0, -20);
 
         setHalfPieData(4, 100);                 // load data
 
-        chart.getLegend().setEnabled(false);
-        chart.animateY(1400, Easing.EaseInOutQuad); // startup animation
+        pieChart.getLegend().setEnabled(false);
+        pieChart.animateY(1400, Easing.EaseInOutQuad); // startup animation
 
-        /*Legend l = chart.getLegend();
+        /*Legend l = pieChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
@@ -120,9 +127,9 @@ public class InsightsFragment extends Fragment {
         l.setYOffset(0f);
 
         // entry label styling
-        chart.setEntryLabelColor(Color.WHITE);
-        //chart.setEntryLabelTypeface(tfRegular);
-        chart.setEntryLabelTextSize(12f);*/
+        pieChart.setEntryLabelColor(Color.WHITE);
+        //pieChart.setEntryLabelTypeface(tfRegular);
+        pieChart.setEntryLabelTextSize(12f);*/
     }
 
     /**
@@ -149,9 +156,9 @@ public class InsightsFragment extends Fragment {
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(Color.WHITE);
-        chart.setData(data);
+        pieChart.setData(data);
 
-        chart.invalidate();
+        pieChart.invalidate();
     }
 
     /**
@@ -183,9 +190,9 @@ public class InsightsFragment extends Fragment {
         int offset = (int)(height * 0.75); /* percent to move */
 
         ConstraintLayout.LayoutParams rlParams =
-                (ConstraintLayout.LayoutParams) chart.getLayoutParams();
+                (ConstraintLayout.LayoutParams) pieChart.getLayoutParams();
         rlParams.setMargins(0, 0, 0, -offset);
-        chart.setLayoutParams(rlParams);
+        pieChart.setLayoutParams(rlParams);
 
     }
 
