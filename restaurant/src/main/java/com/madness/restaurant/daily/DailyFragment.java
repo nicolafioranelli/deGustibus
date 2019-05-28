@@ -85,29 +85,29 @@ public class DailyFragment extends Fragment {
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Query query = databaseReference.child("offers").child(user.getUid());
 
-        FirebaseRecyclerOptions<DailyClass> options =
-                new FirebaseRecyclerOptions.Builder<DailyClass>()
-                        .setQuery(query, DailyClass.class)
+        FirebaseRecyclerOptions<DishClass> options =
+                new FirebaseRecyclerOptions.Builder<DishClass>()
+                        .setQuery(query, DishClass.class)
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<DailyClass, DailyHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<DishClass, DishHolder>(options) {
             @NonNull
             @Override
-            public DailyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            public DishHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item
                 View view = LayoutInflater.from(viewGroup.getContext()).
                         inflate(R.layout.dailyoffer_listitem, viewGroup, false);
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                return new DailyHolder(view);
+                return new DishHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull DailyHolder holder, int position, @NonNull DailyClass model) {
+            protected void onBindViewHolder(@NonNull DishHolder holder, int position, @NonNull DishClass model) {
                 holder.dish.setText(model.getDish());
-                holder.type.setText(model.getType());
+                holder.desc.setText(model.getDescription());
                 holder.avail.setText(model.getAvail());
-                holder.price.setText(model.getPrice());
+                holder.price.setText(model.getPrice().toString());
 
                 GlideApp.with(holder.pic.getContext())
                         .load(model.getPic())

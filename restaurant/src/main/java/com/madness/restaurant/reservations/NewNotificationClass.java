@@ -76,7 +76,7 @@ public class NewNotificationClass {
 
                                 /* Send notification to user */
                                 final Map<String, Object> newNotification = new HashMap<String, Object>();
-                                newNotification.put("type", context.getApplicationContext().getString(R.string.typeNot_refused));
+                                newNotification.put("desc", context.getApplicationContext().getString(R.string.typeNot_refused));
 
                                 Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
                                 String restaurantName = restaurantMap.get("name").toString();
@@ -112,7 +112,7 @@ public class NewNotificationClass {
                 if (snapshot.exists()) {
                     /* Send notification to user */
                     final Map<String, Object> newNotification = new HashMap<String, Object>();
-                    newNotification.put("type", context.getApplicationContext().getString(R.string.typeNot_accepted));
+                    newNotification.put("desc", context.getApplicationContext().getString(R.string.typeNot_accepted));
 
                     Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
                     String restaurantName = restaurantMap.get("name").toString();
@@ -127,7 +127,7 @@ public class NewNotificationClass {
                         public void onComplete(@NonNull Task<Void> task) {
                             /* Send notification to rider */
                             final Map<String, Object> notificationRider = new HashMap<String, Object>();
-                            notificationRider.put("type", context.getApplicationContext().getString(R.string.typeNot_incoming));
+                            notificationRider.put("desc", context.getApplicationContext().getString(R.string.typeNot_incoming));
                             notificationRider.put("description", context.getApplicationContext().getString(R.string.desc5) + orderData.getOrderKey().substring(1, 6) + context.getApplicationContext().getString(R.string.desc6));
                             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                             Date date = new Date();

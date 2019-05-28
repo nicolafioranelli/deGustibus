@@ -556,7 +556,7 @@ public class EditProfile extends Fragment {
             Log.d("MAD", "onCreate: permission granted");
             //Create an Intent with action as ACTION_PICK
             Intent intent = new Intent(Intent.ACTION_PICK);
-            // Sets the type as image/*. This ensures only components of type image are selected
+            // Sets the desc as image/*. This ensures only components of desc image are selected
             intent.setType("image/*");
             //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
             String[] mimeTypes = {"image/jpeg", "image/png"};
@@ -636,7 +636,7 @@ public class EditProfile extends Fragment {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Create an Intent with action as ACTION_PICK
                     Intent intent = new Intent(Intent.ACTION_PICK);
-                    // Sets the type as image/*. This ensures only components of type image are selected
+                    // Sets the desc as image/*. This ensures only components of desc image are selected
                     intent.setType("image/*");
                     //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
                     String[] mimeTypes = {"image/jpeg", "image/png"};

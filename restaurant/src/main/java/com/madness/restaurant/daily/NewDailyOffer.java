@@ -47,6 +47,8 @@ import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The NewDailyOffer Fragment is in charge of managing addition and editing of a new daily plate.
@@ -250,6 +252,8 @@ public class NewDailyOffer extends Fragment {
             final StorageReference fileReference = storageReference.child(user.getUid()).child(newItem.getKey());  // generate a new child in /
 
             // store the picture into firestore
+
+            // if the picture is not null, retrieve it and AFTER insert the new dish
             if (mImageUri != null) {
                 fileReference.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -258,46 +262,13 @@ public class NewDailyOffer extends Fragment {
                             @Override
                             public void onSuccess(Uri uri) {
                                 imageUrl = uri.toString();
-                                // create a new daily class container
-                                DailyClass dailyClass = new DailyClass(
-                                  dishname.getText().toString(),  // dishname from textview
-                                  desc.getText().toString(),      // desc from textview
-                                  avail.getText().toString(),     // avail from textviev
-                                  price.getText().toString(),     // price from textview
-                                  imageUrl,       // url from previous storage on firestore
-                                  user.getUid(),                  // TODO REMOVE IT
-                                  newItemKey                // unique key already generated with `push()`
-                                );
-
-                                newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                  @Override
-                                  public void onSuccess(Void aVoid) {
-                                      // Ok!
-                                    }
-                              });
-
+                                storeDish(true, newItem);
                             }
                         });
                     }
                 });
-            } else {
-                // create a new daily class container
-                DailyClass dailyClass = new DailyClass(
-                        dishname.getText().toString(),  // dishname from textview
-                        desc.getText().toString(),      // desc from textview
-                        avail.getText().toString(),     // avail from textviev
-                        price.getText().toString(),     // price from textview
-                        imageUrl,       // url from previous storage on firestore
-                        user.getUid(),                  // TODO REMOVE IT
-                        newItemKey                // unique key already generated with `push()`
-                );
-
-                newItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //  Ok!
-                    }
-                });
+            } else { // otherwise insert the new dish without picture
+                storeDish(true, newItem);
             }
         } else {  // -- UPDATE --
             final DatabaseReference updateItem = databaseReference.child(user.getUid()).child(id);
@@ -314,7 +285,7 @@ public class NewDailyOffer extends Fragment {
                                 public void onSuccess(Uri uri) {
                                     imageUrl = uri.toString();
                                         // create a new daily class container
-                                        DailyClass dailyClass = new DailyClass(
+                                        /*DishClass dishClass = new DishClass(
                                             dishname.getText().toString(),  // dishname from textview
                                             desc.getText().toString(),      // desc from textview
                                             avail.getText().toString(),     // avail from textviev
@@ -322,37 +293,15 @@ public class NewDailyOffer extends Fragment {
                                             imageUrl,       // url from previous storage on firestore
                                             user.getUid(),                  // TODO REMOVE IT
                                             id
-                                        );
-
-                                        updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                //Ok!
-                                            }
-                                        });
+                                        );*/
+                                        storeDish(false, updateItem);
 
                                 }
                             });
                         }
                     });
             } else {
-                // create a new daily class container
-                DailyClass dailyClass = new DailyClass(
-                        dishname.getText().toString(),  // dishname from textview
-                        desc.getText().toString(),      // desc from textview
-                        avail.getText().toString(),     // avail from textviev
-                        price.getText().toString(),     // price from textview
-                        imageUrl,       // url from previous storage on firestore
-                        user.getUid(),                  // TODO REMOVE IT
-                        id
-                );
-
-                updateItem.setValue(dailyClass).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Ok!
-                    }
-                });
+                storeDish(false,updateItem);
             }
         }
     }
@@ -377,11 +326,11 @@ public class NewDailyOffer extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        DailyClass d = snapshot.getValue(DailyClass.class);
+                        DishClass d = snapshot.getValue(DishClass.class);
                         dishname.setText(d.getDish());
-                        desc.setText(d.getType());
+                        desc.setText(d.getDescription());
                         avail.setText(d.getAvail());
-                        price.setText(d.getPrice());
+                        price.setText(d.getPrice().toString());
                         imageUrl = d.getPic();
                         GlideApp.with(getContext())
                                 .load(d.getPic())
@@ -412,7 +361,7 @@ public class NewDailyOffer extends Fragment {
         } else {
             //Create an Intent with action as ACTION_PICK
             Intent intent = new Intent(Intent.ACTION_PICK);
-            // Sets the type as image/*. This ensures only components of type image are selected
+            // Sets the desc as image/*. This ensures only components of desc image are selected
             intent.setType("image/*");
             //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
             String[] mimeTypes = {"image/jpeg", "image/png"};
@@ -491,7 +440,7 @@ public class NewDailyOffer extends Fragment {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Create an Intent with action as ACTION_PICK
                     Intent intent = new Intent(Intent.ACTION_PICK);
-                    // Sets the type as image/*. This ensures only components of type image are selected
+                    // Sets the desc as image/*. This ensures only components of desc image are selected
                     intent.setType("image/*");
                     //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
                     String[] mimeTypes = {"image/jpeg", "image/png"};
@@ -507,4 +456,34 @@ public class NewDailyOffer extends Fragment {
         }
     }
 
+    /**
+     * Create or update values in firebase.
+     * All the values are stored in the class attributes.
+     * @param flag true if create, false if udate
+     * @param reference firebase reference
+     */
+    private void storeDish(Boolean flag, DatabaseReference reference){
+        Map<String,Object> dish = new HashMap<>();
+        if(flag){ // create
+            dish.put("avail", avail.getText().toString());
+            dish.put("count", 0);
+            dish.put("description", desc.getText().toString());
+            dish.put("dish", dishname.getText().toString());
+            dish.put("pic", imageUrl);
+            dish.put("popular", 0);
+            dish.put("price",Float.valueOf(price.getText().toString()));
+            dish.put("rating",0);
+        }else{ // update
+            // do not update `count` `rating` and `popular`
+            dish.put("avail", avail.getText().toString());
+            dish.put("description", desc.getText().toString());
+            dish.put("dish", dishname.getText().toString());
+            dish.put("pic", imageUrl);
+            dish.put("price",Float.valueOf(price.getText().toString()));
+        }
+        reference.setValue(dish);
+    }
+
 }
+
+

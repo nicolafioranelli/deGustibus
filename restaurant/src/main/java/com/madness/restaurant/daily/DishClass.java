@@ -1,21 +1,21 @@
 package com.madness.restaurant.daily;
 
-public class DailyClass {
+public class DishClass {
 
     private String dish;
-    private String type;
+    private String description;
     private String avail;
-    private String price;
+    private Float price;
     private String pic;
     private String restaurant;
     private String identifier;
 
-    public DailyClass() {
+    public DishClass() {
     }
 
-    public DailyClass(String dish, String type, String avail, String price, String pic, String restaurant, String identifier) {
+    public DishClass(String dish, String description, String avail, Float price, String pic, String restaurant, String identifier) {
         this.dish = dish;
-        this.type = type;
+        this.description = description;
         this.avail = avail;
         this.price = price;
         this.pic = pic;
@@ -47,12 +47,10 @@ public class DailyClass {
         this.dish = dish;
     }
 
-    public String getType() {
-        return type;
-    }
+    public String getDescription() { return description; }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String type) {
+        this.description = type;
     }
 
     public String getAvail() {
@@ -63,11 +61,11 @@ public class DailyClass {
         this.avail = avail;
     }
 
-    public String getPrice() {
+    public Float getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 

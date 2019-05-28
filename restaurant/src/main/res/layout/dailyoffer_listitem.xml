@@ -38,7 +38,7 @@
                 tools:text="@tools:sample/lorem" />
 
             <TextView
-                android:id="@+id/dish_type"
+                android:id="@+id/dish_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/space8"

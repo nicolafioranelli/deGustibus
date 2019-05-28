@@ -270,7 +270,7 @@ public class RiderChoiceFragment extends Fragment {
     private void loadAdapter() {
         /* Get all the riders in a certain range (here defined in 5 kilometers) */
         getRiders(new GetRidersCallback() {
-            /* Save the riders in a List of RiderComparable type */
+            /* Save the riders in a List of RiderComparable desc */
             List<RiderComparable> list = new ArrayList<>();
 
             @Override
