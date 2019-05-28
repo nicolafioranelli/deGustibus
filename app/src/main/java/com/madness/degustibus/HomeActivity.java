@@ -447,8 +447,7 @@ public class HomeActivity extends AppCompatActivity
         try {
             fragment = null;
             Class fragmentClass;
-            //TODO: change to new order class Fragment
-            fragmentClass = RestaurantDetailsFragment.class;
+            fragmentClass = com.madness.degustibus.new_order.OrderFragment.class;
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
@@ -466,8 +465,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        CompletedOrderFragment fragment = (CompletedOrderFragment)
-                getSupportFragmentManager().findFragmentByTag("Complete offer");
+        com.madness.degustibus.new_order.OrderFragment fragment = (com.madness.degustibus.new_order.OrderFragment)
+                getSupportFragmentManager().findFragmentByTag("Order");
         if (fragment != null) {
             fragment.setDeliveryDate(year, month, dayOfMonth);
         }
@@ -475,8 +474,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        CompletedOrderFragment fragment = (CompletedOrderFragment)
-                getSupportFragmentManager().findFragmentByTag("Complete offer");
+        com.madness.degustibus.new_order.OrderFragment fragment = (com.madness.degustibus.new_order.OrderFragment)
+                getSupportFragmentManager().findFragmentByTag("Order");
         if (fragment != null) {
             fragment.setDeliveryTime(hourOfDay, minute);
         }

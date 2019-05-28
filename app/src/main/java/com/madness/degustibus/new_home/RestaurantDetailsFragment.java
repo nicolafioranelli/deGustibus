@@ -1,5 +1,6 @@
 package com.madness.degustibus.new_home;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,6 +44,17 @@ public class RestaurantDetailsFragment extends Fragment {
 
     public RestaurantDetailsFragment() {
         // Required empty public constructor
+    }
+
+    /* The onAttach method registers the DetailsInterface */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DetailsInterface) {
+            detailsInterface = (DetailsInterface) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement DetailsInterface");
+        }
     }
 
     @Override

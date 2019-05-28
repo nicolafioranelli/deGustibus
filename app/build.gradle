@@ -48,6 +48,7 @@ dependencies {
 
     implementation 'com.algolia:instantsearch-android:1.15.2'
     implementation 'com.algolia:instantsearch-android-core:1.15.2'
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

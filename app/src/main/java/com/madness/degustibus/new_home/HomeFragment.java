@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /* The onAttach method registers the newOrderInterface */
+    /* The onAttach method registers the HomeInterface */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
