@@ -111,4 +111,5 @@
     <string name="typeNot_new">Nuovo ordine</string>
     <string name="order_button">Ordina</string>
     <string name="search_hint">Cerca</string>
+    <string name="received">Ricevuto</string>
 </resources>

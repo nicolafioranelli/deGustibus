@@ -41,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.auth.LoginActivity;
 import com.madness.degustibus.new_home.HomeFragment;
 import com.madness.degustibus.new_home.RestaurantDetailsFragment;
+import com.madness.degustibus.new_reservations.ReservationsFragment;
 import com.madness.degustibus.notifications.NotificationsFragment;
 import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
@@ -321,7 +322,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.nav_reservations:
                 try {
-                    fragmentClass = ReservationFragment.class;
+                    fragmentClass = ReservationsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Reservations").addToBackStack("HOME").commit();

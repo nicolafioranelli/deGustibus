@@ -146,11 +146,12 @@
     <string name="status_elaboration">elaboration</string>
     <string name="status_delivering">Delivering</string>
     <string name="no_rider">Not assigned</string>
-    <string name="recieved">Received</string>
+    <string name="received">Received</string>
     <string name="buttonPick">Pick</string>
     <string name="buttonDeliver">Deliver</string>
     <string name="typeNot_new">New</string>
 
     <string name="search_hint">Search</string>
     <string name="order_button">Order</string>
+    <string name="recieved">Rec</string>
 </resources>
