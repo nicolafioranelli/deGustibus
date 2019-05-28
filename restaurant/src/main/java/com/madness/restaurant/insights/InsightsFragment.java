@@ -18,12 +18,20 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.StackedValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.madness.restaurant.R;
 
@@ -89,6 +97,8 @@ public class InsightsFragment extends Fragment {
         xLabels.setPosition(XAxisPosition.TOP);*/
 
         // chart.setDrawLegend(false);
+
+        setBarChartData();
     }
 
     private void halfPieConfigurations(View rootView){
@@ -116,20 +126,6 @@ public class InsightsFragment extends Fragment {
 
         pieChart.getLegend().setEnabled(false);
         pieChart.animateY(1400, Easing.EaseInOutQuad); // startup animation
-
-        /*Legend l = pieChart.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setDrawInside(false);
-        l.setXEntrySpace(7f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
-
-        // entry label styling
-        pieChart.setEntryLabelColor(Color.WHITE);
-        //pieChart.setEntryLabelTypeface(tfRegular);
-        pieChart.setEntryLabelTextSize(12f);*/
     }
 
     /**
@@ -178,22 +174,82 @@ public class InsightsFragment extends Fragment {
     }
 
     /**
-     * Place the half-piechart in the correct position
+     *  Set the data to display in the bar chart
      */
-    private void moveOffScreen() {
+    private void setBarChartData() {
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        int height = displayMetrics.heightPixels;
 
-        int offset = (int)(height * 0.75); /* percent to move */
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new MyValueFormatter());
 
-        ConstraintLayout.LayoutParams rlParams =
-                (ConstraintLayout.LayoutParams) pieChart.getLayoutParams();
-        rlParams.setMargins(0, 0, 0, -offset);
-        pieChart.setLayoutParams(rlParams);
+        ArrayList<BarEntry> values = new ArrayList<>();
 
+
+
+        for (int i = 0; i < 24; i++) {
+            float mul = (5 + 1);
+            float val1 = (float) (Math.random() * mul) + mul / 3;
+            float val2 = (float) (Math.random() * mul) + mul / 3;
+            float val3 = (float) (Math.random() * mul) + mul / 3;
+
+            values.add(new BarEntry(
+                    i,
+                    new float[]{val1, val2, val3},
+                    getResources().getDrawable(R.drawable.dish_image)));
+        }
+
+        BarDataSet set1;
+
+        if (barChart.getData() != null &&
+                barChart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
+            set1.setValues(values);
+            barChart.getData().notifyDataChanged();
+            barChart.notifyDataSetChanged();
+        } else {
+            set1 = new BarDataSet(values, "Statistics Vienna 2014");
+            set1.setDrawIcons(false);
+            set1.setColors(getColors());
+            set1.setStackLabels(new String[]{"Births", "Divorces", "Marriages"});
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+
+            BarData data = new BarData(dataSets);
+            data.setValueFormatter(new StackedValueFormatter(false, "", 1));
+            data.setValueTextColor(Color.WHITE);
+
+            barChart.setData(data);
+        }
+
+        barChart.setFitBars(true);
+        barChart.invalidate();
     }
+
+    private int[] getColors() {
+
+        // have as many colors as stack-values per entry
+        int[] colors = new int[3];
+
+        System.arraycopy(ColorTemplate.MATERIAL_COLORS, 0, colors, 0, 3);
+
+        return colors;
+    }
+
+    /**
+     * Custom format of x axis
+     */
+    class MyValueFormatter extends ValueFormatter{
+
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            if(value < 10){
+                return "0" + (int)value + ":00";
+            }else
+                return (int)value + ":00";
+        }
+    }
+
 
 }
