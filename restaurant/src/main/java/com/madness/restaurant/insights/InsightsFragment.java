@@ -1,8 +1,10 @@
 package com.madness.restaurant.insights;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,17 +36,34 @@ import com.github.mikephil.charting.formatter.StackedValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class InsightsFragment extends Fragment {
 
+
+    //TODO DETACH LISTNER
+
+
     private PieChart pieChart;
     private BarChart barChart;
+    private FirebaseUser user;
+    private HashMap<String,HashMap<String,Object>> dishes;
+    private Long total = 0L;  // total sales;
 
     protected final String[] parties = new String[] {
             "Party A", "Party B", "Party C", "Party D", "Party E", "Party F", "Party G", "Party H",
@@ -53,7 +73,9 @@ public class InsightsFragment extends Fragment {
     };
 
     public InsightsFragment() {
-        // Required empty public constructor
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        dishes = new HashMap<>();
+        loadDataFromFirebase();
     }
 
     @Override
@@ -63,8 +85,7 @@ public class InsightsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment and add the title
         final View rootView = inflater.inflate(R.layout.fragment_insights, container, false);
         getActivity().setTitle(getString(R.string.menu_insights));
@@ -137,23 +158,36 @@ public class InsightsFragment extends Fragment {
 
         ArrayList<PieEntry> values = new ArrayList<>();
 
-        for (int i = 0; i < count; i++) {
+        /*for (int i = 0; i < count; i++) {
             values.add(new PieEntry((float) ((Math.random() * range) + range / 5), parties[i % parties.length]));
+        }*/
+
+
+        for (Map.Entry<String, HashMap<String, Object>> dish : dishes.entrySet()) { // for each dish
+            String name = "";
+            Long popular = 0L;
+            for (Map.Entry<String, Object> entry : dish.getValue().entrySet()) {    // for each propery
+                if(entry.getKey().equals("dish")) name = entry.getValue().toString();
+                if(entry.getKey().equals("popular")) popular = (Long) entry.getValue();
+            }
+
+            // add a new entry onfly if is != 0
+            if(popular != 0L){
+                PieEntry entry = new PieEntry(popular,name);
+                values.add(entry);
+            }
+
         }
 
-        PieDataSet dataSet = new PieDataSet(values, "Election Results");
+        PieDataSet dataSet = new PieDataSet(values, "Dishes");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
-
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        //dataSet.setSelectionShift(0f);
-
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(Color.WHITE);
         pieChart.setData(data);
-
         pieChart.invalidate();
     }
 
@@ -249,6 +283,85 @@ public class InsightsFragment extends Fragment {
             }else
                 return (int)value + ":00";
         }
+    }
+
+
+    private void loadDataFromFirebase(){
+        // get offers
+        FirebaseDatabase.getInstance().getReference()
+                .child("offers")
+                .child(user.getUid())
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        // insert a single dish
+                        HashMap<String,Object> tmp = new HashMap<>();
+                        String name = dataSnapshot.child("dish").getValue(String.class);
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("dish",name);
+                        tmp.put("popular",popular);
+                        total += popular;
+                        dishes.put(dataSnapshot.getKey(),tmp);
+                        setHalfPieData(4,100);
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        //remove it
+                        Long prevPopular = (Long) dishes.get(dataSnapshot.getKey()).get("popular");
+                        total -= prevPopular;
+                        dishes.remove(dataSnapshot.getKey());
+                        //insert the new one
+                        HashMap<String,Object> tmp = new HashMap<>();
+                        String name = dataSnapshot.child("dish").getValue(String.class);
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("dish",name);
+                        tmp.put("popular",popular);
+                        total += popular;
+                        dishes.put(dataSnapshot.getKey(),tmp);
+                        setHalfPieData(4,100);
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        //remove it
+                        HashMap<String,Object> tmp = new HashMap<>();
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("popular",popular);
+                        total -= popular;
+                        dishes.remove(dataSnapshot.getKey());
+                        setHalfPieData(4,100);
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("orders")
+                .orderByChild("restaurantID")
+                .equalTo(user.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // dataSnapshot is the "issue" node with all children with id 0
+                            for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                                // do something with the individual "issues"
+                                Log.d("PRINT", "onDataChange: " + issue.toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
 
