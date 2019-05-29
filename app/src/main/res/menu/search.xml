@@ -6,10 +6,15 @@
 
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search"
-        app:showAsAction="always|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView"
-        android:title="Search"/>
+        android:title="@string/search_hint"
+        app:actionViewClass="com.algolia.instantsearch.ui.views.SearchBox"
+        app:iconifiedByDefault="true"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_filter"
+        android:title="@string/search_hint"
+        android:icon="@drawable/ic_filters"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_notifications"

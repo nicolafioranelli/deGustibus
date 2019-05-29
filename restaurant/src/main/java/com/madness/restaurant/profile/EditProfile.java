@@ -39,8 +39,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -56,6 +60,9 @@ import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.picker.TimePickerFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -103,6 +110,8 @@ public class EditProfile extends Fragment {
     private FirebaseUser user;
     private ValueEventListener listener;
     private DatabaseReference referenceListener;
+    private Client client;
+    private Index index;
 
     public EditProfile() {
         // Required empty public constructor
@@ -115,6 +124,9 @@ public class EditProfile extends Fragment {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        client = new Client("LRBUKD1XJR", "d796532dfd54cafdf4587b412ad560f8");
+        index = client.getIndex("rest_HOME");
 
         pref = this.getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
         setHasOptionsMenu(true);
@@ -664,6 +676,9 @@ public class EditProfile extends Fragment {
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
         map.put("address", autocompleteView.getText().toString());
+        if (getArguments() != null) {
+            map.put("rating", 0);
+        }
         map.put("defaultOpen", defaultOpen.getText().toString());
         map.put("defaultClose", defaultClose.getText().toString());
         map.put("mondayOpen", mondayOpen.getText().toString());
@@ -701,7 +716,23 @@ public class EditProfile extends Fragment {
                                                           public void onSuccess(Uri uri) {
                                                               String imageUrl = uri.toString();
                                                               map.put("photo", imageUrl);
-                                                              databaseReference.child("restaurants").child(user.getUid()).updateChildren(map);
+                                                              databaseReference.child("restaurants").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                  @Override
+                                                                  public void onComplete(@NonNull Task<Void> task) {
+                                                                      try {
+                                                                          JSONObject object = new JSONObject()
+                                                                                  .put("name", map.get("name").toString())
+                                                                                  .put("desc", map.get("desc").toString())
+                                                                                  .put("address", map.get("address").toString())
+                                                                                  .put("rating", map.get("rating").toString())
+                                                                                  .put("photo", map.get("photo").toString());
+
+                                                                          index.addObjectAsync(object, user.getUid(), null);
+                                                                      } catch (JSONException e) {
+
+                                                                      }
+                                                                  }
+                                                              });
 
                                                           }
                                                       });
