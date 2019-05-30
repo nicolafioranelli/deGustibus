@@ -329,7 +329,7 @@ public class NewDailyOffer extends Fragment {
                         DishClass d = snapshot.getValue(DishClass.class);
                         dishname.setText(d.getDish());
                         desc.setText(d.getDescription());
-                        avail.setText(d.getAvail());
+                        avail.setText(d.getAvail().toString());
                         price.setText(d.getPrice().toString());
                         imageUrl = d.getPic();
                         GlideApp.with(getContext())
