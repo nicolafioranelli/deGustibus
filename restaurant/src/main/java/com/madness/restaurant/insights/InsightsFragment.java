@@ -3,15 +3,20 @@ package com.madness.restaurant.insights;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -109,19 +114,12 @@ public class InsightsFragment extends Fragment {
         leftAxis.setAxisMinimum(0f);                        // set minimun value on y
         barChart.getAxisRight().setEnabled(false);
         barChart.getLegend().setEnabled(false);             // hide the legend
-
-        /*XAxis xLabels = barChart.getXAxis();
-        xLabels.setPosition(XAxisPosition.TOP);*/
-
-        // chart.setDrawLegend(false);
-
         setBarChartData(); // load with empty data
     }
 
     private void halfPieConfigurations(View rootView){
         pieChart = rootView.findViewById(R.id.pieChart);
         pieChart.setBackgroundColor(Color.TRANSPARENT);
-        //moveOffScreen();
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
         /*pieChart.setCenterTextTypeface(tfLight);*/           // font settings
@@ -183,7 +181,8 @@ public class InsightsFragment extends Fragment {
      * @return
      */
     private SpannableString generateCenterSpannableText() {
-
+        Typeface myTypeface = Typeface.create(ResourcesCompat.getFont(getActivity(), R.font.comfortaa),
+                Typeface.BOLD);
         SpannableString s = new SpannableString("deGustibus\ndeveloped by MADness");
         s.setSpan(new RelativeSizeSpan(1.9f), 0, 10, 0);
         s.setSpan(new StyleSpan(Typeface.NORMAL), 11, s.length() - 8, 0);
@@ -204,19 +203,6 @@ public class InsightsFragment extends Fragment {
         xAxis.setValueFormatter(new MyValueFormatter());
 
         this.barChartValues = new ArrayList<>();
-
-
-        /*for (int i = 0; i < 24; i++) {
-            float mul = (5 + 1);
-            float val1 = (float) (Math.random() * mul) + mul / 3;
-            float val2 = (float) (Math.random() * mul) + mul / 3;
-            float val3 = (float) (Math.random() * mul) + mul / 3;
-
-            barChartValues.add(new BarEntry(
-                    i,
-                    new float[]{val1, val2, val3}));
-        }*/
-
 
         for(int i=0; i < orders.length; i++){
             barChartValues.add(new BarEntry(i,orders[i]));
