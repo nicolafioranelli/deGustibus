@@ -61,7 +61,7 @@ public class InsightsFragment extends Fragment {
     private BarChart barChart;
     private FirebaseUser user;
     private HashMap<String,HashMap<String,Object>> dishes;
-    private ArrayList<Integer> orders;
+    private int[] orders;
     private Long total = 0L;  // total sales;
     private ChildEventListener listenerPieChart;
     private ChildEventListener listenerBarChart;
@@ -71,7 +71,7 @@ public class InsightsFragment extends Fragment {
     public InsightsFragment() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         dishes = new HashMap<>();
-        orders = new ArrayList<>(24);
+        orders = new int[24];
         loadDataFromFirebase();
     }
 
@@ -115,7 +115,7 @@ public class InsightsFragment extends Fragment {
 
         // chart.setDrawLegend(false);
 
-        setBarChartData();
+        setBarChartData(); // load with empty data
     }
 
     private void halfPieConfigurations(View rootView){
@@ -138,26 +138,17 @@ public class InsightsFragment extends Fragment {
         pieChart.setMaxAngle(180f);                            // HALF CHART
         pieChart.setRotationAngle(180f);
         pieChart.setCenterTextOffset(0, -20);
-
-        setHalfPieData(4, 100);                 // load data
-
         pieChart.getLegend().setEnabled(false);
         pieChart.animateY(1400, Easing.EaseInOutQuad); // startup animation
+        setHalfPieData(); // load with empty data
     }
 
     /**
      * Set the data to display in the half-piechart
-     * @param count number of partitions
-     * @param range total percentage
      */
-    private void setHalfPieData(int count, float range) {
+    private void setHalfPieData() {
 
         this.pieChartValues = new ArrayList<>();
-
-        /*for (int i = 0; i < count; i++) {
-            values.add(new PieEntry((float) ((Math.random() * range) + range / 5), parties[i % parties.length]));
-        }*/
-
 
         for (Map.Entry<String, HashMap<String, Object>> dish : dishes.entrySet()) { // for each dish
             String name = "";
@@ -215,7 +206,7 @@ public class InsightsFragment extends Fragment {
         this.barChartValues = new ArrayList<>();
 
 
-        for (int i = 0; i < 24; i++) {
+        /*for (int i = 0; i < 24; i++) {
             float mul = (5 + 1);
             float val1 = (float) (Math.random() * mul) + mul / 3;
             float val2 = (float) (Math.random() * mul) + mul / 3;
@@ -224,6 +215,11 @@ public class InsightsFragment extends Fragment {
             barChartValues.add(new BarEntry(
                     i,
                     new float[]{val1, val2, val3}));
+        }*/
+
+
+        for(int i=0; i < orders.length; i++){
+            barChartValues.add(new BarEntry(i,orders[i]));
         }
 
         BarDataSet set1;
@@ -294,7 +290,7 @@ public class InsightsFragment extends Fragment {
                     tmp.put("popular",popular);
                     total += popular;
                     dishes.put(dataSnapshot.getKey(),tmp);
-                    setHalfPieData(4,100);
+                    setHalfPieData();
 
                 }
 
@@ -312,7 +308,7 @@ public class InsightsFragment extends Fragment {
                     tmp.put("popular",popular);
                     total += popular;
                     dishes.put(dataSnapshot.getKey(),tmp);
-                    setHalfPieData(4,100);
+                    setHalfPieData();
                 }
 
                 @Override
@@ -323,7 +319,7 @@ public class InsightsFragment extends Fragment {
                     tmp.put("popular",popular);
                     total -= popular;
                     dishes.remove(dataSnapshot.getKey());
-                    setHalfPieData(4,100);
+                    setHalfPieData();
                 }
 
                 @Override
@@ -344,32 +340,27 @@ public class InsightsFragment extends Fragment {
                         // get time
                         String time = dataSnapshot.child("deliveryHour").getValue(String.class);
                         String index = time.substring(0,2); // select only the hour
-                        Log.d("PRINT", "onChildAdded: " + index);
-                        int temp = orders.get(Integer.valueOf(index));
-                        temp++;
-                        orders.set(Integer.valueOf(index), temp);
-                        /*Log.d("PRINT", dataSnapshot.getValue().toString());*/
+                        orders[Integer.valueOf(index).intValue()] += 1;
+                        setBarChartData();
                     }
 
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
 
                     @Override
                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                        // get time
+                        String time = dataSnapshot.child("deliveryHour").getValue(String.class);
+                        String index = time.substring(0,2); // select only the hour
+                        orders[Integer.valueOf(index).intValue()] -= 1;
+                        setBarChartData();
                     }
 
                     @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
                 });
     }
 
