@@ -6,7 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -43,13 +47,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback  {
+public class MapFragment extends Fragment implements OnMapReadyCallback, Handler.Callback, FetchUrl.AsyncFetchResponse {
 
     private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13;
 
+    private Handler h=new Handler(this);
     private MapView mapView;
+    private TextView streetAddress;
+    private TextView routeLenght;
+    private TextView routeTime;
     private GoogleMap googleMap;
     private String locationAddress;
     private String name;
@@ -58,8 +66,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     private FirebaseUser user;
     private IncomingData incomingData;
     private Address address;
+    public String distance;
+    public String duration;
     LatLng currentLocation;
-    ArrayList<LatLng> MarkerPoints;
+    FetchUrl fetchUrl = new FetchUrl();
 
 
     private OnFragmentInteractionListener mListener;
@@ -71,10 +81,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //this to set delegate/listener back to this class
+        fetchUrl.delegate = this;
         //check permission
         getLocationPermission();
         //get user
         user = FirebaseAuth.getInstance().getCurrentUser();
+        locationAddress = getArguments().getString("address");
+        name = getArguments().getString("name");
     }
 
 
@@ -95,6 +109,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        streetAddress = view.findViewById(R.id.tv_map_address);
+        routeLenght = view.findViewById(R.id.tv_map_km);
+        routeTime = view.findViewById(R.id.tv_map_time);
         mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
@@ -125,6 +142,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
+        streetAddress.setText(locationAddress);
         //check for permissions
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,9 +156,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     }
     private void mapOperations (){
 
-
-        locationAddress = getArguments().getString("address");
-        name = getArguments().getString("name");
         //find the address
         address = geoLocate(locationAddress);
         //converte Location into LatLong
@@ -153,9 +168,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         moveCamera(currentLocation, DEFAULT_ZOOM);
         //create a URL to make a request to find the path
         String url = getDirectionsUrl(currentLocation, destination);
-        FetchUrl fetchUrl = new FetchUrl();
         fetchUrl.setMap(googleMap);
         fetchUrl.execute(url);
+        /*routeLenght.setText(fetchUrl.distance);
+        routeTime.setText(fetchUrl.duration);*/
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        return false;
+    }
+
+
+
+    @Override
+    public void processFetchFinish(String distance, String duration) {
+        System.out.println("dentro MapFragment distance= " + distance + "duration" + duration);
+        routeLenght.setText(distance);
+        routeTime.setText(duration);
     }
 
     public interface OnFragmentInteractionListener {

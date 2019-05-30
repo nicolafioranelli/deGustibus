@@ -13,12 +13,24 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-class FetchUrl extends AsyncTask<String, Void, String> {
+class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.AsyncResponse {
     GoogleMap map;
+    public AsyncFetchResponse delegate = null;
+
+    @Override
+    public void processFinish(String distance, String duration) {
+        delegate.processFetchFinish(distance,duration);
+    }
+
+    //interface to comunicate with main thread
+    public interface AsyncFetchResponse {
+        void processFetchFinish(String distance, String duration);
+    }
 
 
     @Override
     protected String doInBackground(String... strings) {
+
         // For storing data from web service
         String data = "";
         try {
@@ -35,9 +47,11 @@ class FetchUrl extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         PointsParser parserTask = new PointsParser();
+        parserTask.delegate = this;
         parserTask.setMap(map);
         // Invokes the thread for parsing the JSON data
         parserTask.execute(s);
+
     }
 
     /**
