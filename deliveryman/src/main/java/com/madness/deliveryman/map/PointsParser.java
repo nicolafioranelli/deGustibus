@@ -23,7 +23,7 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
     private String duration;
     public AsyncResponse delegate = null;
 
-    //interface to comunicate with main thread
+    //interface to comunicate with FetchUrl
     public interface AsyncResponse {
         void processFinish(String distance, String duration);
     }
@@ -86,6 +86,7 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
         // Drawing polyline in the Google Map for the i-th route
         if (lineOptions != null) {
             map.addPolyline(lineOptions);
+            //call the method processFinish of FetchUrl to pass distance and duration
             delegate.processFinish(distance,duration);
 
         }

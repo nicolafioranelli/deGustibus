@@ -47,13 +47,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, Handler.Callback, FetchUrl.AsyncFetchResponse {
+public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUrl.AsyncFetchResponse {
 
     private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13;
 
-    private Handler h=new Handler(this);
     private MapView mapView;
     private TextView streetAddress;
     private TextView routeLenght;
@@ -66,13 +65,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
     private FirebaseUser user;
     private IncomingData incomingData;
     private Address address;
-    public String distance;
-    public String duration;
     LatLng currentLocation;
     FetchUrl fetchUrl = new FetchUrl();
-
-
-    private OnFragmentInteractionListener mListener;
 
     public MapFragment() {
         // Required empty public constructor
@@ -87,6 +81,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
         getLocationPermission();
         //get user
         user = FirebaseAuth.getInstance().getCurrentUser();
+        //get location and name of destination
         locationAddress = getArguments().getString("address");
         name = getArguments().getString("name");
     }
@@ -101,8 +96,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
-        LoadFromFirebase();
-
         return rootView;
     }
 
@@ -112,30 +105,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
         streetAddress = view.findViewById(R.id.tv_map_address);
         routeLenght = view.findViewById(R.id.tv_map_km);
         routeTime = view.findViewById(R.id.tv_map_time);
-        mapView = (MapView) view.findViewById(R.id.map);
+        mapView = view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
+        //Set up a callback object that will be activated when the instance of GoogleMap is ready to be used
         mapView.getMapAsync(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     //Manipulates the map once available. This callback is triggered when the map is ready to be used.
@@ -143,7 +117,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
     public void onMapReady(GoogleMap map) {
         googleMap = map;
         streetAddress.setText(locationAddress);
-        //check for permissions
+        //check for fine and coarse location permissions
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -151,9 +125,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
         }
         //Initialize Google Play Services
         googleMap.setMyLocationEnabled(true);
+        //get the current location of the device
         getDeviceLocation(googleMap);
 
     }
+
+    //translates the destination address and makes the url request
     private void mapOperations (){
 
         //find the address
@@ -166,43 +143,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
                 .title(name));
         //set position and zoom of the camera
         moveCamera(currentLocation, DEFAULT_ZOOM);
-        //create a URL to make a request to find the path
+        //create a URL to make a request to find the path from current location to destination location
         String url = getDirectionsUrl(currentLocation, destination);
         fetchUrl.setMap(googleMap);
         fetchUrl.execute(url);
-        /*routeLenght.setText(fetchUrl.distance);
-        routeTime.setText(fetchUrl.duration);*/
     }
 
-    @Override
-    public boolean handleMessage(Message msg) {
-        return false;
-    }
-
-
-
+    // update the view when FetchUrl ends adding distance and duration of the road
     @Override
     public void processFetchFinish(String distance, String duration) {
-        System.out.println("dentro MapFragment distance= " + distance + "duration" + duration);
         routeLenght.setText(distance);
         routeTime.setText(duration);
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
-
-    // checking permission for map
+    // checking location permissions for display the current position on map
     private void getLocationPermission() {
-
+        //list of permission to check
         String[] permission = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.INTERNET
         };
         if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //if fine and coarse location permissions are granted set this flag for future checks, else no
                 mLocationPermissionGaranted = true;
             } else {
                 ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
@@ -219,7 +183,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
                 .getInstance()
                 .getReference()
                 .child("positions"));
+        //get current location of device
         geoFire.getLocation(user.getUid(), new LocationCallback() {
+            //when finds the position, update the map
             @Override
             public void onLocationResult(String key, GeoLocation location) {
                 currentLocation = new LatLng(location.latitude,location.longitude);
@@ -260,16 +226,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
         }
     }
 
+    // process of transforming a street address or other description of a location into a (latitude, longitude) coordinate (address)
     private Address geoLocate(String addressName){
         Geocoder geocoder = new Geocoder(this.getContext());
         List<Address> list = new ArrayList<>();
         try{
+            //Returns an array of Addresses that are known to describe the named location
             list = geocoder.getFromLocationName(addressName,1);
         }catch (IOException e){
 
         }
 
         if(list.size() > 0){
+            //return the first result
             return list.get(0);
         }
         else return null;
@@ -293,26 +262,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Handler
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.map_key);
         return url;
-    }
-
-    public void LoadFromFirebase (){
-        // get data from orders in firebase
-        Query query = databaseReference.child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                dataSnapshot.getChildren();
-
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    if(!snapshot.getValue(IncomingData.class).getStatus().equals("done")){
-                        incomingData = snapshot.getValue(IncomingData.class);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
     }
 
 }
