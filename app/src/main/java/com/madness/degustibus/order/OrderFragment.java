@@ -203,7 +203,10 @@ public class OrderFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        picture = objectMap.get("photo").toString();
+                        if(objectMap!=null){
+                            picture = objectMap.get("photo").toString();
+                        }
+
 
                         ImageView image = rootView.findViewById(R.id.rest_imageView);
                         GlideApp.with(getContext())
