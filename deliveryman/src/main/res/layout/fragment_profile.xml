@@ -27,6 +27,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="16dp"
+            android:paddingTop="16dp"
             android:visibility="invisible">
 
             <LinearLayout
@@ -36,13 +37,30 @@
                 android:orientation="vertical"
                 android:showDividers="end">
 
-                <ImageView
+
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imageview"
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp" />
+
+                <RatingBar
+                    android:id="@+id/simpleRatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:isIndicator="true"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp" />
+
+                <Button
+                    android:id="@+id/reviewsButton"
+                    android:text="@string/see_reviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
             </LinearLayout>
 
             <TextView

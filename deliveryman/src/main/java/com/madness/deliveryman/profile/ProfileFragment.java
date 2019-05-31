@@ -13,7 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madness.deliveryman.GlideApp;
 import com.madness.deliveryman.R;
 
@@ -36,12 +40,16 @@ public class ProfileFragment extends Fragment {
     private TextView email;
     private TextView desc;
     private TextView phone;
+    private RatingBar simpleRatingBar;
     private TextView vehicle;
+    private Button reviews;
     private ImageView img;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private ValueEventListener eventListener;
     private DatabaseReference listenerReference;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -64,6 +72,8 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
     }
 
     /* Populates the menu with the edit button */
@@ -104,13 +114,24 @@ public class ProfileFragment extends Fragment {
         phone = getView().findViewById(R.id.tv_show_phone);
         vehicle = getView().findViewById(R.id.tv_show_vehicle);
         img = getView().findViewById(R.id.imageview);
+        simpleRatingBar = getView().findViewById(R.id.simpleRatingBar);// initiate a rating bar
+        simpleRatingBar.setNumStars(5);
+        reviews = getView().findViewById(R.id.reviewsButton);
 
         loadFromFirebase();
+        listenToButton();
+    }
+
+    private void listenToButton() {
+        reviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.reviewsClick();
+            }
+        });
     }
 
     private void loadFromFirebase() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
         listenerReference = databaseReference.child("riders").child(user.getUid());
 
         eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
@@ -124,6 +145,13 @@ public class ProfileFragment extends Fragment {
                     email.setText(user.get("email").toString());
                     desc.setText(user.get("desc").toString());
                     phone.setText(user.get("phone").toString());
+                    if(user.get("rating")!=null){
+                        Float rating=Float.valueOf(user.get("rating").toString());
+                        Float count=Float.valueOf(user.get("count").toString());
+                        simpleRatingBar.setRating((rating/count));
+                    }
+                    else
+                        simpleRatingBar.setRating(0);
 
                     String pic = null;
                     if (user.get("photo") != null) {
@@ -170,6 +198,7 @@ public class ProfileFragment extends Fragment {
     /* Interface for the listener */
     public interface ProfileListener {
         void editProfileClick();
+        void reviewsClick();
     }
 
     @Override
