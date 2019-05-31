@@ -33,7 +33,9 @@ public class DataParser {
                     /** Getting distance from the json data */
                     jDistance = ((JSONObject) jLegs.get(j)).getJSONObject("distance");
                     HashMap<String, String> hmDistance = new HashMap<String, String>();
+
                     hmDistance.put("distance", jDistance.getString("text"));
+                    hmDistance.put("distanceInt", String.valueOf(jDistance.getInt("value")));
                     /** Getting duration from the json data */
                     jDuration = ((JSONObject) jLegs.get(j)).getJSONObject("duration");
                     HashMap<String, String> hmDuration = new HashMap<String, String>();

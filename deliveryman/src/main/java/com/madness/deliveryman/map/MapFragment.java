@@ -24,6 +24,8 @@ import android.widget.TextView;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.LocationCallback;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -60,6 +62,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
     private GoogleMap googleMap;
     private String locationAddress;
     private String name;
+    private String orderId;
     private DatabaseReference databaseReference;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseUser user;
@@ -84,6 +87,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
         //get location and name of destination
         locationAddress = getArguments().getString("address");
         name = getArguments().getString("name");
+        orderId = getArguments().getString("orderId");
     }
 
 
@@ -151,9 +155,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
 
     // update the view when FetchUrl ends adding distance and duration of the road
     @Override
-    public void processFetchFinish(String distance, String duration) {
+    public void processFetchFinish(String distance, String duration, String distanceInt) {
         routeLenght.setText(distance);
         routeTime.setText(duration);
+        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
+
     }
 
     // checking location permissions for display the current position on map

@@ -19,14 +19,15 @@ class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.A
 
     //things to do when PointParser finish
     @Override
-    public void processFinish(String distance, String duration) {
+    public void processFinish(String distance, String duration, String distanceInt) {
         //call the method processFinish of MapFragment to pass distance and duration
-        delegate.processFetchFinish(distance,duration);
+        delegate.processFetchFinish(distance,duration,distanceInt);
+
     }
 
     //interface to comunicate with MapFragment
     public interface AsyncFetchResponse {
-        void processFetchFinish(String distance, String duration);
+        void processFetchFinish(String distance, String duration, String distanceInt);
     }
 
 

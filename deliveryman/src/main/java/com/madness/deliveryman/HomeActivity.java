@@ -517,12 +517,13 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void callMaps(String name, String address) {
+    public void callMaps(String name, String address, String orderId) {
         try {
 
             Bundle args = new Bundle();
             args.putString("name", name);
             args.putString("address", address);
+            args.putString("orderId",orderId);
             Fragment fragment = new MapFragment();
             fragment.setArguments(args);
             fragmentManager = getSupportFragmentManager();

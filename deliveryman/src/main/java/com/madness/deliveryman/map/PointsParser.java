@@ -21,11 +21,12 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
     GoogleMap map;
     private String distance;
     private String duration;
+    private String distanceInt;
     public AsyncResponse delegate = null;
 
     //interface to comunicate with FetchUrl
     public interface AsyncResponse {
-        void processFinish(String distance, String duration);
+        void processFinish(String distance, String duration, String distanceInt);
     }
 
     // Parsing the data in non-ui thread
@@ -65,9 +66,10 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
                 HashMap<String, String> point = path.get(j);
                 if(j==0){    // Get distance from the list
                     distance = (String)point.get("distance");
+                    distanceInt = (String)point.get("distanceInt");
                     continue;
-                }else if(j==1){ // Get duration from the list
-                    duration = (String)point.get("duration");
+                }else if(j==1) { // Get distance from the list
+                    duration = (String) point.get("duration");
                     continue;
                 }else{
                     double lat = Double.parseDouble(point.get("lat"));
@@ -87,7 +89,7 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
         if (lineOptions != null) {
             map.addPolyline(lineOptions);
             //call the method processFinish of FetchUrl to pass distance and duration
-            delegate.processFinish(distance,duration);
+            delegate.processFinish(distance,duration,distanceInt);
 
         }
     }

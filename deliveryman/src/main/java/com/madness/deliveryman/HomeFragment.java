@@ -96,7 +96,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     try {
                         if (objectMap.get("name") != null) {
                             userName.setText(objectMap.get("name").toString());
-                            mileage.setText(objectMap.get("mileage").toString());
+                            //transforms from meters to km
+                            int km = Integer.parseInt(objectMap.get("mileage").toString())/1000;
+                            mileage.setText(String.valueOf(km)+ " Km");
                             rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                             rootView.findViewById(R.id.homeLayout).setVisibility(View.VISIBLE);
                         } else {
@@ -223,7 +225,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 //if fine and coarse location permissions are granted set this flag for future checks, else no
                 mLocationPermissionGaranted = true;
-                System.out.println("QUIIIIIIIIIIIII" + mapView + " EEEE" + this);
                 mapView.getMapAsync(this);
             } else {
                 ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
