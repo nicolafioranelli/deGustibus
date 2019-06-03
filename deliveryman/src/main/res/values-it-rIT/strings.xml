@@ -109,4 +109,5 @@
     <string name="by_name">Nome</string>
     <string name="by_rating">Valutazione</string>
     <string name="by_date">Data</string>
+    <string name="rating_name">Nome:</string>
 </resources>
