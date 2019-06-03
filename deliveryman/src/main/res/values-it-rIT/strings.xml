@@ -100,4 +100,13 @@
     <string name="err_desc">Inserisci una descrizione!</string>
     <string name="err_name">Inserisci il tuo nome!</string>
     <string name="err_phone">Inserisci un telefono!</string>
+    <string name="no_reviews">Non è stata effettuata nessuna valutazione</string>
+    <string name="ratings">Valutazioni</string>
+    <string name="see_reviews">Vedi le Recensioni sulle tue consegne!</string>
+    <string name="reviews">Recensioni</string>
+
+    <string name="sort_by">Ordina per</string>
+    <string name="by_name">Nome</string>
+    <string name="by_rating">Valutazione</string>
+    <string name="by_date">Data</string>
 </resources>
