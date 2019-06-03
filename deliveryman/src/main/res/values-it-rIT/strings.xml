@@ -102,7 +102,7 @@
     <string name="err_phone">Inserisci un telefono!</string>
     <string name="no_reviews">Non è stata effettuata nessuna valutazione</string>
     <string name="ratings">Valutazioni</string>
-    <string name="see_reviews">Vedi le Recensioni sulle tue consegne!</string>
+    <string name="see_reviews">Recensioni</string>
     <string name="reviews">Recensioni</string>
 
     <string name="sort_by">Ordina per</string>
