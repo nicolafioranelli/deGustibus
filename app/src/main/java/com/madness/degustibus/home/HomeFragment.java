@@ -1,6 +1,7 @@
 package com.madness.degustibus.home;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,23 +10,40 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 
 import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.core.model.FacetStat;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
+import com.algolia.search.saas.Index;
+import com.algolia.search.saas.Query;
+import com.algolia.search.saas.RequestOptions;
 import com.madness.degustibus.R;
 import com.madness.degustibus.notifications.NotificationsFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class HomeFragment extends Fragment {
 
@@ -33,7 +51,6 @@ public class HomeFragment extends Fragment {
     private static final String ALGOLIA_APP_ID = "LRBUKD1XJR";
     private static final String ALGOLIA_API_KEY = "d1909b402e103014c844a891abb4bb4a";
     private Searcher searcher;
-    private FilterResultsFragment filterResultsFragment;
     private SearchView searchBox;
     private Hits hits;
     private HomeInterface homeInterface;
@@ -114,6 +131,75 @@ public class HomeFragment extends Fragment {
         }
 
         if(item.getItemId() == R.id.action_filter) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            View customView = inflater.inflate(R.layout.popup_filter,null);
+            final PopupWindow window = new PopupWindow(
+                    customView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            FrameLayout frameLayout = getActivity().findViewById(R.id.frame);
+            window.showAtLocation(frameLayout, Gravity.CENTER,0,0);
+
+            CheckBox checkBox = customView.findViewById(R.id.checkBox);
+
+            FacetStat facetStat = searcher.getFacetStat("id");
+            System.out.println(facetStat);
+
+            List<String> facet = searcher.getFacetRefinements("id");
+            System.out.println(facet);
+            if(facet!=null) {
+                if(facet.size()!=0){
+                    checkBox.setChecked(true);
+                } else {
+                    checkBox.setChecked(false);
+                }
+            } else {
+                checkBox.setChecked(false);
+            }
+
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked) {
+                        searcher.addFacetRefinement("id", "VSrLj8XzxRboYed89O5XYAQl1Ll1").search();
+                        window.dismiss();
+                    } else {
+                        searcher.removeFacetRefinement("id", "VSrLj8XzxRboYed89O5XYAQl1Ll1").search();
+                        window.dismiss();
+                    }
+                }
+            });
+
+
+            //searcher.addFacetRefinement("id", "VSrLj8XzxRboYed89O5XYAQl1Ll1").search();
+/*
+            final boolean willDisplay = !filterResultsWindow.isShowing();
+            if (willDisplay) {
+                filterResultsWindow.showAsDropDown(buttonFilter);
+            } else {
+                filterResultsWindow.dismiss();
+            }*/
+            //toggleArrow(buttonFilter, willDisplay);
+
+            /*Client client = new Client("LRBUKD1XJR", "d1909b402e103014c844a891abb4bb4a");
+            Index index = client.getIndex("rest_HOME");
+
+            //index.search(new Query("").setFilters(""), new RequestOptions());
+            index.searchAsync(new Query("").setFilters("id:VSrLj8XzxRboYed89O5XYAQl1Ll1"), new CompletionHandler() {
+                @Override
+                public void requestCompleted(JSONObject content, AlgoliaException error) {
+                    // [...]
+                    System.out.println(content);
+                    SearchResultsJsonParser resultsJsonParser = new SearchResultsJsonParser();
+                    List<HomeModel> results = resultsJsonParser.parseResults(content);
+                    /*
+                    moviesListAdapter.clear();
+                    moviesListAdapter.addAll(results);
+                    moviesListAdapter.notifyDataSetChanged();
+                }
+            });*/
 
         }
         return true;

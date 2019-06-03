@@ -48,6 +48,7 @@ dependencies {
 
     implementation 'com.algolia:instantsearch-android:1.15.2'
     implementation 'com.algolia:instantsearch-android-core:1.15.2'
+    implementation 'com.algolia:algoliasearch-android:3.+'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation 'com.anton46:stepsview:0.0.2'
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
