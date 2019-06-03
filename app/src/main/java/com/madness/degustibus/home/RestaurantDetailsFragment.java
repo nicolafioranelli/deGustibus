@@ -135,8 +135,6 @@ public class RestaurantDetailsFragment extends Fragment {
         } catch (JSONException e) {
 
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 

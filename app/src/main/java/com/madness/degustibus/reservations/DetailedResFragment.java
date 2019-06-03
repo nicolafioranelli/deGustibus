@@ -18,6 +18,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -35,6 +38,9 @@ import com.kofigyan.stateprogressbar.StateProgressBar;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
 import com.madness.degustibus.order.ProfileClass;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -77,6 +83,8 @@ public class DetailedResFragment extends Fragment {
     private RatingBar ratingBar2;
     private EditText comment;
     private List<ItemClass> dishes;
+    private Client client;
+    private Index index;
 
     public DetailedResFragment() {
         // Required empty public constructor
@@ -88,6 +96,8 @@ public class DetailedResFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        client = new Client("LRBUKD1XJR", "d796532dfd54cafdf4587b412ad560f8");
+        index = client.getIndex("rest_HOME");
         userReference = databaseReference.child("customers").child(user.getUid());
         userListener = userReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -423,6 +433,18 @@ public class DetailedResFragment extends Fragment {
                         System.out.println(Integer.parseInt(rating.toString()) + dishRating);
                         ref.child("rating").setValue(Integer.parseInt(rating.toString()) + dishRating);
                         ref.child("count").setValue(Integer.parseInt(count.toString()) + 1);
+
+                        Integer value = Math.round( (Integer.parseInt(rating.toString())+dishRating) / (Integer.parseInt(count.toString())+1) );
+                        try {
+                            JSONObject object = new JSONObject()
+                                    .put("rating", value);
+
+                            index.partialUpdateObject(object, dataSnapshot.getKey(), false, null);
+                        } catch (JSONException e) {
+
+                        } catch (AlgoliaException e) {
+
+                        }
                     }
 
                     @Override

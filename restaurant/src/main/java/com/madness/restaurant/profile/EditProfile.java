@@ -719,14 +719,19 @@ public class EditProfile extends Fragment {
                                                               databaseReference.child("restaurants").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                   @Override
                                                                   public void onComplete(@NonNull Task<Void> task) {
+                                                                      Integer rating = Integer.parseInt(map.get("rating").toString());
+                                                                      Integer count = Integer.parseInt(map.get("count").toString());
+                                                                      Integer value = (Math.round(rating/count));
+
                                                                       try {
                                                                           JSONObject object = new JSONObject()
                                                                                   .put("name", map.get("name").toString())
                                                                                   .put("desc", map.get("desc").toString())
                                                                                   .put("address", map.get("address").toString())
-                                                                                  .put("rating", map.get("rating").toString())
+                                                                                  .put("rating", value)
                                                                                   .put("photo", map.get("photo").toString());
 
+                                                                          //TODO: controllare comportamento diverso fra inserimento e cancellazione
                                                                           index.addObjectAsync(object, user.getUid(), null);
                                                                       } catch (JSONException e) {
 
