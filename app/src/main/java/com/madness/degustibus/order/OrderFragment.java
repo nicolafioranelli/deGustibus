@@ -96,6 +96,8 @@ public class OrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
+        //getActivity().setTitle(getString(R.string.title_Notifications));
+        getActivity().setTitle("New order"); // TODO: strings
         name = rootView.findViewById(R.id.rest_title);
         address = rootView.findViewById(R.id.rest_subtitle);
         ratingBar = rootView.findViewById(R.id.ratingBar);

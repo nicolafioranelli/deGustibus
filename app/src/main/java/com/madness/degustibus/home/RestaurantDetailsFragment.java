@@ -1,12 +1,16 @@
 package com.madness.degustibus.home;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,6 +43,8 @@ public class RestaurantDetailsFragment extends Fragment {
     private JSONObject restaurant;
     private DetailsInterface detailsInterface;
     private Button button;
+    private MenuInflater menuInflaterP;
+    private Menu menuP;
 
     public RestaurantDetailsFragment() {
         // Required empty public constructor
@@ -61,6 +67,7 @@ public class RestaurantDetailsFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -68,6 +75,7 @@ public class RestaurantDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_restaurant_details, container, false);
+        getActivity().setTitle("Restaurant"); // TODO: strings
         imageView = rootView.findViewById(R.id.rest_imageView);
         title = rootView.findViewById(R.id.rest_title);
         address = rootView.findViewById(R.id.rest_subtitle);
@@ -88,6 +96,48 @@ public class RestaurantDetailsFragment extends Fragment {
                 detailsInterface.newRestaurantOrder(restaurant.toString());
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menuP = menu;
+        menuInflaterP = inflater;
+
+        System.out.println(getArguments().getBoolean("isPreferred"));
+
+        if(getArguments().getBoolean("isPreferred")){
+            inflater.inflate(R.menu.preferred, menu);
+        } else {
+            inflater.inflate(R.menu.not_preferred, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("Restaurants", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        try {
+            restaurant = new JSONObject(getArguments().getString("restaurant"));
+            System.out.println(restaurant);
+            menuP.clear();
+            if(item.getItemId() == R.id.action_notpreferred) {
+                System.out.println(restaurant.get("name").toString());
+                editor.putString(restaurant.get("name").toString(), restaurant.getString("id"));
+                editor.commit();
+                menuInflaterP.inflate(R.menu.preferred, menuP);
+            }
+            if(item.getItemId() == R.id.action_preferred) {
+                editor.remove(restaurant.get("name").toString());
+                editor.commit();
+                menuInflaterP.inflate(R.menu.not_preferred, menuP);
+            }
+        } catch (JSONException e) {
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void populate(String restaurantProfileString) {

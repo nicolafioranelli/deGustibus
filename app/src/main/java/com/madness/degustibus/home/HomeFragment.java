@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -19,7 +22,9 @@ import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
 import com.madness.degustibus.R;
+import com.madness.degustibus.notifications.NotificationsFragment;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeFragment extends Fragment {
@@ -82,9 +87,36 @@ public class HomeFragment extends Fragment {
             public void onItemClick(RecyclerView recyclerView, int position, View v) {
                 JSONObject hit = hits.get(position);
                 String restaurant = hit.toString();
-                homeInterface.viewRestaurantDetails(restaurant);
+                try {
+                    homeInterface.viewRestaurantDetails(restaurant, hits.get(position).getString("name"));
+                } catch (JSONException e) {
+
+                }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_notifications) {
+            Fragment fragment = null;
+            Class fragmentClass;
+            try {
+                fragmentClass = NotificationsFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Notifications").addToBackStack("HOME").commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            DrawerLayout drawer = getActivity().findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
+
+        if(item.getItemId() == R.id.action_filter) {
+
+        }
+        return true;
     }
 
     @Override
@@ -100,6 +132,6 @@ public class HomeFragment extends Fragment {
     }
 
     public interface HomeInterface {
-        void viewRestaurantDetails(String restaurant);
+        void viewRestaurantDetails(String restaurant, String name);
     }
 }
