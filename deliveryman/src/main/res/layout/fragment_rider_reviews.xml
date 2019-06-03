@@ -19,7 +19,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:id="@+id/emptyLayout"
@@ -27,7 +28,8 @@
         android:layout_height="match_parent"
         android:background="#FFFFFF"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="100dp"

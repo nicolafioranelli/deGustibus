@@ -49,6 +49,7 @@ public class RiderReviewsFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private LinearLayout empty;
     private RecyclerView recyclerView;
+    private View progressBar;
 
     private LinearLayoutManager linearLayoutManager;
     private RiderReviewsAdapter adapter;
@@ -86,14 +87,14 @@ public class RiderReviewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_restaurant_reviews, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_rider_reviews, container, false);
         getActivity().setTitle(getResources().getString(R.string.reviews));
 
         empty=rootView.findViewById(R.id.emptyLayout);
+        progressBar = rootView.findViewById(R.id.progress_horizontal);
         recyclerView = rootView.findViewById(R.id.recyclerView);
         view = rootView;
         loadAdapter();
-        Log.i("retrievedata", "ciao1");
         return rootView;
     }
 
@@ -154,6 +155,7 @@ public class RiderReviewsFragment extends Fragment {
      * at the end the custom Adapter is populated and are present also some methods for data change/delete.
      */
     private void loadAdapter() {
+        progressBar.setVisibility(View.VISIBLE);
         /* Get all the current Rider's reviews */
         getReviews(new GetReviewsCallback() {
             /* Save the reviews in a List of RiderReviewsComparable type */
@@ -246,7 +248,8 @@ public class RiderReviewsFragment extends Fragment {
                         //if there is a child who's key is current rider's key
                         if(dSnapshot.getKey().compareTo(user.getUid())==0){
                             //Set the "No reviews available" Layout to INVISIBLE
-                            empty.setVisibility(View.INVISIBLE);
+                            empty.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.VISIBLE);
                             progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -267,6 +270,17 @@ public class RiderReviewsFragment extends Fragment {
                                             }
                                         });
                                     }
+                                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                                    view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE
+
+
+
+
+
+
+
+
+                                    );
                                 }
 
                                 @Override
