@@ -6,7 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,10 +19,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.LocationCallback;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -43,26 +49,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback  {
+public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUrl.AsyncFetchResponse {
 
     private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13;
 
     private MapView mapView;
+    private TextView streetAddress;
+    private TextView routeLenght;
+    private TextView routeTime;
     private GoogleMap googleMap;
     private String locationAddress;
     private String name;
+    private String orderId;
     private DatabaseReference databaseReference;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseUser user;
     private IncomingData incomingData;
     private Address address;
     LatLng currentLocation;
-    ArrayList<LatLng> MarkerPoints;
-
-
-    private OnFragmentInteractionListener mListener;
+    FetchUrl fetchUrl = new FetchUrl();
 
     public MapFragment() {
         // Required empty public constructor
@@ -71,10 +78,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //this to set delegate/listener back to this class
+        fetchUrl.delegate = this;
         //check permission
         getLocationPermission();
         //get user
         user = FirebaseAuth.getInstance().getCurrentUser();
+        //get location and name of destination
+        locationAddress = getArguments().getString("address");
+        name = getArguments().getString("name");
+        orderId = getArguments().getString("orderId");
     }
 
 
@@ -87,45 +100,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         linearLayoutManager = new LinearLayoutManager(getContext());
-        LoadFromFirebase();
-
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mapView = (MapView) view.findViewById(R.id.map);
+        streetAddress = view.findViewById(R.id.tv_map_address);
+        routeLenght = view.findViewById(R.id.tv_map_km);
+        routeTime = view.findViewById(R.id.tv_map_time);
+        mapView = view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
+        //Set up a callback object that will be activated when the instance of GoogleMap is ready to be used
         mapView.getMapAsync(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     //Manipulates the map once available. This callback is triggered when the map is ready to be used.
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
-        //check for permissions
+        streetAddress.setText(locationAddress);
+        //check for fine and coarse location permissions
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -133,14 +129,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         }
         //Initialize Google Play Services
         googleMap.setMyLocationEnabled(true);
+        //get the current location of the device
         getDeviceLocation(googleMap);
 
     }
+
+    //translates the destination address and makes the url request
     private void mapOperations (){
 
-
-        locationAddress = getArguments().getString("address");
-        name = getArguments().getString("name");
         //find the address
         address = geoLocate(locationAddress);
         //converte Location into LatLong
@@ -151,28 +147,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
                 .title(name));
         //set position and zoom of the camera
         moveCamera(currentLocation, DEFAULT_ZOOM);
-        //create a URL to make a request to find the path
+        //create a URL to make a request to find the path from current location to destination location
         String url = getDirectionsUrl(currentLocation, destination);
-        FetchUrl fetchUrl = new FetchUrl();
         fetchUrl.setMap(googleMap);
         fetchUrl.execute(url);
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    // update the view when FetchUrl ends adding distance and duration of the road
+    @Override
+    public void processFetchFinish(String distance, String duration, String distanceInt) {
+        routeLenght.setText(distance);
+        routeTime.setText(duration);
+        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
+
     }
 
-    // checking permission for map
+    // checking location permissions for display the current position on map
     private void getLocationPermission() {
-
+        //list of permission to check
         String[] permission = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.INTERNET
         };
         if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //if fine and coarse location permissions are granted set this flag for future checks, else no
                 mLocationPermissionGaranted = true;
             } else {
                 ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
@@ -189,7 +189,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
                 .getInstance()
                 .getReference()
                 .child("positions"));
+        //get current location of device
         geoFire.getLocation(user.getUid(), new LocationCallback() {
+            //when finds the position, update the map
             @Override
             public void onLocationResult(String key, GeoLocation location) {
                 currentLocation = new LatLng(location.latitude,location.longitude);
@@ -230,16 +232,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         }
     }
 
+    // process of transforming a street address or other description of a location into a (latitude, longitude) coordinate (address)
     private Address geoLocate(String addressName){
         Geocoder geocoder = new Geocoder(this.getContext());
         List<Address> list = new ArrayList<>();
         try{
+            //Returns an array of Addresses that are known to describe the named location
             list = geocoder.getFromLocationName(addressName,1);
         }catch (IOException e){
 
         }
 
         if(list.size() > 0){
+            //return the first result
             return list.get(0);
         }
         else return null;
@@ -263,26 +268,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback  {
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.map_key);
         return url;
-    }
-
-    public void LoadFromFirebase (){
-        // get data from orders in firebase
-        Query query = databaseReference.child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                dataSnapshot.getChildren();
-
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    if(!snapshot.getValue(IncomingData.class).getStatus().equals("done")){
-                        incomingData = snapshot.getValue(IncomingData.class);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
     }
 
 }

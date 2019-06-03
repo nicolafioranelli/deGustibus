@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -45,6 +46,7 @@ public class IncomingFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
     private Maps mapsInterface;
+    private int km;
     private HashMap<String, Object> map;
 
     public IncomingFragment() {
@@ -85,8 +87,20 @@ public class IncomingFragment extends Fragment {
 
         FirebaseRecyclerOptions<IncomingData> options =
                 new FirebaseRecyclerOptions.Builder<IncomingData>()
-                        .setQuery(query, IncomingData.class)
+                        //.setQuery(query, IncomingData.class)
+                        .setQuery(query, new SnapshotParser<IncomingData>() {
+                            @NonNull
+                            @Override
+                            public IncomingData parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                //create object IncomingData plus the order ID
+                                IncomingData order = snapshot.getValue(IncomingData.class);
+                                order.setOrderID(snapshot.getKey());
+
+                                return order;
+                            }
+                        })
                         .build();
+
 
         adapter = new FirebaseRecyclerAdapter<IncomingData, IncomingHolder>(options) {
 
@@ -103,6 +117,7 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
+                km = Integer.parseInt(model.getMileage());
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
@@ -133,6 +148,7 @@ public class IncomingFragment extends Fragment {
                             String address = objectMap.get("address").toString();
                             holder.restaurant.setText(restaurantName);
                             holder.restaurantAddres.setText(address);
+
                         }
                     }
 
@@ -151,7 +167,7 @@ public class IncomingFragment extends Fragment {
                     holder.map.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mapsInterface.callMaps(holder.restaurant.getText().toString(),holder.restaurantAddres.getText().toString());
+                            mapsInterface.callMaps(holder.restaurant.getText().toString(),holder.restaurantAddres.getText().toString(),model.getOrderID());
                         }
                     });
                 }else if(model.getStatus().equals("delivering")){
@@ -160,7 +176,7 @@ public class IncomingFragment extends Fragment {
                     holder.map.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mapsInterface.callMaps(holder.customer.getText().toString(),holder.customerAddress.getText().toString());
+                            mapsInterface.callMaps(holder.customer.getText().toString(),holder.customerAddress.getText().toString(),model.getOrderID());
                         }
                     });
                 }else if (model.getStatus().equals("done")||model.getStatus().equals("refused")){
@@ -204,6 +220,9 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             pick(position, model.getCustomerID());
+                            //adding km to total km routes from rider
+                            /*databaseReference.child("riders/"+user.getUid()+"/mileage").setValue(model.getMileage());*/
+
                         }
                     });
                 } else if (model.getStatus().equals("delivering")) {
@@ -370,8 +389,20 @@ public class IncomingFragment extends Fragment {
                     databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            int riderRoutesKm;
                             if (snapshot.exists()) {
                                 Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+
+
+                                if(objectMap.get("mileage")!=null){
+                                    //adding km to total km routes from rider
+                                     riderRoutesKm = Integer.parseInt(objectMap.get("mileage").toString()) + km;
+                                }
+                                else {
+                                    //new rider with first route
+                                    riderRoutesKm = km;
+                                }
+                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(riderRoutesKm);
                                 objectMap.put("status", "delivering");
                                 databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 
@@ -445,7 +476,7 @@ public class IncomingFragment extends Fragment {
     }
 
     public interface Maps{
-        public void callMaps(String name, String address);
+        public void callMaps(String name, String address,String orderId);
     }
 
 }

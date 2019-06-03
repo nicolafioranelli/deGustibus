@@ -13,17 +13,31 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-class FetchUrl extends AsyncTask<String, Void, String> {
+class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.AsyncResponse {
     GoogleMap map;
+    public AsyncFetchResponse delegate = null;
+
+    //things to do when PointParser finish
+    @Override
+    public void processFinish(String distance, String duration, String distanceInt) {
+        //call the method processFinish of MapFragment to pass distance and duration
+        delegate.processFetchFinish(distance,duration,distanceInt);
+
+    }
+
+    //interface to comunicate with MapFragment
+    public interface AsyncFetchResponse {
+        void processFetchFinish(String distance, String duration, String distanceInt);
+    }
 
 
     @Override
     protected String doInBackground(String... strings) {
+
         // For storing data from web service
         String data = "";
         try {
             // Fetching the data from web service
-
             data = downloadUrl(strings[0]);
         } catch (Exception e) {
 
@@ -35,9 +49,12 @@ class FetchUrl extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         PointsParser parserTask = new PointsParser();
+        //set the delegate of the pasertask as this (FetchUrl)
+        parserTask.delegate = this;
         parserTask.setMap(map);
         // Invokes the thread for parsing the JSON data
         parserTask.execute(s);
+
     }
 
     /**

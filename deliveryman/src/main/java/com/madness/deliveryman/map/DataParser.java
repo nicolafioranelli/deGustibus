@@ -10,12 +10,17 @@ import java.util.List;
 
 
 public class DataParser {
+
     public List<List<HashMap<String, String>>> parse(JSONObject jObject) {
 
         List<List<HashMap<String, String>>> routes = new ArrayList<>();
         JSONArray jRoutes;
         JSONArray jLegs;
         JSONArray jSteps;
+        JSONObject jDistance;
+        JSONObject jDuration;
+
+
         try {
             jRoutes = jObject.getJSONArray("routes");
             /** Traversing all routes */
@@ -25,6 +30,20 @@ public class DataParser {
                 /** Traversing all legs */
                 for (int j = 0; j < jLegs.length(); j++) {
                     jSteps = ((JSONObject) jLegs.get(j)).getJSONArray("steps");
+                    /** Getting distance from the json data */
+                    jDistance = ((JSONObject) jLegs.get(j)).getJSONObject("distance");
+                    HashMap<String, String> hmDistance = new HashMap<String, String>();
+
+                    hmDistance.put("distance", jDistance.getString("text"));
+                    hmDistance.put("distanceInt", String.valueOf(jDistance.getInt("value")));
+                    /** Getting duration from the json data */
+                    jDuration = ((JSONObject) jLegs.get(j)).getJSONObject("duration");
+                    HashMap<String, String> hmDuration = new HashMap<String, String>();
+                    hmDuration.put("duration", jDuration.getString("text"));
+                    /** Adding distance object to the path */
+                    path.add(hmDistance);
+                    /** Adding duration object to the path */
+                    path.add(hmDuration);
 
                     /** Traversing all steps */
                     for (int k = 0; k < jSteps.length(); k++) {
@@ -89,4 +108,5 @@ public class DataParser {
 
         return poly;
     }
+
 }

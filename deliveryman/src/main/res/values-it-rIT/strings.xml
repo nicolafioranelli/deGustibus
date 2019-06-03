@@ -101,6 +101,7 @@
     <string name="err_name">Inserisci il tuo nome!</string>
     <string name="err_phone">Inserisci un telefono!</string>
     <string name="no_reviews">Non è stata effettuata nessuna valutazione</string>
+    <string name="home_distance">Distanza</string>
     <string name="ratings">Valutazioni</string>
     <string name="see_reviews">Recensioni</string>
     <string name="reviews">Recensioni</string>

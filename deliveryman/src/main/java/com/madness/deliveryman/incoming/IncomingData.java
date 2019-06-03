@@ -2,6 +2,7 @@ package com.madness.deliveryman.incoming;
 
 public class IncomingData {
 
+    private String orderID;
     private String customerID;
     private String restaurantID;
     private String deliverymanID;
@@ -12,6 +13,8 @@ public class IncomingData {
     private String customerAddress;
     private String restaurantAddress;
     private String status;
+    private String mileage;
+
 
     public IncomingData() {
     }
@@ -28,6 +31,14 @@ public class IncomingData {
         this.restaurantAddress = restaurantAddress;
         this.status = status;
     }
+
+    public String getMileage() {        return mileage;    }
+
+    public void setMileage(String mileage) {        this.mileage = mileage;    }
+
+    public String getOrderID() {        return orderID;    }
+
+    public void setOrderID(String orderID) {        this.orderID = orderID;    }
 
     public String getCustomerID() {
         return customerID;

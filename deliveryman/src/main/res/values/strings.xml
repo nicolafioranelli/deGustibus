@@ -133,7 +133,7 @@
     <string name="err_name">Name is required!</string>
     <string name="err_desc">Description in required!</string>
     <string name="err_phone">Phone is required!</string>
-
+    <string name="home_distance">Distance</string>
     <string name="see_reviews">Reviews</string>
     <string name="reviews">Reviews</string>
     <string name="no_reviews">No rating has been received yet!</string>
