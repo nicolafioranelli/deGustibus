@@ -146,4 +146,7 @@
     <string name="by_date">Date</string>
     <string name="rating_name">Name:</string>
     <string name="rating_score">Score:</string>
+    <string name="map_address">Address:</string>
+    <string name="map_time">Time:</string>
+    <string name="map_distance" translatable="false">Km:</string>
 </resources>

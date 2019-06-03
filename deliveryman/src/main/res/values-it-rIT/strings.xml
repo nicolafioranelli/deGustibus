@@ -112,4 +112,6 @@
     <string name="by_date">Data</string>
     <string name="rating_name">Nome:</string>
     <string name="rating_score">Punteggio:</string>
+    <string name="map_address">Indirizzo:</string>
+    <string name="map_time">Durata:</string>
 </resources>

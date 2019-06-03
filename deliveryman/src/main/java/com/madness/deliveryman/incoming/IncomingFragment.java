@@ -117,7 +117,7 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
-                km = Integer.parseInt(model.getMileage());
+                //km = Integer.parseInt(model.getMileage()); TODO fix
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
