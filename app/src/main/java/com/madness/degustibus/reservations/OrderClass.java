@@ -1,32 +1,52 @@
 package com.madness.degustibus.reservations;
 
-public class ReservationData {
+import java.util.List;
 
+public class OrderClass {
+
+    private String id;
     private String customerID;
     private String restaurantID;
     private String deliverymanID;
     private String deliveryDate;
     private String deliveryHour;
-    private String description;
     private String totalPrice;
     private String customerAddress;
     private String restaurantAddress;
     private String status;
+    private String riderComment;
+    private String riderRating;
+    private String restaurantComment;
+    private String restaurantRating;
+    private List<ItemClass> cart;
 
-    public ReservationData() {
+    public OrderClass() {
     }
 
-    public ReservationData(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
+    public OrderClass(String id, String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String totalPrice, String customerAddress, String restaurantAddress, String status, String riderComment, String riderRating, String restaurantComment, String restaurantRating, List<ItemClass> cart) {
+        this.id = id;
         this.customerID = customerID;
         this.restaurantID = restaurantID;
         this.deliverymanID = deliverymanID;
         this.deliveryDate = deliveryDate;
         this.deliveryHour = deliveryHour;
-        this.description = description;
         this.totalPrice = totalPrice;
         this.customerAddress = customerAddress;
         this.restaurantAddress = restaurantAddress;
         this.status = status;
+        this.riderComment = riderComment;
+        this.riderRating = riderRating;
+        this.restaurantComment = restaurantComment;
+        this.restaurantRating = restaurantRating;
+        this.cart = cart;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCustomerID() {
@@ -69,14 +89,6 @@ public class ReservationData {
         this.deliveryHour = deliveryHour;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getTotalPrice() {
         return totalPrice;
     }
@@ -107,5 +119,45 @@ public class ReservationData {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRiderComment() {
+        return riderComment;
+    }
+
+    public void setRiderComment(String riderComment) {
+        this.riderComment = riderComment;
+    }
+
+    public String getRiderRating() {
+        return riderRating;
+    }
+
+    public void setRiderRating(String riderRating) {
+        this.riderRating = riderRating;
+    }
+
+    public String getRestaurantComment() {
+        return restaurantComment;
+    }
+
+    public void setRestaurantComment(String restaurantComment) {
+        this.restaurantComment = restaurantComment;
+    }
+
+    public String getRestaurantRating() {
+        return restaurantRating;
+    }
+
+    public void setRestaurantRating(String restaurantRating) {
+        this.restaurantRating = restaurantRating;
+    }
+
+    public List<ItemClass> getCart() {
+        return cart;
+    }
+
+    public void setCart(List<ItemClass> cart) {
+        this.cart = cart;
     }
 }

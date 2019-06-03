@@ -1,4 +1,4 @@
-package com.madness.degustibus.new_home;
+package com.madness.degustibus.home;
 
 public class RatingsClass {
 

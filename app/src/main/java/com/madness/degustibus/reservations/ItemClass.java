@@ -1,19 +1,19 @@
-package com.madness.degustibus.new_reservations;
+package com.madness.degustibus.reservations;
 
 public class ItemClass {
 
     private Integer quantity;
     private String id;
-    private String dish;
+    private String name;
     private Integer rating;
 
     public ItemClass() {
     }
 
-    public ItemClass(Integer quantity, String id, String dish, Integer rating) {
+    public ItemClass(Integer quantity, String id, String name, Integer rating) {
         this.quantity = quantity;
         this.id = id;
-        this.dish = dish;
+        this.name = name;
         this.rating = rating;
     }
 
@@ -33,12 +33,12 @@ public class ItemClass {
         this.id = id;
     }
 
-    public String getDish() {
-        return dish;
+    public String getName() {
+        return name;
     }
 
-    public void setDish(String dish) {
-        this.dish = dish;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getRating() {

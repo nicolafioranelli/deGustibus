@@ -2,17 +2,18 @@ package com.madness.degustibus.reservations;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
 import com.madness.degustibus.R;
 
-public class ReservationHolder extends RecyclerView.ViewHolder {
+public class OrderHolder extends RecyclerView.ViewHolder {
 
-    public TextView status, deliveryman, restaurant, date, hour, price, restaurantAddres;
-    public Button recieved;
+    public TextView status, deliveryman, restaurant, date, hour, price;
+    public ImageButton button;
 
 
-    public ReservationHolder(final View itemView) {
+    public OrderHolder(final View itemView) {
         super(itemView);
         status = itemView.findViewById(R.id.status);
         deliveryman = itemView.findViewById(R.id.deliveryman);
@@ -20,7 +21,7 @@ public class ReservationHolder extends RecyclerView.ViewHolder {
         date = itemView.findViewById(R.id.date);
         hour = itemView.findViewById(R.id.hour);
         price = itemView.findViewById(R.id.price);
-        restaurantAddres = itemView.findViewById(R.id.restaurantAddress);
-        recieved = itemView.findViewById(R.id.recievedButton);
+        button = itemView.findViewById(R.id.button);
     }
+
 }

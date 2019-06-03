@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.algolia.instantsearch.core.helpers.Searcher;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,18 +38,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.auth.LoginActivity;
-import com.madness.degustibus.new_home.HomeFragment;
-import com.madness.degustibus.new_home.RestaurantDetailsFragment;
-import com.madness.degustibus.new_reservations.ReservationsFragment;
+import com.madness.degustibus.home.HomeFragment;
+import com.madness.degustibus.home.RestaurantDetailsFragment;
 import com.madness.degustibus.notifications.NotificationsFragment;
-import com.madness.degustibus.order.CompletedOrderFragment;
 import com.madness.degustibus.order.OrderFragment;
 import com.madness.degustibus.profile.EditProfileFragment;
 import com.madness.degustibus.profile.ProfileFragment;
-import com.madness.degustibus.reservations.ReservationFragment;
+import com.madness.degustibus.reservations.DetailedResFragment;
+import com.madness.degustibus.reservations.ReservationsFragment;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
@@ -61,7 +58,6 @@ import java.util.Map;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         ProfileFragment.ProfileListener,
-        OrderFragment.NewOrderInterface,
         HomeFragment.HomeInterface,
         RestaurantDetailsFragment.DetailsInterface,
         TimePickerDialog.OnTimeSetListener,
@@ -141,7 +137,7 @@ public class HomeActivity extends AppCompatActivity
             try {
                 fragment = null;
                 Class fragmentClass;
-                fragmentClass = com.madness.degustibus.new_home.HomeFragment.class;
+                fragmentClass = com.madness.degustibus.home.HomeFragment.class;
                 fragment = (Fragment) fragmentClass.newInstance();
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
             } catch (Exception e) {
@@ -367,8 +363,10 @@ public class HomeActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
             } else if (fragment instanceof OrderFragment) {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
-            } else if (fragment instanceof CompletedOrderFragment) {
-                navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+            } else if (fragment instanceof DetailedResFragment) {
+                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
+            } else if (fragment instanceof ReservationsFragment) {
+                navigationView.getMenu().findItem(R.id.nav_reservations).setChecked(true);
             } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
             }
@@ -393,29 +391,6 @@ public class HomeActivity extends AppCompatActivity
                 }
             });
         }
-    }
-
-    @Override
-    public void goToCart(String userIdentifier) {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = CompletedOrderFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "onItemClicked: ", e);
-        }
-
-        Bundle args = new Bundle();
-        args.putString("id", userIdentifier);
-        args.putSerializable("user", userData);
-        fragment.setArguments(args);
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "Complete offer");
-        ft.addToBackStack("COMPLETEOFFER");
-        ft.commit();
     }
 
     /* Interface method to go to restaurant details */
@@ -448,7 +423,7 @@ public class HomeActivity extends AppCompatActivity
         try {
             fragment = null;
             Class fragmentClass;
-            fragmentClass = com.madness.degustibus.new_order.OrderFragment.class;
+            fragmentClass = com.madness.degustibus.order.OrderFragment.class;
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             Log.e("MAD", "onItemClicked: ", e);
@@ -466,7 +441,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        com.madness.degustibus.new_order.OrderFragment fragment = (com.madness.degustibus.new_order.OrderFragment)
+        com.madness.degustibus.order.OrderFragment fragment = (com.madness.degustibus.order.OrderFragment)
                 getSupportFragmentManager().findFragmentByTag("Order");
         if (fragment != null) {
             fragment.setDeliveryDate(year, month, dayOfMonth);
@@ -475,7 +450,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        com.madness.degustibus.new_order.OrderFragment fragment = (com.madness.degustibus.new_order.OrderFragment)
+        com.madness.degustibus.order.OrderFragment fragment = (com.madness.degustibus.order.OrderFragment)
                 getSupportFragmentManager().findFragmentByTag("Order");
         if (fragment != null) {
             fragment.setDeliveryTime(hourOfDay, minute);

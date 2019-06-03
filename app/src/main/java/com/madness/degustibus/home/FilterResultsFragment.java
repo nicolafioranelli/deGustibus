@@ -1,4 +1,4 @@
-package com.madness.degustibus.new_home;
+package com.madness.degustibus.home;
 
 
 import android.app.Activity;
@@ -8,14 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -44,7 +42,8 @@ public class FilterResultsFragment extends DialogFragment {
     /**
      * Default constructor required when the fragment is restored.
      */
-    public FilterResultsFragment() {}
+    public FilterResultsFragment() {
+    }
 
     /**
      * Get a FilterResultsFragment instance linked with a given searcher.
@@ -178,8 +177,8 @@ public class FilterResultsFragment extends DialogFragment {
             final double maxValue = ((SeekBarDescription) filter).max;
             final int steps = ((SeekBarDescription) filter).steps;
 
-            final TextView tv = (TextView) filterLayout.findViewById(R.id.dialog_seekbar_text);
-            final SeekBar seekBar = (SeekBar) filterLayout.findViewById(R.id.dialog_seekbar_bar);
+            final TextView tv = filterLayout.findViewById(R.id.dialog_seekbar_text);
+            final SeekBar seekBar = filterLayout.findViewById(R.id.dialog_seekbar_bar);
             final NumericRefinement currentFilter = searcher.getNumericRefinement(attribute, NumericRefinement.OPERATOR_GT);
 
             if (currentFilter != null && currentFilter.value != 0) {
@@ -210,8 +209,8 @@ public class FilterResultsFragment extends DialogFragment {
 
             updateSeekBarText(tv, name, currentFilter != null ? currentFilter.value : minValue, minValue);
         } else {
-            final TextView tv = (TextView) filterLayout.findViewById(R.id.dialog_checkbox_text);
-            final CheckBox checkBox = (CheckBox) filterLayout.findViewById(R.id.dialog_checkbox_box);
+            final TextView tv = filterLayout.findViewById(R.id.dialog_checkbox_text);
+            final CheckBox checkBox = filterLayout.findViewById(R.id.dialog_checkbox_box);
             final Boolean currentFilter = searcher.getBooleanFilter(attribute);
             final FacetStat stats = searcher.getFacetStat(attribute);
             final boolean hasOnlyOneValue = stats != null && stats.min == stats.max;
@@ -284,9 +283,9 @@ public class FilterResultsFragment extends DialogFragment {
     }
 
     private class SeekBarDescription extends FilterDescription {
+        private final int steps;
         private Double min;
         private Double max;
-        private final int steps;
 
         SeekBarDescription(String attribute, String name, Double min, Double max, int steps, int position) {
             super(attribute, name, position);

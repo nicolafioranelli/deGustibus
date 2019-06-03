@@ -1,4 +1,4 @@
-package com.madness.degustibus.new_reservations;
+package com.madness.degustibus.reservations;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,8 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.R;
-import com.madness.degustibus.new_order.MenuItem;
-import com.madness.degustibus.order.OrderFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +37,7 @@ public class ReservationsFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseRecyclerAdapter adapter;
     private RecyclerView recyclerView;
+    private String restPic;
 
     public ReservationsFragment() {
         // Required empty public constructor
@@ -59,6 +58,8 @@ public class ReservationsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_reservations, container, false);
         recyclerView = rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         return rootView;
     }
@@ -71,48 +72,48 @@ public class ReservationsFragment extends Fragment {
 
         FirebaseRecyclerOptions<OrderClass> options =
                 new FirebaseRecyclerOptions.Builder<OrderClass>()
-                .setQuery(query, new SnapshotParser<OrderClass>() {
-                    @NonNull
-                    @Override
-                    public OrderClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        System.out.println(snapshot.getValue());
+                        .setQuery(query, new SnapshotParser<OrderClass>() {
+                            @NonNull
+                            @Override
+                            public OrderClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                System.out.println(snapshot.getValue());
 
-                        List<ItemClass> cart = new ArrayList<>();
-                        for(DataSnapshot obj : snapshot.child("cart").getChildren()){
-                            ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
-                                    obj.getKey(),
-                                    obj.child("name").getValue().toString(),
-                                    //Integer.parseInt(obj.child("rating").toString()) TODO: correct behaviour of Integer
-                                    0
+                                List<ItemClass> cart = new ArrayList<>();
+                                for (DataSnapshot obj : snapshot.child("cart").getChildren()) {
+                                    ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
+                                            obj.getKey(),
+                                            obj.child("name").getValue().toString(),
+                                            Integer.parseInt(obj.child("rating").getValue().toString())
                                     );
-                            cart.add(item);
-                        }
+                                    cart.add(item);
+                                }
 
-                        OrderClass order = new OrderClass(snapshot.child("customerID").getValue().toString(),
-                                snapshot.child("restaurantID").getValue().toString(),
-                                snapshot.child("deliverymanID").getValue().toString(),
-                                snapshot.child("deliveryDate").getValue().toString(),
-                                snapshot.child("deliveryHour").getValue().toString(),
-                                snapshot.child("totalPrice").getValue().toString(),
-                                snapshot.child("customerAddress").getValue().toString(),
-                                snapshot.child("restaurantAddress").getValue().toString(),
-                                snapshot.child("status").getValue().toString(),
-                                snapshot.child("riderComment").getValue().toString(),
-                                snapshot.child("riderRating").getValue().toString(),
-                                snapshot.child("restaurantComment").getValue().toString(),
-                                snapshot.child("restaurantRating").getValue().toString(),
-                                cart
-                        );
+                                OrderClass order = new OrderClass(snapshot.getKey(),
+                                        snapshot.child("customerID").getValue().toString(),
+                                        snapshot.child("restaurantID").getValue().toString(),
+                                        snapshot.child("deliverymanID").getValue().toString(),
+                                        snapshot.child("deliveryDate").getValue().toString(),
+                                        snapshot.child("deliveryHour").getValue().toString(),
+                                        snapshot.child("totalPrice").getValue().toString(),
+                                        snapshot.child("customerAddress").getValue().toString(),
+                                        snapshot.child("restaurantAddress").getValue().toString(),
+                                        snapshot.child("status").getValue().toString(),
+                                        snapshot.child("riderComment").getValue().toString(),
+                                        snapshot.child("riderRating").getValue().toString(),
+                                        snapshot.child("restaurantComment").getValue().toString(),
+                                        snapshot.child("restaurantRating").getValue().toString(),
+                                        cart
+                                );
 
-                        return order;
-                    }
-                })
-                .build();
+                                return order;
+                            }
+                        })
+                        .build();
 
         adapter = new FirebaseRecyclerAdapter<OrderClass, OrderHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final OrderHolder holder, final int position, @NonNull final OrderClass model) {
-                if(model.getDeliverymanID().equals("null")) {
+                if (model.getDeliverymanID().equals("null")) {
                     holder.deliveryman.setText(R.string.no_rider);
                 } else {
                     databaseReference.child("riders").child(model.getDeliverymanID()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -155,7 +156,7 @@ public class ReservationsFragment extends Fragment {
                 if (model.getStatus().equals("new")) {
                     holder.status.setText(R.string.status_new);
                 } else if (model.getStatus().equals("incoming")) {
-                    holder.status.setText(R.string.status_incoming);
+                    holder.status.setText(R.string.status_elaboration);
                 } else if (model.getStatus().equals("refused")) {
                     holder.status.setText(R.string.status_refused);
                 } else if (model.getStatus().equals("done")) {
@@ -172,6 +173,10 @@ public class ReservationsFragment extends Fragment {
                         try {
                             Fragment fragment;
                             fragment = DetailedResFragment.class.newInstance();
+                            Bundle args = new Bundle();
+                            args.putString("restaurant", holder.restaurant.getText().toString());
+                            args.putString("orderID", model.getId());
+                            fragment.setArguments(args);
 
                             ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.flContent, fragment, " Detail")
@@ -196,6 +201,8 @@ public class ReservationsFragment extends Fragment {
             }
         };
         recyclerView.setAdapter(adapter);
+
+
     }
 
     @Override
@@ -208,7 +215,7 @@ public class ReservationsFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-            adapter.stopListening();
+        adapter.stopListening();
 
     }
 }

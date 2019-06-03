@@ -1,4 +1,4 @@
-package com.madness.degustibus.new_home;
+package com.madness.degustibus.home;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

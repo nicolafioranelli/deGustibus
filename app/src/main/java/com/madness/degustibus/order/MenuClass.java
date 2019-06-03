@@ -1,4 +1,4 @@
-package com.madness.degustibus.new_order;
+package com.madness.degustibus.order;
 
 public class MenuClass {
 
