@@ -100,4 +100,5 @@
     <string name="err_desc">Inserisci una descrizione!</string>
     <string name="err_name">Inserisci il tuo nome!</string>
     <string name="err_phone">Inserisci un telefono!</string>
+    <string name="home_distance">Distanza</string>
 </resources>
