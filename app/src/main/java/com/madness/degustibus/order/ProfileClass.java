@@ -1,5 +1,9 @@
 package com.madness.degustibus.order;
 
+/**
+ * Model for the profile
+ */
+
 public class ProfileClass {
 
     private String name;

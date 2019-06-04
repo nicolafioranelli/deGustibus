@@ -678,6 +678,8 @@ public class EditProfile extends Fragment {
         map.put("address", autocompleteView.getText().toString());
         if (getArguments() != null) {
             map.put("rating", 0);
+            map.put("count", 0);
+            map.put("popular", 0);
         }
         map.put("defaultOpen", defaultOpen.getText().toString());
         map.put("defaultClose", defaultClose.getText().toString());
@@ -719,23 +721,7 @@ public class EditProfile extends Fragment {
                                                               databaseReference.child("restaurants").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                   @Override
                                                                   public void onComplete(@NonNull Task<Void> task) {
-                                                                      Integer rating = Integer.parseInt(map.get("rating").toString());
-                                                                      Integer count = Integer.parseInt(map.get("count").toString());
-                                                                      Integer value = (Math.round(rating/count));
-
-                                                                      try {
-                                                                          JSONObject object = new JSONObject()
-                                                                                  .put("name", map.get("name").toString())
-                                                                                  .put("desc", map.get("desc").toString())
-                                                                                  .put("address", map.get("address").toString())
-                                                                                  .put("rating", value)
-                                                                                  .put("photo", map.get("photo").toString());
-
-                                                                          //TODO: controllare comportamento diverso fra inserimento e cancellazione
-                                                                          index.addObjectAsync(object, user.getUid(), null);
-                                                                      } catch (JSONException e) {
-
-                                                                      }
+                                                                      doOnAlgolia(map, true);
                                                                   }
                                                               });
 
@@ -749,6 +735,39 @@ public class EditProfile extends Fragment {
             }
         } else {
             databaseReference.child("restaurants").child(user.getUid()).updateChildren(map);
+            doOnAlgolia(map, false);
+        }
+    }
+
+    private void doOnAlgolia(Map<String, Object> map, Boolean photo){
+        if(getArguments()!= null) {
+            try {
+                JSONObject object = new JSONObject()
+                        .put("name", map.get("name").toString())
+                        .put("desc", map.get("desc").toString())
+                        .put("address", map.get("address").toString())
+                        .put("id", user.getUid())
+                        .put("rating", 0);
+                if(photo) {
+                    object.put("photo", map.get("photo").toString());
+                }
+                index.addObjectAsync(object, user.getUid(), null);
+            } catch (JSONException e) {
+
+            }
+        } else {
+            try {
+                JSONObject object = new JSONObject()
+                        .put("name", map.get("name").toString())
+                        .put("desc", map.get("desc").toString())
+                        .put("address", map.get("address").toString());
+                if(photo) {
+                    object.put("photo", map.get("photo").toString());
+                }
+                index.partialUpdateObjectAsync(object, user.getUid(), null);
+            } catch (JSONException e) {
+
+            }
         }
     }
 

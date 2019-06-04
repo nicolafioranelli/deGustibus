@@ -1,5 +1,9 @@
 package com.madness.degustibus.order;
 
+/**
+ * Model for the reservation
+ */
+
 public class ReservationClass {
     private String customerID;
     private String restaurantID;

@@ -6,18 +6,18 @@
 
     <item
         android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
         android:title="@string/search_hint"
         app:actionViewClass="com.algolia.instantsearch.ui.views.SearchBox"
-        app:iconifiedByDefault="true"
-        android:icon="@drawable/ic_search"
         app:iconTint="#FFFFFF"
-        app:showAsAction="always|collapseActionView"/>
+        app:iconifiedByDefault="true"
+        app:showAsAction="always|collapseActionView" />
 
     <item
         android:id="@+id/action_filter"
-        android:title="@string/search_hint"
         android:icon="@drawable/ic_filters"
-        app:showAsAction="always"/>
+        android:title="@string/search_hint"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_notifications"

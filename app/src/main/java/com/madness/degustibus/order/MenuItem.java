@@ -1,5 +1,9 @@
 package com.madness.degustibus.order;
 
+/**
+ * Item of the Menu Class model
+ */
+
 public class MenuItem {
 
     private Integer quantity;

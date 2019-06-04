@@ -54,9 +54,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DetailedResFragment extends Fragment {
 
-    private final String[] labels = {"In attesa", "In elaborazione", "In consegna", "Consegnato"};
-    private StateProgressBar stateProgressBar;
-
+    /* Firebase */
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -64,11 +62,11 @@ public class DetailedResFragment extends Fragment {
     private DatabaseReference orderReference;
     private ValueEventListener userListener;
     private ValueEventListener orderListener;
-    private ProfileClass userProfile;
-    private OrderClass order;
     private FirebaseRecyclerAdapter adapter;
-    private View view;
 
+    /* Widgets */
+    private StateProgressBar stateProgressBar;
+    private View view;
     private TextView status;
     private Button button;
     private TextView restaurant;
@@ -82,7 +80,14 @@ public class DetailedResFragment extends Fragment {
     private TextView restName;
     private RatingBar ratingBar2;
     private EditText comment;
+
+    /* Data */
+    private final String[] labels = {getString(R.string.step1), getString(R.string.step2), getString(R.string.step3), getString(R.string.step4)};
+    private ProfileClass userProfile;
+    private OrderClass order;
     private List<ItemClass> dishes;
+
+    /* Algolia */
     private Client client;
     private Index index;
 
@@ -90,6 +95,7 @@ public class DetailedResFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /* Lifecycle */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,17 +212,31 @@ public class DetailedResFragment extends Fragment {
                 updateRatings();
             }
         });
-
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        userReference.removeEventListener(userListener);
+        orderReference.removeEventListener(orderListener);
+        adapter.stopListening();
+    }
+    // end lifecycle
+
+    /* Helpers */
     private void loadFromFirebase() {
         final String orderID = getArguments().getString("orderID");
         orderReference = databaseReference.child("orders").child(orderID);
         orderListener = orderReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 List<ItemClass> cart = new ArrayList<>();
                 for (DataSnapshot obj : dataSnapshot.child("cart").getChildren()) {
                     ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
@@ -316,8 +336,6 @@ public class DetailedResFragment extends Fragment {
                 foodReceived();
             }
         });
-
-
     }
 
     private void loadRestaurant(String restID, Integer restRating) {
@@ -410,7 +428,6 @@ public class DetailedResFragment extends Fragment {
         }
 
         if (ok) {
-            System.out.println("OK");
             /* Update ratings */
             Map<String, Object> restRating = new HashMap<>();
             restRating.put("name", userProfile.getName());
@@ -430,11 +447,10 @@ public class DetailedResFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Object rating = dataSnapshot.child("rating").getValue();
                         Object count = dataSnapshot.child("count").getValue();
-                        System.out.println(Integer.parseInt(rating.toString()) + dishRating);
                         ref.child("rating").setValue(Integer.parseInt(rating.toString()) + dishRating);
                         ref.child("count").setValue(Integer.parseInt(count.toString()) + 1);
 
-                        Integer value = Math.round( (Integer.parseInt(rating.toString())+dishRating) / (Integer.parseInt(count.toString())+1) );
+                        Integer value = Math.round((Integer.parseInt(rating.toString()) + dishRating) / (Integer.parseInt(count.toString()) + 1));
                         try {
                             JSONObject object = new JSONObject()
                                     .put("rating", value);
@@ -483,8 +499,8 @@ public class DetailedResFragment extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     new AlertDialog.Builder(getContext())
-                            .setTitle("Evaluation completed")
-                            .setMessage("Thanks for your evaluations! Restaurateurs will collect them to improve their work!")
+                            .setTitle(getString(R.string.evaluation_Title))
+                            .setMessage(getString(R.string.evaluation_Desc))
 
                             // Specifying a listener allows you to take an action before dismissing the dialog.
                             // The dialog is automatically dismissed when a dialog button is clicked.
@@ -505,21 +521,7 @@ public class DetailedResFragment extends Fragment {
                 databaseReference.child("orders").child(order.getId()).child("cart").child(dishes.get(i).getId()).child("rating").setValue(dishes.get(i).getRating().toString());
             }
         } else {
-            Toast.makeText(getContext(), "Evaluate all items!", Toast.LENGTH_SHORT);
+            Toast.makeText(getContext(), getString(R.string.evaluation_Err), Toast.LENGTH_SHORT);
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        userReference.removeEventListener(userListener);
-        orderReference.removeEventListener(orderListener);
-        adapter.stopListening();
     }
 }

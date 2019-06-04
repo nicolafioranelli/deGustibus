@@ -18,6 +18,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -48,27 +50,32 @@ import java.util.Map;
 
 public class OrderFragment extends Fragment {
 
+    /* Firebase */
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private FirebaseRecyclerAdapter adapter;
     private ValueEventListener eventListener;
     private DatabaseReference listenerReference;
+
+    /* Widgets */
     private TextView name;
     private TextView address;
     private RatingBar ratingBar;
     private TextView customerAddress;
     private TextView totalPrice;
-    private float totalAmount;
     private RecyclerView recyclerView;
-    private JSONObject restaurant;
-    private String restaurantID;
     private TextView setDate;
     private TextView setTime;
     private DialogFragment timePicker;
     private DialogFragment datePicker;
-    private ProfileClass userProfile;
     private Button complete_btn;
+
+    /* Data */
+    private float totalAmount;
+    private JSONObject restaurant;
+    private String restaurantID;
+    private ProfileClass userProfile;
     private MenuItem item;
     private ArrayList<MenuItem> menu;
     private boolean order = true;
@@ -77,6 +84,7 @@ public class OrderFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /* Lifecycle */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +104,7 @@ public class OrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
-        //getActivity().setTitle(getString(R.string.title_Notifications));
-        getActivity().setTitle("New order"); // TODO: strings
+        getActivity().setTitle(getString(R.string.title_Order));
         name = rootView.findViewById(R.id.rest_title);
         address = rootView.findViewById(R.id.rest_subtitle);
         ratingBar = rootView.findViewById(R.id.ratingBar);
@@ -136,7 +143,7 @@ public class OrderFragment extends Fragment {
         Date currentDate = Calendar.getInstance().getTime();        // get the current date time
         Calendar newCalendar = Calendar.getInstance();              // create a new calendar
         newCalendar.setTime(currentDate);                           // set it with the current date time
-        newCalendar.add(Calendar.HOUR, 1);                    // add one hour
+        newCalendar.add(Calendar.HOUR, 1);                  // add one hour
         Date newDefaultDeliveryTime = newCalendar.getTime();        // create the default date time
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");   // date format
@@ -207,20 +214,33 @@ public class OrderFragment extends Fragment {
                     increaseRestAndNotify();
 
                     Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
-                    FragmentManager fragmentManager = getFragmentManager();
-                    System.out.println(fragmentManager.getBackStackEntryCount());
                     performNoBackStackTransaction();
-                    /*
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStackImmediate("HOME", FragmentManager.POP_BACK_STACK_INCLUSIVE);*/
                 }
             }
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        try {
+            adapter.stopListening();
+            listenerReference.removeEventListener(eventListener);
+        } catch (Exception e) {
+
+        }
+    }
+    // end Lifecycle
+
+    /* Helpers */
     private void loadMenu() {
         Query query = databaseReference.child("offers").child(restaurantID).orderByChild("popular");
-
         FirebaseRecyclerOptions<MenuClass> options =
                 new FirebaseRecyclerOptions.Builder<MenuClass>()
                         .setQuery(query, new SnapshotParser<MenuClass>() {
@@ -329,6 +349,17 @@ public class OrderFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();
                 ref.setValue(Integer.parseInt(value.toString()) + 1);
+
+                try {
+                    Client client = new Client("LRBUKD1XJR", "d796532dfd54cafdf4587b412ad560f8");
+                    Index index = client.getIndex("rest_HOME");
+                    JSONObject object = new JSONObject()
+                            .put("popular", (Integer.parseInt(value.toString()) + 1));
+
+                    index.partialUpdateObjectAsync(object, restaurantID, null);
+                } catch (JSONException e) {
+
+                }
             }
 
             @Override
@@ -375,21 +406,5 @@ public class OrderFragment extends Fragment {
     public void setDeliveryTime(int hourOfDay, int minute) {
         setTime.setText(String.format("%02d:%02d", hourOfDay, minute));
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        try {
-            adapter.stopListening();
-            listenerReference.removeEventListener(eventListener);
-        } catch (Exception e) {
-
-        }
-    }
+    // end Helpers
 }

@@ -31,25 +31,32 @@ import org.json.JSONObject;
 
 public class RestaurantDetailsFragment extends Fragment {
 
+    /* Firebase */
+    private DatabaseReference databaseReference;
+    private FirebaseUser user;
+    private FirebaseRecyclerAdapter adapter;
+
+    /* Widgets */
     private ImageView imageView;
     private TextView title;
     private TextView description;
     private TextView address;
     private RatingBar ratingBar;
     private RecyclerView recyclerView;
-    private DatabaseReference databaseReference;
-    private FirebaseUser user;
-    private FirebaseRecyclerAdapter adapter;
-    private JSONObject restaurant;
-    private DetailsInterface detailsInterface;
     private Button button;
     private MenuInflater menuInflaterP;
     private Menu menuP;
+
+    /* Data */
+    private JSONObject restaurant;
+    private DetailsInterface detailsInterface;
+
 
     public RestaurantDetailsFragment() {
         // Required empty public constructor
     }
 
+    /* Lifecycle */
     /* The onAttach method registers the DetailsInterface */
     @Override
     public void onAttach(Context context) {
@@ -75,7 +82,7 @@ public class RestaurantDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_restaurant_details, container, false);
-        getActivity().setTitle("Restaurant"); // TODO: strings
+        getActivity().setTitle(getString(R.string.title_Restaurant));
         imageView = rootView.findViewById(R.id.rest_imageView);
         title = rootView.findViewById(R.id.rest_title);
         address = rootView.findViewById(R.id.rest_subtitle);
@@ -97,16 +104,17 @@ public class RestaurantDetailsFragment extends Fragment {
             }
         });
     }
+    // end Lifecycle
 
+    /* Option menu Helpers */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menuP = menu;
         menuInflaterP = inflater;
 
-        System.out.println(getArguments().getBoolean("isPreferred"));
-
-        if(getArguments().getBoolean("isPreferred")){
+        // according to value received is shown the full star or the border star (preferred/not)
+        if (getArguments().getBoolean("isPreferred")) {
             inflater.inflate(R.menu.preferred, menu);
         } else {
             inflater.inflate(R.menu.not_preferred, menu);
@@ -119,15 +127,13 @@ public class RestaurantDetailsFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPref.edit();
         try {
             restaurant = new JSONObject(getArguments().getString("restaurant"));
-            System.out.println(restaurant);
-            menuP.clear();
-            if(item.getItemId() == R.id.action_notpreferred) {
-                System.out.println(restaurant.get("name").toString());
+            menuP.clear(); //clear menu and reload it
+            if (item.getItemId() == R.id.action_notpreferred) {
                 editor.putString(restaurant.get("name").toString(), restaurant.getString("id"));
                 editor.commit();
                 menuInflaterP.inflate(R.menu.preferred, menuP);
             }
-            if(item.getItemId() == R.id.action_preferred) {
+            if (item.getItemId() == R.id.action_preferred) {
                 editor.remove(restaurant.get("name").toString());
                 editor.commit();
                 menuInflaterP.inflate(R.menu.not_preferred, menuP);
@@ -138,6 +144,7 @@ public class RestaurantDetailsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /* Populate the view with firebase data */
     private void populate(String restaurantProfileString) {
         try {
             restaurant = new JSONObject(restaurantProfileString);

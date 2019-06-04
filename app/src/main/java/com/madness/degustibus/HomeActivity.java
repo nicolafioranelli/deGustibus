@@ -50,6 +50,8 @@ import com.madness.degustibus.reservations.ReservationsFragment;
 
 import java.util.HashMap;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * This is the class of the main Activity (launch) for the app. In particular the onCreate method checks
  * if a user is already authenticated and in case no one is found, it redirects to the Login Activity
@@ -64,20 +66,31 @@ public class HomeActivity extends AppCompatActivity
         TimePickerDialog.OnTimeSetListener,
         DatePickerDialog.OnDateSetListener {
 
+    /* Notifications */
     private final String CHANNEL_ID = "channelApp";
     private final int NOTIFICATION_ID = 001;
-    Toolbar toolbar;
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Fragment fragment;
-    FragmentManager fragmentManager;
+
+    /* Widgets */
+    private Toolbar toolbar;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+
+    /* Fragments */
+    private Fragment fragment;
+    private FragmentManager fragmentManager;
+
+    /* Firebase */
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private DatabaseReference listenerReference;
+
+    /* Listeners */
     private ValueEventListener listener;
     private HashMap<String, Object> userData;
+
+    /* Lifecycle */
 
     /* Check if connection is enabled! */
     public static boolean isNetworkAvailable(Context context) {
@@ -101,6 +114,8 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
+
+        // Retrieve instances of Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         user = firebaseAuth.getCurrentUser();
@@ -117,6 +132,7 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
+        /* Check if it has happened a registration task or it is a login, in case registration redirect to edit profile*/
         fragmentManager = getSupportFragmentManager();
         if (getIntent().hasExtra("newCreation")) {
             try {
@@ -130,7 +146,6 @@ public class HomeActivity extends AppCompatActivity
                 fragment.setArguments(args);
 
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(1).setChecked(true);
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
             }
@@ -156,7 +171,9 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         try {
-            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
+            final TextView email = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
+            final CircleImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.userImage);
             listenerReference = databaseReference.child("customers").child(user.getUid());
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -165,6 +182,12 @@ public class HomeActivity extends AppCompatActivity
                     try {
                         if (userData.get("name") != null) {
                             userName.setText(userData.get("name").toString());
+                            email.setText(userData.get("email").toString());
+                            /* Glide */
+                            GlideApp.with(getApplicationContext())
+                                    .load(userData.get("photo").toString())
+                                    .placeholder(R.drawable.user_profile)
+                                    .into(imageView);
                         }
                     } catch (Exception e) {
 
@@ -180,6 +203,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
+        // Update highlights in the navigation menu
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
@@ -188,7 +212,7 @@ public class HomeActivity extends AppCompatActivity
         });
         createNotificationChannel();
 
-        // listen for notifications
+        // Listen for notifications
         if (user != null) FirebaseDatabase.getInstance().getReference()
                 .child("notifications")
                 .child(user.getUid())
@@ -205,43 +229,6 @@ public class HomeActivity extends AppCompatActivity
 
                     }
                 });
-
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String name = CHANNEL_ID;
-            String description = "desc";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void makeNotification(String type, String description) {
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
-        // it simply call the `onNewIntent()` method
-        intent.putExtra("notification", "open");
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // show a new notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
-        builder.setContentTitle(type);
-        builder.setContentText(description);
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setContentIntent(pendingIntent);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
-
     }
 
     @Override
@@ -267,6 +254,59 @@ public class HomeActivity extends AppCompatActivity
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
+    }
+
+    // End lifecycle
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            listenerReference.removeEventListener(listener);
+        } catch (Exception e) {
+
+        }
+    }
+
+    /* Notification helpers */
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = CHANNEL_ID;
+            String description = "desc";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    // end notification helpers
+
+    /* Helpers */
+
+    private void makeNotification(String type, String description) {
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activity
+        // it simply call the `onNewIntent()` method
+        intent.putExtra("notification", "open");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // show a new notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
+        builder.setContentTitle(type);
+        builder.setContentText(description);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+
     }
 
     @Override
@@ -335,24 +375,6 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void editProfileClick() {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = EditProfileFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "editProfileClick: ", e);
-        }
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "EditProfile");
-        ft.addToBackStack("PROFILE");
-        ft.commit();
-    }
-
     private void updateMenu() {
         fragment = fragmentManager.findFragmentById(R.id.flContent);
         if (fragment != null) {
@@ -394,6 +416,28 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    // end Helpers
+
+    /* Methods for interfaces */
+
+    @Override
+    public void editProfileClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = EditProfileFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "editProfileClick: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "EditProfile");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
+    }
+
     /* Interface method to go to restaurant details */
     @Override
     public void viewRestaurantDetails(String restaurant, String name) {
@@ -407,15 +451,12 @@ public class HomeActivity extends AppCompatActivity
         }
 
         Bundle args = new Bundle();
-
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Restaurants", Context.MODE_PRIVATE);
-        System.out.println(sharedPreferences.getAll().toString());
-        if(sharedPreferences.contains(name)) {
+        if (sharedPreferences.contains(name)) {
             args.putBoolean("isPreferred", true);
         } else {
             args.putBoolean("isPreferred", false);
         }
-
         args.putString("restaurant", restaurant);
         fragment.setArguments(args);
 
@@ -427,7 +468,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     /* Interface method to go to new order */
-
     @Override
     public void newRestaurantOrder(String restaurant) {
         try {
@@ -464,16 +504,6 @@ public class HomeActivity extends AppCompatActivity
                 getSupportFragmentManager().findFragmentByTag("Order");
         if (fragment != null) {
             fragment.setDeliveryTime(hourOfDay, minute);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            listenerReference.removeEventListener(listener);
-        } catch (Exception e) {
-
         }
     }
 }

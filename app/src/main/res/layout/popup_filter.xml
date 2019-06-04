@@ -11,38 +11,38 @@
         android:background="@color/colorFilterBackground"
         android:padding="8dp"
 
-        android:text="Filter results"
+        android:text="@string/filter"
         android:textAllCaps="true"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/popup_filters"
+    <LinearLayout
+        android:id="@+id/popup_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <CheckBox
+            android:id="@+id/checkBox"
             android:layout_width="match_parent"
-            android:padding="4dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="8dp"
+            android:checked="false"
+            android:text="@string/preferred" />
 
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_margin="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:text="Preferred" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/minRate" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="Minimum rate"/>
-
-            <SeekBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:id="@+id/seekbar"
-                android:max="5"
-                android:progress="1" />
-        </LinearLayout>
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:max="5"
+            android:progress="1" />
+    </LinearLayout>
 
 </LinearLayout>

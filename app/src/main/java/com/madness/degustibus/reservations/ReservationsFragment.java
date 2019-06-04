@@ -37,12 +37,12 @@ public class ReservationsFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseRecyclerAdapter adapter;
     private RecyclerView recyclerView;
-    private String restPic;
 
     public ReservationsFragment() {
         // Required empty public constructor
     }
 
+    /* Lifecycle */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +67,6 @@ public class ReservationsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Query query = databaseReference.child("orders").orderByChild("customerID").equalTo(user.getUid());
 
         FirebaseRecyclerOptions<OrderClass> options =
@@ -76,8 +75,6 @@ public class ReservationsFragment extends Fragment {
                             @NonNull
                             @Override
                             public OrderClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                System.out.println(snapshot.getValue());
-
                                 List<ItemClass> cart = new ArrayList<>();
                                 for (DataSnapshot obj : snapshot.child("cart").getChildren()) {
                                     ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
@@ -136,7 +133,6 @@ public class ReservationsFragment extends Fragment {
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.price.setText(model.getTotalPrice() + " €");
-
                 databaseReference.child("restaurants").child(model.getRestaurantID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -186,8 +182,6 @@ public class ReservationsFragment extends Fragment {
                         } catch (Exception e) {
                             Log.e("MAD", "onClick: ", e);
                         }
-
-
                     }
                 });
             }
@@ -201,8 +195,6 @@ public class ReservationsFragment extends Fragment {
             }
         };
         recyclerView.setAdapter(adapter);
-
-
     }
 
     @Override

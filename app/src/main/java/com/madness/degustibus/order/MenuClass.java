@@ -1,5 +1,9 @@
 package com.madness.degustibus.order;
 
+/**
+ * Model for the Recycler View related to the daily menu
+ */
+
 public class MenuClass {
 
     private Integer avail;
