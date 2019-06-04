@@ -163,10 +163,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
         FirebaseDatabase.getInstance().getReference().child("orders").child(orderId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("VALORE MILEAGE =" + dataSnapshot.child("mileage").getValue());
-                    if(Integer.parseInt((String)dataSnapshot.child("mileage").getValue()) == 0)
-                        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
-
+                if(Integer.parseInt((String)dataSnapshot.child("mileage").getValue()) == 0)
+                    databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
             }
 
             @Override

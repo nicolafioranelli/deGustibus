@@ -121,8 +121,6 @@ public class ReservationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                                riderRoutesKm = Integer.parseInt(objectMap.get("mileage").toString());
-                                System.out.println("Route km = " + riderRoutesKm);
                                 String riderName = objectMap.get("name").toString();
                                 holder.deliveryman.setText(riderName);
                             }
@@ -228,7 +226,6 @@ public class ReservationFragment extends Fragment {
 
                     objectMap.put("status", "done");
                     objectMap.put("mileage", "0");
-                    System.out.println("mileage" + objectMap);
                     databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 
                     /* Send notification to user */
