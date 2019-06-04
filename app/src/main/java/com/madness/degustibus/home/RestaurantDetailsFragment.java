@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,10 +20,16 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
 
@@ -50,7 +57,7 @@ public class RestaurantDetailsFragment extends Fragment {
     /* Data */
     private JSONObject restaurant;
     private DetailsInterface detailsInterface;
-
+    private String restID;
 
     public RestaurantDetailsFragment() {
         // Required empty public constructor
@@ -89,6 +96,9 @@ public class RestaurantDetailsFragment extends Fragment {
         description = rootView.findViewById(R.id.rest_description);
         ratingBar = rootView.findViewById(R.id.ratingBar);
         button = rootView.findViewById(R.id.orderButton);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
         return rootView;
     }
 
@@ -157,16 +167,42 @@ public class RestaurantDetailsFragment extends Fragment {
             address.setText(restaurant.get("address").toString());
             description.setText(restaurant.get("desc").toString());
             ratingBar.setRating(Float.valueOf(restaurant.get("rating").toString()));
+            restID = restaurant.getString("id");
         } catch (JSONException e) {
 
         }
 
-        /*
-        Query query = databaseReference.child("ratings").child("restaurants").child(user.getUid()).orderByChild("date");
+        Query query = databaseReference.child("ratings").child("restaurants").child(restID).orderByChild("date");
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println(dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         FirebaseRecyclerOptions<RatingsClass> options =
                 new FirebaseRecyclerOptions.Builder<RatingsClass>()
-                        .setQuery(query, RatingsClass.class)
+                        .setQuery(query, new SnapshotParser<RatingsClass>() {
+                            @NonNull
+                            @Override
+                            public RatingsClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                RatingsClass object = new RatingsClass(
+                                        snapshot.child("name").getValue().toString(),
+                                        Float.parseFloat(snapshot.child("rating").getValue().toString()),
+                                        snapshot.child("comment").getValue().toString(),
+                                        snapshot.child("date").getValue().toString().substring(0, 10)
+                                );
+                                System.out.println(snapshot.getValue());
+
+                                return object;
+                            }
+                        })
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<RatingsClass, RatingsHolder>(options) {
@@ -175,7 +211,7 @@ public class RestaurantDetailsFragment extends Fragment {
                 holder.name.setText(model.getName());
                 holder.comment.setText(model.getComment());
                 holder.date.setText(model.getDate());
-                holder.value.setText(model.getDate());
+                holder.rating.setRating(model.getValue());
             }
 
             @NonNull
@@ -186,7 +222,20 @@ public class RestaurantDetailsFragment extends Fragment {
                 return new RatingsHolder(view);
             }
         };
-        */
+
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     public interface DetailsInterface {

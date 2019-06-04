@@ -167,7 +167,7 @@ public class ReservationsFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         try {
-                            Fragment fragment;
+                            Fragment fragment = null;
                             fragment = DetailedResFragment.class.newInstance();
                             Bundle args = new Bundle();
                             args.putString("restaurant", holder.restaurant.getText().toString());
@@ -175,7 +175,7 @@ public class ReservationsFragment extends Fragment {
                             fragment.setArguments(args);
 
                             ((FragmentActivity) getContext()).getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.flContent, fragment, " Detail")
+                                    .replace(R.id.flContent, fragment, "Detail")
                                     .addToBackStack("Reservations")
                                     .commit();
 

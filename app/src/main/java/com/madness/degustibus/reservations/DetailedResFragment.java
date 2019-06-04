@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -82,7 +83,6 @@ public class DetailedResFragment extends Fragment {
     private EditText comment;
 
     /* Data */
-    private final String[] labels = {getString(R.string.step1), getString(R.string.step2), getString(R.string.step3), getString(R.string.step4)};
     private ProfileClass userProfile;
     private OrderClass order;
     private List<ItemClass> dishes;
@@ -104,18 +104,6 @@ public class DetailedResFragment extends Fragment {
         user = auth.getCurrentUser();
         client = new Client("LRBUKD1XJR", "d796532dfd54cafdf4587b412ad560f8");
         index = client.getIndex("rest_HOME");
-        userReference = databaseReference.child("customers").child(user.getUid());
-        userListener = userReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userProfile = dataSnapshot.getValue(ProfileClass.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         dishes = new ArrayList<>();
     }
 
@@ -125,6 +113,7 @@ public class DetailedResFragment extends Fragment {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_detailed_res, container, false);
         view = rootView;
+        final String[] labels = {getString(R.string.step1), getString(R.string.step2), getString(R.string.step3), getString(R.string.step4)};
 
         stateProgressBar = rootView.findViewById(R.id.progressBar);
         status = rootView.findViewById(R.id.status);
@@ -145,6 +134,19 @@ public class DetailedResFragment extends Fragment {
         ratingBar2 = rootView.findViewById(R.id.ratingBar);
         comment = rootView.findViewById(R.id.comment);
 
+        userReference = databaseReference.child("customers").child(user.getUid());
+        userListener = userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userProfile = dataSnapshot.getValue(ProfileClass.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         loadFromFirebase();
 
         Query query = databaseReference.child("orders").child(getArguments().getString("orderID")).child("cart");
@@ -154,7 +156,6 @@ public class DetailedResFragment extends Fragment {
                             @NonNull
                             @Override
                             public ItemClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                System.out.println(snapshot.getValue());
                                 ItemClass item = new ItemClass(Integer.parseInt(snapshot.child("quantity").getValue().toString()),
                                         snapshot.getKey(),
                                         snapshot.child("name").getValue().toString(),
@@ -280,7 +281,11 @@ public class DetailedResFragment extends Fragment {
                     status.setText(R.string.status_done);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FOUR);
                     button.setVisibility(View.GONE);
-                    loadRestaurant(order.getRestaurantID(), Math.round(Float.parseFloat(order.getRestaurantRating())));
+                    if(order.getRestaurantRating().equals("null")) {
+                        loadRestaurant(order.getRestaurantID(), 0);
+                    } else {
+                        loadRestaurant(order.getRestaurantID(), Math.round(Float.parseFloat(order.getRestaurantRating())));
+                    }
                     view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     if (!order.getRestaurantRating().equals("null")) {
                         reviewButton.setVisibility(View.GONE);
@@ -455,10 +460,8 @@ public class DetailedResFragment extends Fragment {
                             JSONObject object = new JSONObject()
                                     .put("rating", value);
 
-                            index.partialUpdateObject(object, dataSnapshot.getKey(), false, null);
+                            index.partialUpdateObjectAsync(object, order.getRestaurantID(), false, null);
                         } catch (JSONException e) {
-
-                        } catch (AlgoliaException e) {
 
                         }
                     }
@@ -471,7 +474,7 @@ public class DetailedResFragment extends Fragment {
             }
 
             /* Update restaurant */
-            final DatabaseReference ref = databaseReference.child("restaurants").child(order.getRestaurantID()).child(order.getRestaurantID());
+            final DatabaseReference ref = databaseReference.child("restaurants").child(order.getRestaurantID());
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
