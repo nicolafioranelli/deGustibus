@@ -12,6 +12,7 @@ public class ReservationData {
     private String customerAddress;
     private String restaurantAddress;
     private String status;
+    private String mileage;
 
     public ReservationData() {
     }
@@ -28,6 +29,10 @@ public class ReservationData {
         this.restaurantAddress = restaurantAddress;
         this.status = status;
     }
+
+    public String getMileage() {        return mileage;    }
+
+    public void setMileage(String mileage) {        this.mileage = mileage;    }
 
     public String getCustomerID() {
         return customerID;

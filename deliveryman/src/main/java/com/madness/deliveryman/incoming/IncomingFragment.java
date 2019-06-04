@@ -220,8 +220,6 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             pick(position, model.getCustomerID());
-                            //adding km to total km routes from rider
-                            /*databaseReference.child("riders/"+user.getUid()+"/mileage").setValue(model.getMileage());*/
 
                         }
                     });
@@ -391,7 +389,7 @@ public class IncomingFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             int riderRoutesKm;
                             if (snapshot.exists()) {
-                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                Map<String, Object> objectMap = (HashMap<String, Object>) snapshot.getValue();
 
 
                                 if(objectMap.get("mileage")!=null){
@@ -402,8 +400,9 @@ public class IncomingFragment extends Fragment {
                                     //new rider with first route
                                     riderRoutesKm = km;
                                 }
-                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(riderRoutesKm);
+                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(String.valueOf(riderRoutesKm));
                                 objectMap.put("status", "delivering");
+                                objectMap.put("mileage", "0");
                                 databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 
                                 /* Send notification to user */

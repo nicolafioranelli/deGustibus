@@ -39,6 +39,8 @@ public class ReservationFragment extends Fragment {
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
     private HashMap<String, Object> map;
+    private  String riderId;
+    private int riderRoutesKm;
 
     public ReservationFragment() {
         // Required empty public constructor();
@@ -87,6 +89,7 @@ public class ReservationFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final ReservationHolder holder, final int position, @NonNull final ReservationData model) {
+
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.price.setText("€ "+model.getTotalPrice());
@@ -118,6 +121,8 @@ public class ReservationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                riderRoutesKm = Integer.parseInt(objectMap.get("mileage").toString());
+                                System.out.println("Route km = " + riderRoutesKm);
                                 String riderName = objectMap.get("name").toString();
                                 holder.deliveryman.setText(riderName);
                             }
@@ -155,7 +160,7 @@ public class ReservationFragment extends Fragment {
                 holder.recieved.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        recieveFood(position,model.getRestaurantID(), model.getDeliverymanID());
+                        recieveFood(position,model.getRestaurantID(), model.getDeliverymanID(),Integer.parseInt(model.getMileage()));
                     }
                 });
 
@@ -204,7 +209,7 @@ public class ReservationFragment extends Fragment {
         databaseReference.removeEventListener(emptyListener);
     }
 
-    private void recieveFood(final int position, final String restaurantID, final String riderID) {
+    private void recieveFood(final int position, final String restaurantID, final String riderID, final int km) {
 
         Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
 
@@ -212,10 +217,18 @@ public class ReservationFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                    //adding km to total km routes from rider
+                    riderRoutesKm = riderRoutesKm + km;
+
+                    /*update total milage of rider*/
+                    databaseReference.child("riders").child(riderID).child("mileage").setValue(String.valueOf(riderRoutesKm));
                     /* Set order as done */
 
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                     objectMap.put("status", "done");
+                    objectMap.put("mileage", "0");
+                    System.out.println("mileage" + objectMap);
                     databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 
                     /* Send notification to user */

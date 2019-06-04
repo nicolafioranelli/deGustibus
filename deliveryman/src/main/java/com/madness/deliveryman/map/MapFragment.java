@@ -46,7 +46,9 @@ import com.madness.deliveryman.map.FetchUrl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUrl.AsyncFetchResponse {
@@ -155,10 +157,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
 
     // update the view when FetchUrl ends adding distance and duration of the road
     @Override
-    public void processFetchFinish(String distance, String duration, String distanceInt) {
+    public void processFetchFinish(String distance, String duration, final String distanceInt) {
         routeLenght.setText(distance);
         routeTime.setText(duration);
-        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
+        FirebaseDatabase.getInstance().getReference().child("orders").child(orderId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("VALORE MILEAGE =" + dataSnapshot.child("mileage").getValue());
+                    if(Integer.parseInt((String)dataSnapshot.child("mileage").getValue()) == 0)
+                        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
     }
 
