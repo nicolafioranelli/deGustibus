@@ -1,8 +1,6 @@
 package com.madness.degustibus.profile;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -138,7 +136,7 @@ public class ProfileFragment extends Fragment {
 
                     getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                     getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     Log.e("MAD", "onDataChange: ", e);
                 }
             }
@@ -148,11 +146,6 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-    }
-
-    /* Interface for the listener */
-    public interface ProfileListener {
-        void editProfileClick();
     }
 
     @Override
@@ -165,5 +158,10 @@ public class ProfileFragment extends Fragment {
     public void onStop() {
         super.onStop();
         listenerReference.removeEventListener(eventListener);
+    }
+
+    /* Interface for the listener */
+    public interface ProfileListener {
+        void editProfileClick();
     }
 }
