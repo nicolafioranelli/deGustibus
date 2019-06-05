@@ -67,7 +67,7 @@ public class RiderChoiceFragment extends Fragment {
     private RiderComparable rider;
     private boolean isNew;
     private View view;
-    private OrderData order;
+    private ReservationClass order;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
@@ -82,7 +82,7 @@ public class RiderChoiceFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-        order = new OrderData();
+        //order = new OrderData();
     }
 
     /* The onCreateView allows to inflate the view of the fragment, in particular here are load information
@@ -171,19 +171,36 @@ public class RiderChoiceFragment extends Fragment {
         summaryListener = summaryReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final Map<String, Object> orderData = (HashMap<String, Object>) dataSnapshot.getValue();
-                order.setCustomerID(orderData.get("customerID").toString());
-                order.setCustomerAddress(orderData.get("customerAddress").toString());
-                order.setDeliveryDate(orderData.get("deliveryDate").toString());
-                order.setDeliveryHour(orderData.get("deliveryHour").toString());
-                order.setRestaurantID(orderData.get("restaurantID").toString());
-                order.setTotalPrice(orderData.get("totalPrice").toString());
-                order.setDescription(orderData.get("description").toString());
-                order.setStatus(orderData.get("status").toString());
-                order.setOrderKey(dataSnapshot.getKey());
+                List<ItemClass> cart = new ArrayList<>();
+                for (DataSnapshot obj : dataSnapshot.child("cart").getChildren()) {
+                    ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
+                            obj.getKey(),
+                            obj.child("name").getValue().toString(),
+                            Integer.parseInt(obj.child("rating").getValue().toString())
+                    );
+                    cart.add(item);
+                }
+
+                order = new ReservationClass(dataSnapshot.getKey(),
+                        dataSnapshot.child("customerID").getValue().toString(),
+                        dataSnapshot.child("restaurantID").getValue().toString(),
+                        dataSnapshot.child("deliverymanID").getValue().toString(),
+                        dataSnapshot.child("deliveryDate").getValue().toString(),
+                        dataSnapshot.child("deliveryHour").getValue().toString(),
+                        dataSnapshot.child("totalPrice").getValue().toString(),
+                        dataSnapshot.child("customerAddress").getValue().toString(),
+                        dataSnapshot.child("restaurantAddress").getValue().toString(),
+                        dataSnapshot.child("status").getValue().toString(),
+                        dataSnapshot.child("riderComment").getValue().toString(),
+                        dataSnapshot.child("riderRating").getValue().toString(),
+                        dataSnapshot.child("restaurantComment").getValue().toString(),
+                        dataSnapshot.child("restaurantRating").getValue().toString(),
+                        cart
+                );
+
 
                 /* Set the name of the customer */
-                customerReference = databaseReference.child("customers").child(orderData.get("customerID").toString());
+                customerReference = databaseReference.child("customers").child(order.getCustomerID());
                 customerListener = customerReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -200,11 +217,17 @@ public class RiderChoiceFragment extends Fragment {
                 });
 
                 /* Set other fields and update correctly the current status */
-                description.setText(orderData.get("description").toString());
-                price.setText(orderData.get("totalPrice").toString());
-                date.setText(orderData.get("deliveryDate").toString());
-                hour.setText(orderData.get("deliveryHour").toString());
-                if (orderData.get("status").toString().equals("new")) {
+                StringBuilder listOfDishes = new StringBuilder();
+                for(int i=0; i<order.getCart().size(); i++) {
+                    listOfDishes.append(order.getCart().get(i).getQuantity());
+                    listOfDishes.append(" x ");
+                    listOfDishes.append(order.getCart().get(i).getName());
+                }
+                description.setText(listOfDishes.toString());
+                price.setText(order.getTotalPrice());
+                date.setText(order.getDeliveryDate());
+                hour.setText(order.getDeliveryHour());
+                if (order.getStatus().equals("new")) {
                     refuse.setVisibility(View.VISIBLE);
                     status.setText(R.string.status_new);
                     refuse.setOnClickListener(new View.OnClickListener() {
@@ -217,27 +240,27 @@ public class RiderChoiceFragment extends Fragment {
                         }
                     });
                     isNew = true;
-                } else if (orderData.get("status").toString().equals("refused")) {
+                } else if (order.getStatus().equals("refused")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_refused);
                     isNew = false;
-                } else if (orderData.get("status").toString().equals("incoming")) {
+                } else if (order.getStatus().equals("incoming")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
                     isNew = false;
-                } else if (orderData.get("status").toString().equals("done")) {
+                } else if (order.getStatus().equals("done")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_done);
                     isNew = false;
-                } else if (orderData.get("status").toString().equals("delivering")) {
+                } else if (order.getStatus().equals("delivering")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(getString(R.string.status_deliverying));
                     isNew = false;
-                } else if (orderData.get("status").toString().equals("elaboration")) {
+                } else if (order.getStatus().equals("elaboration")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);

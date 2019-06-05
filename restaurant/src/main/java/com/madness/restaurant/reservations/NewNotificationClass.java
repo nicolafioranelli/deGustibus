@@ -28,26 +28,25 @@ public class NewNotificationClass {
         this.context = context;
     }
 
-    public void acceptAndSend(final OrderData orderData) {
+    public void acceptAndSend(final ReservationClass orderData) {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         Map<String, Object> updateObject = new HashMap<>();
         updateObject.put("customerAddress", orderData.getCustomerAddress());
         updateObject.put("customerID", orderData.getCustomerID());
         updateObject.put("deliveryDate", orderData.getDeliveryDate());
         updateObject.put("deliveryHour", orderData.getDeliveryHour());
-        updateObject.put("deliverymanID", orderData.getRiderID());
-        updateObject.put("description", orderData.getDescription());
+        updateObject.put("deliverymanID", orderData.getDeliverymanID());
         updateObject.put("restaurantID", orderData.getRestaurantID());
         updateObject.put("status", "incoming");
         updateObject.put("totalPrice", orderData.getTotalPrice());
 
-        databaseReference.child("orders").child(orderData.getOrderKey()).updateChildren(updateObject).addOnCompleteListener(new OnCompleteListener<Void>() {
+        databaseReference.child("orders").child(orderData.getId()).updateChildren(updateObject).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 databaseReference = FirebaseDatabase.getInstance().getReference();
                 Map<String, Object> availObject = new HashMap<>();
                 availObject.put("available", false);
-                databaseReference.child("riders").child(orderData.getRiderID()).updateChildren(availObject);
+                databaseReference.child("riders").child(orderData.getId()).updateChildren(availObject);
                 /* Perform notification insertion */
                 newNotificationOrderComplete(orderData);
             }
@@ -57,9 +56,9 @@ public class NewNotificationClass {
 
     }
 
-    public void refuseAndNotify(final OrderData orderData) {
+    public void refuseAndNotify(final ReservationClass orderData) {
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        Query refuseQuery = databaseReference.child("orders").child(orderData.getOrderKey());
+        Query refuseQuery = databaseReference.child("orders").child(orderData.getId());
 
         refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -105,7 +104,7 @@ public class NewNotificationClass {
         });
     }
 
-    private void newNotificationOrderComplete(final OrderData orderData) {
+    private void newNotificationOrderComplete(final ReservationClass orderData) {
         ValueEventListener eventListener = databaseReference.child("restaurants").child(orderData.getRestaurantID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -116,7 +115,7 @@ public class NewNotificationClass {
 
                     Map<String, Object> restaurantMap = (HashMap<String, Object>) snapshot.getValue();
                     String restaurantName = restaurantMap.get("name").toString();
-                    newNotification.put("description", context.getApplicationContext().getString(R.string.desc3) + orderData.getOrderKey().substring(1, 6) + context.getApplicationContext().getString(R.string.desc4) + restaurantName);
+                    newNotification.put("description", context.getApplicationContext().getString(R.string.desc3) + orderData.getId().substring(1, 6) + context.getApplicationContext().getString(R.string.desc4) + restaurantName);
 
                     DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
@@ -128,12 +127,12 @@ public class NewNotificationClass {
                             /* Send notification to rider */
                             final Map<String, Object> notificationRider = new HashMap<String, Object>();
                             notificationRider.put("desc", context.getApplicationContext().getString(R.string.typeNot_incoming));
-                            notificationRider.put("description", context.getApplicationContext().getString(R.string.desc5) + orderData.getOrderKey().substring(1, 6) + context.getApplicationContext().getString(R.string.desc6));
+                            notificationRider.put("description", context.getApplicationContext().getString(R.string.desc5) + orderData.getId().substring(1, 6) + context.getApplicationContext().getString(R.string.desc6));
                             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                             Date date = new Date();
                             notificationRider.put("date", dateFormat.format(date));
 
-                            databaseReference.child("notifications").child(orderData.getRiderID()).push().setValue(notificationRider);
+                            databaseReference.child("notifications").child(orderData.getDeliverymanID()).push().setValue(notificationRider);
                         }
                     });
                 }
