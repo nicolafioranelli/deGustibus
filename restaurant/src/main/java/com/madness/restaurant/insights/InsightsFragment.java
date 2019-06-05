@@ -77,7 +77,7 @@ public class InsightsFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         dishes = new HashMap<>();
         orders = new int[24];
-        loadDataFromFirebase();
+
     }
 
     @Override
@@ -94,7 +94,7 @@ public class InsightsFragment extends Fragment {
 
         halfPieConfigurations(rootView);
         barChartConfigurations(rootView);
-
+        loadDataFromFirebase();
         return rootView;
     }
 

@@ -172,31 +172,25 @@ public class NewDailyOffer extends Fragment {
     }
 
     public void getPhoto(View v) {
-        ImageView imageView = getActivity().findViewById(R.id.imageviewfordish);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
-                pictureDialog.setTitle(getActivity().getString(R.string.select_action));
-                String[] pictureDialogItems = {
-                        getResources().getText(R.string.camera).toString(), getResources().getText(R.string.gallery).toString()};
-                pictureDialog.setItems(pictureDialogItems,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case 0:
-                                        checkPermissionsAndStartCamera();
-                                        break;
-                                    case 1:
-                                        checkPermissionsAndStartGallery();
-                                        break;
-                                }
-                            }
-                        });
-                pictureDialog.show();
-            }
-        });
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
+        pictureDialog.setTitle(getActivity().getString(R.string.select_action));
+        String[] pictureDialogItems = {
+                getResources().getText(R.string.camera).toString(), getResources().getText(R.string.gallery).toString()};
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                checkPermissionsAndStartCamera();
+                                break;
+                            case 1:
+                                checkPermissionsAndStartGallery();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
     }
 
     private String getPrefPhoto() {
@@ -329,7 +323,7 @@ public class NewDailyOffer extends Fragment {
                         DishClass d = snapshot.getValue(DishClass.class);
                         dishname.setText(d.getDish());
                         desc.setText(d.getDescription());
-                        avail.setText(d.getAvail().toString());
+                        avail.setText(String.valueOf(d.getAvail()));
                         price.setText(d.getPrice().toString());
                         imageUrl = d.getPic();
                         GlideApp.with(getContext())
