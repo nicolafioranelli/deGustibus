@@ -178,6 +178,12 @@ public class ProfileFragment extends Fragment {
                             .placeholder(R.drawable.user_profile)
                             .into(img);
                 } else {
+                    String pic = null;
+                    GlideApp.with(getContext())
+                            .load(pic)
+                            .placeholder(R.drawable.user_profile)
+                            .into(img);
+
                     email.setText(user.getEmail());
                     mondayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
                     mondayClose.setText(getResources().getString(R.string.frProfile_defClose));

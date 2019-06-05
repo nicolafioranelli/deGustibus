@@ -7,8 +7,8 @@
     <string name="title_Profile">Profile</string>
     <string name="title_EditProfile">Edit</string>
     <string name="title_Settings">Settings</string>
+    <string name="title_Restaurant">Restaurant</string>
     <string name="title_Order">New order</string>
-    <string name="title_Complete">Complete order</string>
 
     <!-- Menu Titles -->
     <string name="menu_home" translatable="false">Home</string>
@@ -146,8 +146,31 @@
     <string name="status_elaboration">elaboration</string>
     <string name="status_delivering">Delivering</string>
     <string name="no_rider">Not assigned</string>
-    <string name="recieved">Received</string>
+    <string name="received">Received</string>
     <string name="buttonPick">Pick</string>
     <string name="buttonDeliver">Deliver</string>
     <string name="typeNot_new">New</string>
+
+    <string name="search_hint">Search</string>
+
+    <!-- Steps -->
+    <string name="step1">Incoming</string>
+    <string name="step2">Elaboration</string>
+    <string name="step3">Delivering</string>
+    <string name="step4">Done</string>
+
+    <!-- Evaluation -->
+    <string name="evaluation_Title">Evaluation completed</string>
+    <string name="evaluation_Desc">Thanks for your evaluations! Restaurateurs will collect them to improve their work!</string>
+    <string name="evaluation_Err">Please, evaluate all items!</string>
+
+    <!-- Views -->
+    <string name="quantity">"Quantity: "</string>
+    <string name="reviews">Reviews</string>
+    <string name="comment">Write here your comment</string>
+    <string name="sendButton">Send reviews</string>
+    <string name="orderButton">Order</string>
+    <string name="minRate">Minimum rate</string>
+    <string name="preferred">Preferred</string>
+    <string name="filter">Filter Results</string>
 </resources>

@@ -11,6 +11,7 @@
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:fontFamily">@font/comfortaa_font</item>
         <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
         <item name="drawerArrowStyle">@style/DrawerHamburgerStyle</item>
     </style>
 

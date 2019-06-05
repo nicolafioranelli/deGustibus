@@ -23,7 +23,7 @@ public class PlaceAPI {
 
     private static final String API_KEY = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
 
-    public ArrayList<String> autocomplete (String input) {
+    public ArrayList<String> autocomplete(String input) {
         ArrayList<String> resultList = null;
 
         HttpURLConnection conn = null;

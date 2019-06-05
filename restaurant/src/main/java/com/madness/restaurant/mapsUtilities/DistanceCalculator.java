@@ -1,27 +1,29 @@
 package com.madness.restaurant.mapsUtilities;
 
-import android.location.Address;
-import android.location.Geocoder;
+import android.content.Context;
 
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 public class DistanceCalculator {
 
     private String from;
     private String to;
+    private Context context;
     private static String KEY = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
+    private double result;
 
-    public DistanceCalculator(String from, String to) {
+    public DistanceCalculator(String from, String to, Context context) {
         this.from = from;
         this.to = to;
+        this.context = context;
     }
 
     private String makeURL (){
@@ -34,28 +36,28 @@ public class DistanceCalculator {
         urlString.append("&sensor=false&mode=driving&alternatives=true");
         urlString.append("&key=");
         urlString.append(KEY);
+        System.out.println(urlString.toString());
         return urlString.toString();
     }
 
-    public double getDistance(){
-        double result = 0;
-
+    public void computeDistance(final DistanceCallback callback){
+        result = 0;
         String url = makeURL();
         //Creating a string request
         StringRequest stringRequest = new StringRequest(url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        final JSONObject json;
                         try {
 
-                            json = new JSONObject(response);
-                            /*JSONArray routeArray = json.getJSONArray("routes");
+                            final JSONObject json = new JSONObject(response);
+                            JSONArray routeArray = json.getJSONArray("routes");
                             JSONObject routes = routeArray.getJSONObject(0);
-                            JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
-                            String encodedString = overviewPolylines.getString("points");*/
-                            System.out.println(json.toString());
-
+                            JSONArray legsArray = routes.getJSONArray("legs");
+                            JSONObject legs = legsArray.getJSONObject(0);
+                            JSONObject distance  = legs.getJSONObject("distance");
+                            result = distance.getDouble("value");
+                            callback.onDistanceComputed(result);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -69,6 +71,13 @@ public class DistanceCalculator {
                     }
                 });
 
-        return result;
+        //Adding the request to request queue
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
     }
+
+    public interface DistanceCallback{
+        void onDistanceComputed(double distance);
+    }
+
 }

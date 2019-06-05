@@ -24,11 +24,14 @@ public class ProfileClass {
     private String sundayOpen;
     private String sundayClose;
     private String photo;
+    private Integer popular;
+    private Integer count;
+    private Integer rating;
 
     public ProfileClass() {
     }
 
-    public ProfileClass(String name, String email, String desc, String phone, String address, String defaultOpen, String defaultClose, String mondayOpen, String mondayClose, String tuesdayOpen, String tuesdayClose, String wednesdayOpen, String wednesdayClose, String thursdayOpen, String thursdayClose, String fridayOpen, String fridayClose, String saturdayOpen, String saturdayClose, String sundayOpen, String sundayClose, String photo) {
+    public ProfileClass(String name, String email, String desc, String phone, String address, String defaultOpen, String defaultClose, String mondayOpen, String mondayClose, String tuesdayOpen, String tuesdayClose, String wednesdayOpen, String wednesdayClose, String thursdayOpen, String thursdayClose, String fridayOpen, String fridayClose, String saturdayOpen, String saturdayClose, String sundayOpen, String sundayClose, String photo, Integer popular, Integer count, Integer rating) {
         this.name = name;
         this.email = email;
         this.desc = desc;
@@ -51,6 +54,9 @@ public class ProfileClass {
         this.sundayOpen = sundayOpen;
         this.sundayClose = sundayClose;
         this.photo = photo;
+        this.popular = popular;
+        this.count = count;
+        this.rating = rating;
     }
 
     public String getName() {
@@ -227,5 +233,29 @@ public class ProfileClass {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public Integer getPopular() {
+        return popular;
+    }
+
+    public void setPopular(Integer popular) {
+        this.popular = popular;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }

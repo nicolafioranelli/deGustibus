@@ -9,9 +9,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -20,8 +18,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -34,9 +36,28 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
-<<<<<<< HEAD
-=======
     implementation 'com.android.support:recyclerview-v7:28.0.0'
 
->>>>>>> angeloprova
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-database:16.1.0'
+    implementation 'com.google.firebase:firebase-storage:16.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:preference-v7:28.0.0'
+    implementation 'com.firebaseui:firebase-ui-database:4.3.2'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+    implementation 'com.firebase:geofire-android:2.3.1'
+<<<<<<< HEAD
+    implementation 'com.mcxiaoke.volley:library-aar:1.0.0'
+=======
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    implementation 'com.algolia:algoliasearch-android:3.+'
+>>>>>>> insights
 }
+
+
+
+apply plugin: 'com.google.gms.google-services'

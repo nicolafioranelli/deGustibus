@@ -42,6 +42,7 @@ import com.madness.restaurant.auth.LoginActivity;
 import com.madness.restaurant.daily.DailyFragment;
 import com.madness.restaurant.daily.NewDailyOffer;
 import com.madness.restaurant.home.HomeFragment;
+import com.madness.restaurant.insights.InsightsFragment;
 import com.madness.restaurant.notifications.NotificationsFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
@@ -370,6 +371,16 @@ public class HomeActivity extends AppCompatActivity
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "SETTINGS").addToBackStack("HOME").commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.nav_insights:
+                try {
+                    fragmentClass = InsightsFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "INSIGHTS").addToBackStack("HOME").commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

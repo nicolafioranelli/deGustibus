@@ -165,4 +165,8 @@
     <string name="phone">Phone is required!</string>
     <string name="descr">Description is required!</string>
     <string name="address">Address is required!</string>
+    <string name="menu_insights">Insights</string>
+    <string name="insights_preferences">Preferences</string>
+    <string name="insights_time">Time distribution</string>
+    <string name="see_reviews">Reviews</string>
 </resources>

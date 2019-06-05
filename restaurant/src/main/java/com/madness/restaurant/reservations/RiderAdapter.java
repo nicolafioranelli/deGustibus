@@ -31,11 +31,11 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
     Context context;
     View view;
     List<RiderComparable> riderList;
-    OrderData orderData;
+    ReservationClass orderData;
     int counter;
     int total;
 
-    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, OrderData orderData) {
+    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, ReservationClass orderData) {
         this.context = context;
         this.view = view;
         this.riderList = riderList;
@@ -87,7 +87,7 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                 @Override
                 public void onClick(View v) {
                     System.out.println(riderComparable.getKey());
-                    orderData.setRiderID(riderComparable.getKey());
+                    orderData.setDeliverymanID(riderComparable.getKey());
                     NewNotificationClass notification = new NewNotificationClass(context);
                     notification.acceptAndSend(orderData);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
@@ -97,7 +97,15 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                     orderData.getCustomerAddress(); // customare address
                     // obtain the rider position in `positions`
 
-                    DistanceCalculator distanceCalculator = new DistanceCalculator(orderData.getCustomerAddress(),null);
+                    DistanceCalculator distanceCalculator =
+                            new DistanceCalculator(orderData.getCustomerAddress(),orderData.getRestaurantAddress(), context);
+                    //double distance = distanceCalculator.getDistance();
+                    distanceCalculator.computeDistance(new DistanceCalculator.DistanceCallback() {
+                        @Override
+                        public void onDistanceComputed(double distance) {
+                            System.out.println("distance= " + distance);
+                        }
+                    });
 
                 }
             });

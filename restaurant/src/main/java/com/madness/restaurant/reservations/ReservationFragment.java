@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +25,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,9 +71,48 @@ public class ReservationFragment extends Fragment {
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Query query = databaseReference.child("orders").orderByChild("restaurantID").equalTo(user.getUid());
 
+        /*
         FirebaseRecyclerOptions<ReservationClass> options =
                 new FirebaseRecyclerOptions.Builder<ReservationClass>()
                         .setQuery(query, ReservationClass.class)
+                        .build();*/
+
+        FirebaseRecyclerOptions<ReservationClass> options =
+                new FirebaseRecyclerOptions.Builder<ReservationClass>()
+                        .setQuery(query, new SnapshotParser<ReservationClass>() {
+                            @NonNull
+                            @Override
+                            public ReservationClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                List<ItemClass> cart = new ArrayList<>();
+                                for (DataSnapshot obj : snapshot.child("cart").getChildren()) {
+                                    ItemClass item = new ItemClass(Integer.parseInt(obj.child("quantity").getValue().toString()),
+                                            obj.getKey(),
+                                            obj.child("name").getValue().toString(),
+                                            Integer.parseInt(obj.child("rating").getValue().toString())
+                                    );
+                                    cart.add(item);
+                                }
+
+                                ReservationClass order = new ReservationClass(snapshot.getKey(),
+                                        snapshot.child("customerID").getValue().toString(),
+                                        snapshot.child("restaurantID").getValue().toString(),
+                                        snapshot.child("deliverymanID").getValue().toString(),
+                                        snapshot.child("deliveryDate").getValue().toString(),
+                                        snapshot.child("deliveryHour").getValue().toString(),
+                                        snapshot.child("totalPrice").getValue().toString(),
+                                        snapshot.child("customerAddress").getValue().toString(),
+                                        snapshot.child("restaurantAddress").getValue().toString(),
+                                        snapshot.child("status").getValue().toString(),
+                                        snapshot.child("riderComment").getValue().toString(),
+                                        snapshot.child("riderRating").getValue().toString(),
+                                        snapshot.child("restaurantComment").getValue().toString(),
+                                        snapshot.child("restaurantRating").getValue().toString(),
+                                        cart
+                                );
+
+                                return order;
+                            }
+                        })
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<ReservationClass, ReservationHolder>(options) {
@@ -105,7 +147,14 @@ public class ReservationFragment extends Fragment {
                     }
                 });
 
-                holder.description.setText(model.getDescription());
+                StringBuilder listOfDishes = new StringBuilder();
+                for(int i=0; i<model.getCart().size(); i++) {
+                    listOfDishes.append(model.getCart().get(i).getQuantity());
+                    listOfDishes.append(" x ");
+                    listOfDishes.append(model.getCart().get(i).getName());
+                }
+
+                holder.description.setText(listOfDishes.toString());
                 holder.price.setText(model.getTotalPrice());
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());

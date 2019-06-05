@@ -134,4 +134,19 @@
     <string name="err_desc">Description in required!</string>
     <string name="err_phone">Phone is required!</string>
     <string name="home_distance">Distance</string>
+    <string name="see_reviews">Reviews</string>
+    <string name="reviews">Reviews</string>
+    <string name="no_reviews">No rating has been received yet!</string>
+    <string name="ratings">Ratings</string>
+
+
+    <string name="sort_by">Sort by</string>
+    <string name="by_name">Name</string>
+    <string name="by_rating">Rating</string>
+    <string name="by_date">Date</string>
+    <string name="rating_name">Name:</string>
+    <string name="rating_score">Score:</string>
+    <string name="map_address">Address:</string>
+    <string name="map_time">Time:</string>
+    <string name="map_distance" translatable="false">Km:</string>
 </resources>

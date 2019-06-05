@@ -7,14 +7,22 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="always|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView"
-        android:title="Search"/>
+        android:title="@string/search_hint"
+        app:actionViewClass="com.algolia.instantsearch.ui.views.SearchBox"
+        app:iconTint="#FFFFFF"
+        app:iconifiedByDefault="true"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_filters"
+        android:title="@string/search_hint"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_notifications"
         android:icon="@drawable/ic_toolbar_notifications"
         android:orderInCategory="300"
         android:title="@string/title_Notifications"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

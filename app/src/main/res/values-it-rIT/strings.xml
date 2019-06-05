@@ -59,7 +59,6 @@
     <string name="err_notification">Ben fatto! Qua non c\'è più nulla da fare!</string>
     <string name="select">Seleziona almeno un piatto! :)</string>
     <string name="err_reservations">Ops... qua non c\'è nulla!</string>
-    <string name="title_Complete">Completa ordine</string>
     <string name="title_Order">Nuovo ordine</string>
     <string name="done">Fatto!</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
@@ -95,7 +94,6 @@
     <string name="desc9">" è stato consegnato!"</string>
     <string name="no_rider">Non assegnato</string>
     <string name="menu_reservations">Prenotazioni</string>
-    <string name="recieved">Ricevuto</string>
     <string name="resDate">Data:</string>
     <string name="resDeliveryman">Fattorino:</string>
     <string name="resHour">Ora:</string>
@@ -109,4 +107,22 @@
     <string name="status_refused">Rifiutato</string>
     <string name="status_delivering">In consegna</string>
     <string name="typeNot_new">Nuovo ordine</string>
+    <string name="search_hint">Cerca</string>
+    <string name="received">Ricevuto</string>
+    <string name="title_Restaurant">Ristorante</string>
+    <string name="step1">In attesa</string>
+    <string name="step2">In elaborazione</string>
+    <string name="step3">In consegna</string>
+    <string name="step4">Consegnato</string>
+    <string name="evaluation_Desc">Grazie per la tua valutazione! I ristoratori potranno così migliorare il proprio lavoro!</string>
+    <string name="evaluation_Title">Valutazione completata</string>
+    <string name="evaluation_Err">Valuta tutti gli elementi per favore!</string>
+    <string name="quantity">"Quantità: "</string>
+    <string name="reviews">Recensioni</string>
+    <string name="comment">Scrivi qui il tuo commento</string>
+    <string name="sendButton">Invia recensioni</string>
+    <string name="orderButton">Ordina</string>
+    <string name="filter">Filtra</string>
+    <string name="minRate">Valutazione minima</string>
+    <string name="preferred">Seleziona solo i preferiti</string>
 </resources>

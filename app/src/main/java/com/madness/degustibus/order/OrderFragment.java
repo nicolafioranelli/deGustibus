@@ -4,22 +4,22 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -33,288 +33,191 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
-import com.madness.degustibus.notifications.NotificationsFragment;
+import com.madness.degustibus.picker.DatePickerFragment;
+import com.madness.degustibus.picker.TimePickerFragment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class OrderFragment extends Fragment {
 
-    private ArrayList<Dish> dishList;
-    private Dish dish;
-    private FirebaseDatabase database;
+    /* Firebase */
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private DatabaseReference databaseRef;
-    private RecyclerView recyclerView;
-    private Button confirm_btn;
-    private Fragment fragment;
-    private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
-    private NewOrderInterface newOrderInterface;
-    private ValueEventListener emptyListener;
-    private String picture;
+    private ValueEventListener eventListener;
+    private DatabaseReference listenerReference;
+
+    /* Widgets */
+    private TextView name;
+    private TextView address;
+    private RatingBar ratingBar;
+    private TextView customerAddress;
+    private TextView totalPrice;
+    private RecyclerView recyclerView;
+    private TextView setDate;
+    private TextView setTime;
+    private DialogFragment timePicker;
+    private DialogFragment datePicker;
+    private Button complete_btn;
+
+    /* Data */
+    private float totalAmount;
+    private JSONObject restaurant;
+    private String restaurantID;
+    private ProfileClass userProfile;
+    private MenuItem item;
+    private ArrayList<MenuItem> menu;
+    private boolean order = true;
 
     public OrderFragment() {
         // Required empty public constructor
     }
 
-    /* The onAttach method registers the newOrderInterface */
+    /* Lifecycle */
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof NewOrderInterface) {
-            newOrderInterface = (NewOrderInterface) context;
-        } else {
-            throw new ClassCastException(context.toString() + "must implement DailyListener");
-        }
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        menu = new ArrayList<>();
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         getActivity().setTitle(getString(R.string.title_Order));
-
-        dishList = new ArrayList<>();
-        confirm_btn = rootView.findViewById(R.id.complete_order_btn);
-
-        rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
-
+        name = rootView.findViewById(R.id.rest_title);
+        address = rootView.findViewById(R.id.rest_subtitle);
+        ratingBar = rootView.findViewById(R.id.ratingBar);
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        database = FirebaseDatabase.getInstance();
-        databaseRef = database.getReference();
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        customerAddress = rootView.findViewById(R.id.costumer_address);
+        totalPrice = rootView.findViewById(R.id.total_price);
+        setDate = rootView.findViewById(R.id.setDate);
+        setTime = rootView.findViewById(R.id.setTime);
+        complete_btn = rootView.findViewById(R.id.confirm_btn);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        confirm_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int cart = 0;
-                // at first clear the cart clear the db
-                FirebaseDatabase.getInstance().getReference()
-                        .child("customers")
-                        .child(user.getUid())
-                        .child("cart")
-                        .removeValue();
+        loadUserData();
 
-                // store the selected dishes in the cart of the user
-                for (Dish dish : dishList) {    // for each dish in the dailyoffer
-                    if (dish.quantity > 0) {    // keep only the selected ones
-
-                        // store it on firebase
-                        // nb. do not use the attribute `databaceReference`
-                        // since it will be modified during the execution of the class
-                        // poitnig to orders
-
-                        Map<String, Object> cartItem = new HashMap<>();
-                        cartItem.put(dish.identifier, dish);
-
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("customers")
-                                .child(user.getUid())
-                                .child("cart").updateChildren(cartItem);
-
-                        cart++;
-                    }
-                }
-
-                // if at least one dish is selected call the checkout
-                if (cart > 0) {
-                    newOrderInterface.goToCart(user.getUid());
-                } else {
-                    Toast.makeText(getContext(),
-                            getString(R.string.select),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        });
-
-        loadFromFirebase(rootView);
         return rootView;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String restaurantProfileString = getArguments().getString("restaurant");
+        try {
+            restaurant = new JSONObject(restaurantProfileString);
+            name.setText(restaurant.get("name").toString());
+            address.setText(restaurant.get("address").toString());
+            ratingBar.setRating(Float.valueOf(restaurant.get("rating").toString()));
+            restaurantID = restaurant.get("id").toString();
+        } catch (JSONException e) {
 
-    /*@Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            dishList = savedInstanceState.getParcelableArrayList("Menu");
         }
-    }*/
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        String piatto = "0";
-        for (Dish dish : dishList) {
-            outState.putString(piatto, dish.avail);
-            piatto = String.valueOf(Integer.valueOf(piatto) + 1);
-        }
-    }
+        //set current time + 1 hour
+        Date currentDate = Calendar.getInstance().getTime();        // get the current date time
+        Calendar newCalendar = Calendar.getInstance();              // create a new calendar
+        newCalendar.setTime(currentDate);                           // set it with the current date time
+        newCalendar.add(Calendar.HOUR, 1);                  // add one hour
+        Date newDefaultDeliveryTime = newCalendar.getTime();        // create the default date time
 
-    /* Populates the menu with the notification button */
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.home, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");   // date format
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");        // time format
 
-    /* Add action to be performed once the item on the toolbar is clicked */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        setDate.setText(dateFormat.format(newDefaultDeliveryTime));     // set Date TextView
+        setTime.setText(timeFormat.format(newDefaultDeliveryTime));     // set Time TextView
 
-        if (id == R.id.action_notifications) {
-            Fragment fragment = null;
-            Class fragmentClass;
-            try {
-                fragmentClass = NotificationsFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Notifications").addToBackStack("HOME").commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            DrawerLayout drawer = getActivity().findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void loadFromFirebase(final View rootView) {
-        // catch the id of the restaurant from the bundle
-        final String rest = this.getArguments().getString("restId");
-
-        // set the top pic
-        FirebaseDatabase.getInstance()
-                .getReference()
-                .child("restaurants")
-                .child(rest)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if(objectMap!=null){
-                            picture = objectMap.get("photo").toString();
-                        }
-
-
-                        ImageView image = rootView.findViewById(R.id.rest_imageView);
-                        GlideApp.with(getContext())
-                                .load(picture)
-                                .placeholder(R.drawable.restaurant)
-                                .into(image);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-        // obtain the url /offers/{restaurantIdentifier}
-        Query query = FirebaseDatabase.getInstance().getReference().child("offers").child(rest); // query data at /offers/{restaurantIdentifier}
-
-        FirebaseRecyclerOptions<Dish> options =
-                new FirebaseRecyclerOptions.Builder<Dish>()
-                        .setQuery(query, new SnapshotParser<Dish>() {
-                            @NonNull
-                            @Override
-                            public Dish parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                dish = snapshot.getValue(Dish.class);  // get the snapshot and cast it
-                                // into a `Dish` item
-                                dishList.add(dish);                         // add the `dish` into the list
-                                return dish;                                // return the item to the builder
-                            }
-                        }).build();                                         // build the option
-
-        // new adapter
-        adapter = new FirebaseRecyclerAdapter<Dish, DishHolder>(options) {
+        // configure date and time picker
+        setDate.setOnClickListener(new View.OnClickListener() {
             @Override
-            protected void onBindViewHolder(@NonNull final DishHolder holder, final int position, @NonNull Dish model) {
-
-                final Integer maxAvail = Integer.parseInt(model.getAvail());
-
-                holder.title.setText(model.getDish());
-                holder.description.setText(model.type);
-                holder.price.setText(model.getPrice() + " €");
-                holder.quantity.setText("0");
-
-                GlideApp.with(holder.image.getContext())
-                        .load(model.getPic())
-                        .placeholder(R.drawable.dish_image)
-                        .into(holder.image);
-
-                // set button plus
-                holder.buttonPlus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int n = Integer.parseInt(holder.quantity.getText().toString());
-                        // check for the availability of the product
-                        if (n < maxAvail) {
-                            n++;
-                            holder.quantity.setText(String.valueOf(n));
-                            dishList.get(position).setQuantity(n);
-                        }
-
-                    }
-                });
-
-                // set button minus
-                holder.buttonMinus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int n = Integer.parseInt(holder.quantity.getText().toString());
-                        // check for non negative numbers
-                        if (n > 0) {
-                            n--;
-                            holder.quantity.setText(String.valueOf(n));
-                            dishList.get(position).setQuantity(n);
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public DishHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.menu_listitem, parent, false);
-
-                return new DishHolder(view);
-            }
-        };
-
-        emptyListener = query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                    rootView.findViewById(R.id.menu).setVisibility(View.VISIBLE);
-                    rootView.findViewById(R.id.complete_order_btn).setVisibility(View.VISIBLE);
-                } else {
-                    rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                    rootView.findViewById(R.id.emptyLayout).setVisibility(View.VISIBLE);
-                    rootView.findViewById(R.id.complete_order_btn).setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onClick(View v) {
+                datePicker = new DatePickerFragment();
+                datePicker.show(getFragmentManager(), "datePicker");
             }
         });
 
-        recyclerView.setAdapter(adapter);
+        setTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePicker = new TimePickerFragment();
+                timePicker.show(getFragmentManager(), "timePicker");
+            }
+        });
+
+        loadMenu();
+
+        // submit operation
+        complete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (totalAmount == 0) {
+                    Toast.makeText(getContext(), getString(R.string.select), Toast.LENGTH_SHORT).show();
+                } else {
+                    HashMap<String, Object> cart = new HashMap<>();
+                    ReservationClass reservation = new ReservationClass(
+                            user.getUid(),
+                            restaurantID,
+                            "null",
+                            setDate.getText().toString(),
+                            setTime.getText().toString(),
+                            totalPrice.getText().toString(),
+                            userProfile.getAddress(),
+                            address.getText().toString(),
+                            "new",
+                            "null",
+                            "null",
+                            "null",
+                            "null"
+                    );
+
+                    for (MenuItem item : menu) {
+                        if (item.getQuantity() > 0) {
+                            HashMap<String, Object> dish = new HashMap<>();
+                            dish.put("name", item.getDish());
+                            dish.put("quantity", item.getQuantity());
+                            dish.put("rating", item.getRating());
+                            cart.put(item.getId(), dish); // <id_plate, data>
+                            databaseReference.child("offers").child(restaurantID).child(item.getId()).child("popular").setValue(item.getPopular() + 1);
+                            databaseReference.child("offers").child(restaurantID).child(item.getId()).child("avail").setValue(item.getAvail() - item.getQuantity());
+                        }
+                    }
+
+                    DatabaseReference df = databaseReference.child("orders").push();
+                    df.setValue(reservation);
+                    df.child("cart").updateChildren(cart);
+
+                    increaseRestAndNotify();
+
+                    Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
+                    performNoBackStackTransaction();
+                }
+            }
+        });
     }
 
     @Override
@@ -326,17 +229,182 @@ public class OrderFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        try {
+            adapter.stopListening();
+            listenerReference.removeEventListener(eventListener);
+        } catch (Exception e) {
+
+        }
+    }
+    // end Lifecycle
+
+    /* Helpers */
+    private void loadMenu() {
+        Query query = databaseReference.child("offers").child(restaurantID).orderByChild("popular");
+        FirebaseRecyclerOptions<MenuClass> options =
+                new FirebaseRecyclerOptions.Builder<MenuClass>()
+                        .setQuery(query, new SnapshotParser<MenuClass>() {
+                            @NonNull
+                            @Override
+                            public MenuClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                MenuClass elem = snapshot.getValue(MenuClass.class);
+                                HashMap<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
+                                item = new MenuItem(0, snapshot.getKey(), map.get("dish").toString(), 0, Integer.parseInt(map.get("popular").toString()), Integer.parseInt(map.get("avail").toString()));
+                                menu.add(item);
+                                return elem;
+                            }
+                        })
+                        .build();
+
+
+        adapter = new FirebaseRecyclerAdapter<MenuClass, MenuHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final MenuHolder holder, final int position, @NonNull final MenuClass model) {
+                holder.title.setText(model.getDish());
+                holder.description.setText(model.getDescription());
+                holder.price.setText(model.getPrice().toString() + " €");
+                GlideApp.with(getContext())
+                        .load(model.getPic())
+                        .placeholder(R.drawable.restaurant)
+                        .into(holder.imageView);
+
+
+                final int maxQuantity = model.getAvail();
+                totalAmount += model.getPrice() * Integer.parseInt(holder.quantity.getText().toString());
+                totalPrice.setText(String.valueOf(totalAmount));
+
+                // set button plus
+                holder.plus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (order) {
+                            Collections.reverse(menu);
+                            order = false;
+                        }
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
+                        // check for the availability of the product
+                        if (n < maxQuantity) {
+                            n++;
+                            holder.quantity.setText(String.valueOf(n));
+                            menu.get(position).setQuantity(n);
+                            totalAmount += model.getPrice();
+                            totalPrice.setText(String.format("%.2f", totalAmount));
+                        }
+
+                    }
+                });
+
+                // set button minus
+                holder.minus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (order) {
+                            Collections.reverse(menu);
+                            order = false;
+                        }
+                        int n = Integer.parseInt(holder.quantity.getText().toString());
+                        // check for non negative numbers
+                        if (n > 0) {
+                            n--;
+                            holder.quantity.setText(String.valueOf(n));
+                            menu.get(position).setQuantity(n);
+                            totalAmount -= model.getPrice();
+                            totalPrice.setText(String.format("%.2f", totalAmount));
+                        }
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            public MenuHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View view = LayoutInflater.from(viewGroup.getContext()).
+                        inflate(R.layout.menu_item, viewGroup, false);
+                return new MenuHolder(view);
+            }
+        };
+        recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        databaseRef.removeEventListener(emptyListener);
+    private void loadUserData() {
+        listenerReference = databaseReference.child("customers").child(user.getUid());
+        eventListener = listenerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userProfile = dataSnapshot.getValue(ProfileClass.class);
+                address.setText(userProfile.getAddress());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    /* Here is defined the interface for the HomeActivity in order to manage the click */
-    public interface NewOrderInterface {
-        void goToCart(String identifier);
+    private void increaseRestAndNotify() {
+        final DatabaseReference ref = databaseReference.child("restaurants").child(restaurantID).child("popular");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Object value = dataSnapshot.getValue();
+                ref.setValue(Integer.parseInt(value.toString()) + 1);
+
+                try {
+                    Client client = new Client("LRBUKD1XJR", "d796532dfd54cafdf4587b412ad560f8");
+                    Index index = client.getIndex("rest_HOME");
+                    JSONObject object = new JSONObject()
+                            .put("popular", (Integer.parseInt(value.toString()) + 1));
+
+                    index.partialUpdateObjectAsync(object, restaurantID, null);
+                } catch (JSONException e) {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        /* Send notification to user */
+        final Map<String, Object> newNotification = new HashMap<String, Object>();
+        newNotification.put("type", getString(R.string.typeNot_new));
+        newNotification.put("description", getString(R.string.desc));
+
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        newNotification.put("date", dateFormat.format(date));
+
+        FirebaseDatabase.getInstance().getReference().child("notifications").child(restaurantID).push().setValue(newNotification);
     }
+
+    public void performNoBackStackTransaction() {
+        final FragmentManager fragmentManager = getFragmentManager();
+
+        try {
+            Fragment fragment = null;
+            Class fragmentClass;
+            fragmentClass = com.madness.degustibus.home.HomeFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+        } catch (Exception e) {
+            Log.e("MAD", "onCreate: ", e);
+        }
+    }
+
+    public void setDeliveryDate(int year, int month, int dayOfMonth) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        cal.set(Calendar.MONTH, month);
+        String format = new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime());
+        setDate.setText(format);
+    }
+
+    public void setDeliveryTime(int hourOfDay, int minute) {
+        setTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+    }
+    // end Helpers
 }

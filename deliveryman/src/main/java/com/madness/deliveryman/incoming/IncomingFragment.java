@@ -117,14 +117,12 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
+                //km = Integer.parseInt(model.getMileage()); TODO fix
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
                 holder.price.setText("€ "+model.getTotalPrice());
 
-                /*
-                 * Obtain customer NAME
-                 */
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -136,12 +134,11 @@ public class IncomingFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
                 });
 
-                /*
-                 * Obtain restaurant NAME and ADDRESS
-                 */
                 databaseReference.child("restaurants").child(model.getRestaurantID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -156,9 +153,10 @@ public class IncomingFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {}
-                });
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    }
+                });
 
                 if(model.getStatus().equals("incoming")){
                     holder.map.setVisibility(View.GONE);
@@ -222,6 +220,8 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             pick(position, model.getCustomerID());
+                            //adding km to total km routes from rider
+                            /*databaseReference.child("riders/"+user.getUid()+"/mileage").setValue(model.getMileage());*/
 
                         }
                     });
@@ -391,7 +391,7 @@ public class IncomingFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             int riderRoutesKm;
                             if (snapshot.exists()) {
-                                Map<String, Object> objectMap = (HashMap<String, Object>) snapshot.getValue();
+                                Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
 
 
                                 if(objectMap.get("mileage")!=null){
@@ -402,9 +402,8 @@ public class IncomingFragment extends Fragment {
                                     //new rider with first route
                                     riderRoutesKm = km;
                                 }
-                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(String.valueOf(riderRoutesKm));
+                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(riderRoutesKm);
                                 objectMap.put("status", "delivering");
-                                objectMap.put("mileage", "0");
                                 databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 
                                 /* Send notification to user */

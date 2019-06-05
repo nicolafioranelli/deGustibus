@@ -1,31 +1,73 @@
 package com.madness.degustibus.order;
 
+/**
+ * Model for the reservation
+ */
+
 public class ReservationClass {
     private String customerID;
     private String restaurantID;
     private String deliverymanID;
     private String deliveryDate;
     private String deliveryHour;
-    private String description;
     private String totalPrice;
     private String customerAddress;
     private String restaurantAddress;
     private String status;
+    private String riderComment;
+    private String riderRating;
+    private String restaurantComment;
+    private String restaurantRating;
 
     public ReservationClass() {
     }
 
-    public ReservationClass(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
+    public ReservationClass(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String totalPrice, String customerAddress, String restaurantAddress, String status, String riderComment, String riderRating, String restaurantComment, String restaurantRating) {
         this.customerID = customerID;
         this.restaurantID = restaurantID;
         this.deliverymanID = deliverymanID;
         this.deliveryDate = deliveryDate;
         this.deliveryHour = deliveryHour;
-        this.description = description;
         this.totalPrice = totalPrice;
         this.customerAddress = customerAddress;
         this.restaurantAddress = restaurantAddress;
         this.status = status;
+        this.riderComment = riderComment;
+        this.riderRating = riderRating;
+        this.restaurantComment = restaurantComment;
+        this.restaurantRating = restaurantRating;
+    }
+
+    public String getRiderComment() {
+        return riderComment;
+    }
+
+    public void setRiderComment(String riderComment) {
+        this.riderComment = riderComment;
+    }
+
+    public String getRiderRating() {
+        return riderRating;
+    }
+
+    public void setRiderRating(String riderRating) {
+        this.riderRating = riderRating;
+    }
+
+    public String getRestaurantComment() {
+        return restaurantComment;
+    }
+
+    public void setRestaurantComment(String restaurantComment) {
+        this.restaurantComment = restaurantComment;
+    }
+
+    public String getRestaurantRating() {
+        return restaurantRating;
+    }
+
+    public void setRestaurantRating(String restaurantRating) {
+        this.restaurantRating = restaurantRating;
     }
 
     public String getCustomerID() {
@@ -66,14 +108,6 @@ public class ReservationClass {
 
     public void setDeliveryHour(String deliveryHour) {
         this.deliveryHour = deliveryHour;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getTotalPrice() {

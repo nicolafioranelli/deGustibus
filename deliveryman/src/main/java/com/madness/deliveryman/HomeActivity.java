@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madness.deliveryman.riderReviews.RiderReviewsFragment;
 import com.madness.deliveryman.auth.LoginActivity;
 import com.madness.deliveryman.incoming.IncomingFragment;
 import com.madness.deliveryman.location.Tracker;
@@ -434,6 +435,24 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, "EditProfile");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
+    }
+
+    @Override
+    public void reviewsClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = RiderReviewsFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "reviewsClick: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "RestarantReviews");
         ft.addToBackStack("PROFILE");
         ft.commit();
     }
