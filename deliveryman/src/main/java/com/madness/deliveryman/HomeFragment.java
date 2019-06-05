@@ -97,9 +97,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         if (objectMap.get("name") != null) {
                             userName.setText(objectMap.get("name").toString());
                             //transforms from meters to km
-                            if(objectMap.containsKey("mileage")){
-                                int km = Integer.parseInt(objectMap.get("mileage").toString())/1000;
-                                mileage.setText(String.valueOf(km)+ " Km");
+                            if(objectMap.containsKey("totalKM")){
+                                Double km = Double.parseDouble(objectMap.get("totalKM").toString())/1000;
+                                mileage.setText(String.format("%.2f", km) + " Km");
                             }else{
                                 mileage.setText("0 Km");
                             }

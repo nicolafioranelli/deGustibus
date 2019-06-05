@@ -307,6 +307,7 @@ public class RiderChoiceFragment extends Fragment {
                         locations.put(rider.getName(), location);
                     }
                 }
+
                 if(exists) {
                     adapter.updateData(list);
                 } else {
@@ -380,10 +381,12 @@ public class RiderChoiceFragment extends Fragment {
 
     /* This method retrieves data about the riders */
     private void retrieveData(String key, final DataRetrieveCallback callback) {
+        System.out.println("Key2: " + key);
         riderReference = databaseReference.child("riders").child(key);
         riderListener = riderReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println(dataSnapshot);
                 Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
                 callback.onCallback(user);
             }
@@ -404,6 +407,7 @@ public class RiderChoiceFragment extends Fragment {
         eventListener = new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, final GeoLocation location) {
+                System.out.println("Key: " + key);
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
