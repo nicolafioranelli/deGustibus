@@ -13,11 +13,9 @@ public class IncomingData {
     private String customerAddress;
     private String restaurantAddress;
     private String status;
-    private String mileage;
 
 
-    public IncomingData() {
-    }
+    public IncomingData() {}
 
     public IncomingData(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
         this.customerID = customerID;
@@ -32,13 +30,10 @@ public class IncomingData {
         this.status = status;
     }
 
-    public String getMileage() {        return mileage;    }
 
-    public void setMileage(String mileage) {        this.mileage = mileage;    }
+    public String getOrderID() { return orderID; }
 
-    public String getOrderID() {        return orderID;    }
-
-    public void setOrderID(String orderID) {        this.orderID = orderID;    }
+    public void setOrderID(String orderID) { this.orderID = orderID; }
 
     public String getCustomerID() {
         return customerID;

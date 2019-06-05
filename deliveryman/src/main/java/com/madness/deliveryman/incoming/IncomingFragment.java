@@ -117,12 +117,14 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
-                km = Integer.parseInt(model.getMileage());
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
                 holder.price.setText("€ "+model.getTotalPrice());
 
+                /*
+                 * Obtain customer NAME
+                 */
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -134,11 +136,12 @@ public class IncomingFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
                 });
 
+                /*
+                 * Obtain restaurant NAME and ADDRESS
+                 */
                 databaseReference.child("restaurants").child(model.getRestaurantID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -153,10 +156,9 @@ public class IncomingFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
                 });
+
 
                 if(model.getStatus().equals("incoming")){
                     holder.map.setVisibility(View.GONE);

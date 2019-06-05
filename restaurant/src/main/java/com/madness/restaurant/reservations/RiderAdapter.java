@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
+import com.madness.restaurant.mapsUtilities.DistanceCalculator;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -91,6 +92,13 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                     notification.acceptAndSend(orderData);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     view.findViewById(R.id.recyclerView).setVisibility(View.GONE);
+
+                    riderComparable.getDistance(); //distance between restaurant and delveryman
+                    orderData.getCustomerAddress(); // customare address
+                    // obtain the rider position in `positions`
+
+                    DistanceCalculator distanceCalculator = new DistanceCalculator(orderData.getCustomerAddress(),null);
+
                 }
             });
         }
