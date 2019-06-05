@@ -465,7 +465,7 @@ public class NewDailyOffer extends Fragment {
     private void storeDish(Boolean flag, DatabaseReference reference){
         Map<String,Object> dish = new HashMap<>();
         if(flag){ // create
-            dish.put("avail", avail.getText().toString());
+            dish.put("avail", Integer.parseInt(avail.getText().toString()));
             dish.put("count", 0);
             dish.put("description", desc.getText().toString());
             dish.put("dish", dishname.getText().toString());
@@ -473,15 +473,17 @@ public class NewDailyOffer extends Fragment {
             dish.put("popular", 0);
             dish.put("price",Float.valueOf(price.getText().toString()));
             dish.put("rating",0);
+            reference.setValue(dish);
         }else{ // update
             // do not update `count` `rating` and `popular`
-            dish.put("avail", avail.getText().toString());
+            dish.put("avail", Integer.parseInt(avail.getText().toString()));
             dish.put("description", desc.getText().toString());
             dish.put("dish", dishname.getText().toString());
             dish.put("pic", imageUrl);
             dish.put("price",Float.valueOf(price.getText().toString()));
+            reference.updateChildren(dish);
         }
-        reference.setValue(dish);
+
     }
 
 }

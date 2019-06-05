@@ -362,6 +362,10 @@ public class EditProfileFragment extends Fragment {
             vehicle = "motorbike";
         }
 
+        if(getArguments()!= null) {
+            map.put("totalKM", 0);
+        }
+
         map.put("vehicle", this.vehicle);
 
         if (mImageUri != null) {
