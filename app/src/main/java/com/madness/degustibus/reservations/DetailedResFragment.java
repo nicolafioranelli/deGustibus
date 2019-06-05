@@ -112,6 +112,7 @@ public class DetailedResFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_detailed_res, container, false);
+        getActivity().setTitle(getString(R.string.title_Details));
         view = rootView;
         final String[] labels = {getString(R.string.step1), getString(R.string.step2), getString(R.string.step3), getString(R.string.step4)};
 
@@ -347,6 +348,7 @@ public class DetailedResFragment extends Fragment {
         databaseReference.child("restaurants").child(restID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //TODO: check behaviour
                 GlideApp.with(getContext())
                         .load(dataSnapshot.child("photo").getValue().toString())
                         .placeholder(R.drawable.restaurant)

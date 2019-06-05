@@ -57,6 +57,7 @@ public class ReservationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_reservations, container, false);
         recyclerView = rootView.findViewById(R.id.recyclerView);
+        getActivity().setTitle(getString(R.string.title_Reservations));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);

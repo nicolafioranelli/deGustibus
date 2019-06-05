@@ -62,7 +62,7 @@
     <string name="title_Order">Nuovo ordine</string>
     <string name="done">Fatto!</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
-    <string name="address">Indirizzo di consegna</string>
+    <string name="address">"Consegna a: "</string>
     <string name="order">Completa ordine</string>
     <string name="products">Prodotti</string>
     <string name="summary">Riepilogo</string>
@@ -125,4 +125,16 @@
     <string name="filter">Filtra</string>
     <string name="minRate">Valutazione minima</string>
     <string name="preferred">Seleziona solo i preferiti</string>
+    <string name="orderDesc">"Grazie! ;)\nIl tuo ordine è stato inviato al ristoratore e riceverai una notifica non appena verrà accettato!"</string>
+    <string name="orderTitle">Ordine completato!</string>
+    <string name="modPassword">Modifica Password</string>
+    <string name="passwordHint">Nuova Password</string>
+    <string name="passwordRepHint">Ripeti Password</string>
+    <string name="err_gen">Ops... qualcosa è andato storto!</string>
+    <string name="deleteDesc">Questa operazione rimuoverà il tuo account in modo permanente, sei sicuro di voler continuare?</string>
+    <string name="deleteTitle">Elimina account</string>
+    <string name="deleteCompleted">Account eliminato!</string>
+    <string name="err_passSame">Le password non coincidono!</string>
+    <string name="title_Reservations">Prenotazioni</string>
+    <string name="title_Details">Dettagli</string>
 </resources>
