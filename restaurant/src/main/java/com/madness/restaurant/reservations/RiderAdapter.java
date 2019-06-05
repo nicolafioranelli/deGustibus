@@ -102,29 +102,6 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                     orderData.getCustomerAddress(); // customare address
                     // obtain the rider position in `positions`
 
-                    /*DistanceCalculator calculator = new DistanceCalculator(context);
-
-
-                    calculator.setFrom(locations.get(riderComparable.getName()).latitude,
-                            locations.get(riderComparable.getName()).longitude);
-                    calculator.setTo(orderData.getRestaurantAddress());
-                    calculator.computeDistance(new DistanceCalculator.DistanceCallback() {
-                        @Override
-                        public void onDistanceComputed(double distance) {
-                            totalDistance += distance;
-                        }
-                    });
-
-
-                    calculator.setFrom(orderData.getCustomerAddress());
-                    calculator.setTo(orderData.getRestaurantAddress());
-                    calculator.computeDistance(new DistanceCalculator.DistanceCallback() {
-                        @Override
-                        public void onDistanceComputed(double distance) {
-                            totalDistance += distance;
-                        }
-                    });*/
-
                     DistanceCalculator calculatorA = new DistanceCalculator(context);
                     calculatorA.setFrom(
                             locations.get(riderComparable.getName()).latitude,
