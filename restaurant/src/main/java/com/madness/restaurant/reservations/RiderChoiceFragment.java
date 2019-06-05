@@ -295,20 +295,23 @@ public class RiderChoiceFragment extends Fragment {
         getRiders(new GetRidersCallback() {
             /* Save the riders in a List of RiderComparable desc */
             List<RiderComparable> list = new ArrayList<>();
+            HashMap<String, GeoLocation> locations = new HashMap<>();
 
             @Override
-            public void onCallback(RiderComparable rider) {
+            public void onCallback(RiderComparable rider, GeoLocation location) {
                 boolean exists = false;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getName().equals(rider.getName())) {
                         exists = true;
                         list.set(i, rider);
+                        locations.put(rider.getName(), location);
                     }
                 }
                 if(exists) {
                     adapter.updateData(list);
                 } else {
                     list.add(rider);
+                    locations.put(rider.getName(), location);
                     /* Sort the riders in the list according to an ascending order (distance) */
                     Collections.sort(list, new Comparator<RiderComparable>() {
                         public int compare(RiderComparable obj1, RiderComparable obj2) {
@@ -317,7 +320,7 @@ public class RiderChoiceFragment extends Fragment {
                         }
                     });
                     /* Set the adapter and show the recycler view while make invisible the progress bar */
-                    adapter = new RiderAdapter(getContext(), view, list, order);
+                    adapter = new RiderAdapter(getContext(), view, list, order, locations);
                     recyclerView.setAdapter(adapter);
                     view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -432,7 +435,7 @@ public class RiderChoiceFragment extends Fragment {
                             }
 
 
-                            callback.onCallback(rider);
+                            callback.onCallback(rider, location);
                     }
                 });
             }
@@ -495,7 +498,7 @@ public class RiderChoiceFragment extends Fragment {
     }
 
     public interface GetRidersCallback {
-        void onCallback(RiderComparable rider);
+        void onCallback(RiderComparable rider, GeoLocation location);
 
         void onUpdate(RiderComparable rider);
 

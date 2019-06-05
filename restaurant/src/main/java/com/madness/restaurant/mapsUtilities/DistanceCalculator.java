@@ -20,9 +20,7 @@ public class DistanceCalculator {
     private static String KEY = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
     private double result;
 
-    public DistanceCalculator(String from, String to, Context context) {
-        this.from = from;
-        this.to = to;
+    public DistanceCalculator(Context context) {
         this.context = context;
     }
 
@@ -36,7 +34,6 @@ public class DistanceCalculator {
         urlString.append("&sensor=false&mode=driving&alternatives=true");
         urlString.append("&key=");
         urlString.append(KEY);
-        System.out.println(urlString.toString());
         return urlString.toString();
     }
 
@@ -76,8 +73,25 @@ public class DistanceCalculator {
         requestQueue.add(stringRequest);
     }
 
+
+
     public interface DistanceCallback{
         void onDistanceComputed(double distance);
     }
 
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setFrom(double latitude, double longitude) {
+        this.from = latitude + "," + longitude;
+    }
+
+    public void setTo(double latitude, double longitude) {
+        this.to = latitude + "," + longitude;
+    }
 }

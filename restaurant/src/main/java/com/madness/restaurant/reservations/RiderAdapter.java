@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.firebase.geofire.GeoLocation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,14 +33,18 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
     View view;
     List<RiderComparable> riderList;
     ReservationClass orderData;
+    HashMap<String, GeoLocation> locations;
     int counter;
     int total;
 
-    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, ReservationClass orderData) {
+    private double totalDistance;
+
+    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, ReservationClass orderData, HashMap<String,GeoLocation> locations) {
         this.context = context;
         this.view = view;
         this.riderList = riderList;
         this.orderData = orderData;
+        this.locations = locations;
     }
 
     @NonNull
@@ -97,13 +102,55 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
                     orderData.getCustomerAddress(); // customare address
                     // obtain the rider position in `positions`
 
-                    DistanceCalculator distanceCalculator =
-                            new DistanceCalculator(orderData.getCustomerAddress(),orderData.getRestaurantAddress(), context);
-                    //double distance = distanceCalculator.getDistance();
-                    distanceCalculator.computeDistance(new DistanceCalculator.DistanceCallback() {
+                    /*DistanceCalculator calculator = new DistanceCalculator(context);
+
+
+                    calculator.setFrom(locations.get(riderComparable.getName()).latitude,
+                            locations.get(riderComparable.getName()).longitude);
+                    calculator.setTo(orderData.getRestaurantAddress());
+                    calculator.computeDistance(new DistanceCalculator.DistanceCallback() {
                         @Override
                         public void onDistanceComputed(double distance) {
-                            System.out.println("distance= " + distance);
+                            totalDistance += distance;
+                        }
+                    });
+
+
+                    calculator.setFrom(orderData.getCustomerAddress());
+                    calculator.setTo(orderData.getRestaurantAddress());
+                    calculator.computeDistance(new DistanceCalculator.DistanceCallback() {
+                        @Override
+                        public void onDistanceComputed(double distance) {
+                            totalDistance += distance;
+                        }
+                    });*/
+
+                    DistanceCalculator calculatorA = new DistanceCalculator(context);
+                    calculatorA.setFrom(
+                            locations.get(riderComparable.getName()).latitude,
+                            locations.get(riderComparable.getName()).longitude
+                    );
+                    calculatorA.setTo(orderData.getRestaurantAddress());
+                    calculatorA.computeDistance(new DistanceCalculator.DistanceCallback() {
+                        @Override
+                        public void onDistanceComputed(double distance) {
+                            totalDistance += distance;
+
+                            DistanceCalculator calculatorB = new DistanceCalculator(context);
+                            calculatorB.setFrom(orderData.getRestaurantAddress());
+                            calculatorB.setTo(orderData.getCustomerAddress());
+                            calculatorB.computeDistance(new DistanceCalculator.DistanceCallback() {
+                                @Override
+                                public void onDistanceComputed(double distance) {
+                                    totalDistance += distance;
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("distances")
+                                            .child(orderData.getDeliverymanID())
+                                            .setValue(totalDistance);
+                                }
+                            });
+
                         }
                     });
 
