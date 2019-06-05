@@ -221,7 +221,7 @@ public class IncomingFragment extends Fragment {
                         public void onClick(View v) {
                             pick(position, model.getCustomerID());
                             //adding km to total km routes from rider
-                            /*databaseReference.child("riders/"+user.getUid()+"/mileage").setValue(model.getMileage());*/
+
 
                         }
                     });
@@ -342,6 +342,19 @@ public class IncomingFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
+                                final Integer km = Integer.parseInt(snapshot.child("totalKM").getValue().toString());
+                                databaseReference.child("distances").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        databaseReference.child("riders").child(user.getUid()).child("totalKM").setValue(km + Integer.parseInt(dataSnapshot.getValue().toString()));
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
                                 Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                                 objectMap.put("status", "elaboration");
                                 databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
@@ -378,7 +391,6 @@ public class IncomingFragment extends Fragment {
     }
 
     private void pick(final int position, final String customerID) {
-
         Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
 
         updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -389,20 +401,9 @@ public class IncomingFragment extends Fragment {
                     databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            int riderRoutesKm;
                             if (snapshot.exists()) {
                                 Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
 
-
-                                if(objectMap.get("mileage")!=null){
-                                    //adding km to total km routes from rider
-                                     riderRoutesKm = Integer.parseInt(objectMap.get("mileage").toString()) + km;
-                                }
-                                else {
-                                    //new rider with first route
-                                    riderRoutesKm = km;
-                                }
-                                databaseReference.child("riders").child(user.getUid()).child("mileage").setValue(riderRoutesKm);
                                 objectMap.put("status", "delivering");
                                 databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
 

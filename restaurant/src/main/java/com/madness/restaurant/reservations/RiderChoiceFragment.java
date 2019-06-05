@@ -295,20 +295,24 @@ public class RiderChoiceFragment extends Fragment {
         getRiders(new GetRidersCallback() {
             /* Save the riders in a List of RiderComparable desc */
             List<RiderComparable> list = new ArrayList<>();
+            HashMap<String, GeoLocation> locations = new HashMap<>();
 
             @Override
-            public void onCallback(RiderComparable rider) {
+            public void onCallback(RiderComparable rider, GeoLocation location) {
                 boolean exists = false;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getName().equals(rider.getName())) {
                         exists = true;
                         list.set(i, rider);
+                        locations.put(rider.getName(), location);
                     }
                 }
+
                 if(exists) {
                     adapter.updateData(list);
                 } else {
                     list.add(rider);
+                    locations.put(rider.getName(), location);
                     /* Sort the riders in the list according to an ascending order (distance) */
                     Collections.sort(list, new Comparator<RiderComparable>() {
                         public int compare(RiderComparable obj1, RiderComparable obj2) {
@@ -317,7 +321,7 @@ public class RiderChoiceFragment extends Fragment {
                         }
                     });
                     /* Set the adapter and show the recycler view while make invisible the progress bar */
-                    adapter = new RiderAdapter(getContext(), view, list, order);
+                    adapter = new RiderAdapter(getContext(), view, list, order, locations);
                     recyclerView.setAdapter(adapter);
                     view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -377,10 +381,12 @@ public class RiderChoiceFragment extends Fragment {
 
     /* This method retrieves data about the riders */
     private void retrieveData(String key, final DataRetrieveCallback callback) {
+        System.out.println("Key2: " + key);
         riderReference = databaseReference.child("riders").child(key);
         riderListener = riderReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println(dataSnapshot);
                 Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
                 callback.onCallback(user);
             }
@@ -401,6 +407,7 @@ public class RiderChoiceFragment extends Fragment {
         eventListener = new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(final String key, final GeoLocation location) {
+                System.out.println("Key: " + key);
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
@@ -432,7 +439,7 @@ public class RiderChoiceFragment extends Fragment {
                             }
 
 
-                            callback.onCallback(rider);
+                            callback.onCallback(rider, location);
                     }
                 });
             }
@@ -495,7 +502,7 @@ public class RiderChoiceFragment extends Fragment {
     }
 
     public interface GetRidersCallback {
-        void onCallback(RiderComparable rider);
+        void onCallback(RiderComparable rider, GeoLocation location);
 
         void onUpdate(RiderComparable rider);
 

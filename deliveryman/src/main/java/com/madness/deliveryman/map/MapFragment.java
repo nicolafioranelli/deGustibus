@@ -158,8 +158,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
     public void processFetchFinish(String distance, String duration, String distanceInt) {
         routeLenght.setText(distance);
         routeTime.setText(duration);
-        databaseReference.child("orders/"+orderId+"/mileage").setValue(distanceInt);
-
     }
 
     // checking location permissions for display the current position on map
