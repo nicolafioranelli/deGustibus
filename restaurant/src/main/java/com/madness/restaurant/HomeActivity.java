@@ -537,11 +537,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        /*NewReservationFragment editRes = (NewReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("AddReservation");
-        if (editRes != null) {
-            editRes.setDate(year, month, dayOfMonth);
-        }*/
+        // empty method
     }
 
     /* Check if connection is enabled! */

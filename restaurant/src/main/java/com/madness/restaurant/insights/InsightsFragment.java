@@ -101,14 +101,14 @@ public class InsightsFragment extends Fragment {
     private void barChartConfigurations(View rootView) {
         barChart = rootView.findViewById(R.id.barChart);
         barChart.setBackgroundColor(Color.TRANSPARENT);
-        //barChart.setOnChartValueSelectedListener(this);
+        barChart.setTouchEnabled(false);
         barChart.getDescription().setEnabled(false);        // no description
         barChart.setMaxVisibleValueCount(40);               // if more than 40 entries are displayed in the chart,
                                                             // no values will be drawn
         barChart.setPinchZoom(false);
         barChart.setDrawGridBackground(false);
         barChart.setDrawBarShadow(false);
-        barChart.setDrawValueAboveBar(false);
+        barChart.setDrawValueAboveBar(true);
         barChart.setHighlightFullBarEnabled(false);
         YAxis leftAxis = barChart.getAxisLeft();            // change the position of the y-labels
         leftAxis.setAxisMinimum(0f);                        // set minimun value on y
@@ -120,9 +120,10 @@ public class InsightsFragment extends Fragment {
     private void halfPieConfigurations(View rootView){
         pieChart = rootView.findViewById(R.id.pieChart);
         pieChart.setBackgroundColor(Color.TRANSPARENT);
+        //pieChart.setDrawSliceText(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
-        /*pieChart.setCenterTextTypeface(tfLight);*/           // font settings
         pieChart.setCenterText(generateCenterSpannableText()); // text in the middle of the pieChart
         pieChart.setDrawHoleEnabled(true);                     // whole in the center
         pieChart.setHoleColor(Color.TRANSPARENT);                    // whole color
@@ -130,9 +131,9 @@ public class InsightsFragment extends Fragment {
         pieChart.setTransparentCircleAlpha(110);
         pieChart.setHoleRadius(58f);
         pieChart.setTransparentCircleRadius(61f);
-        pieChart.setDrawCenterText(true);                      // draw the text
+        pieChart.setDrawCenterText(false);                      // draw the text
         pieChart.setRotationEnabled(false);                    // disable pieChart rotation
-        pieChart.setHighlightPerTapEnabled(true);              // clickable
+        pieChart.setHighlightPerTapEnabled(false);              // clickable
         pieChart.setMaxAngle(180f);                            // HALF CHART
         pieChart.setRotationAngle(180f);
         pieChart.setCenterTextOffset(0, -20);
@@ -151,7 +152,7 @@ public class InsightsFragment extends Fragment {
         for (Map.Entry<String, HashMap<String, Object>> dish : dishes.entrySet()) { // for each dish
             String name = "";
             Long popular = 0L;
-            for (Map.Entry<String, Object> entry : dish.getValue().entrySet()) {    // for each propery
+            for (Map.Entry<String, Object> entry : dish.getValue().entrySet()) {    // for each property
                 if(entry.getKey().equals("dish")) name = entry.getValue().toString();
                 if(entry.getKey().equals("popular")) popular = (Long) entry.getValue();
             }
@@ -169,8 +170,10 @@ public class InsightsFragment extends Fragment {
         dataSet.setSelectionShift(5f);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         PieData data = new PieData(dataSet);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
+        PercentFormatter formatter= new PercentFormatter(pieChart);
+
+        data.setValueFormatter(formatter);
+        data.setValueTextSize(10f);
         data.setValueTextColor(Color.WHITE);
         pieChart.setData(data);
         pieChart.invalidate();
@@ -219,7 +222,7 @@ public class InsightsFragment extends Fragment {
         } else {
             set1 = new BarDataSet(barChartValues, "Statistics Vienna 2014");
             set1.setDrawIcons(false);
-            set1.setColors(getColors());
+            set1.setColors(getResources().getColor(R.color.theme_colorAccent));
             set1.setStackLabels(new String[]{"Births", "Divorces", "Marriages"});
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<>();
@@ -234,16 +237,6 @@ public class InsightsFragment extends Fragment {
 
         barChart.setFitBars(true);
         barChart.invalidate();
-    }
-
-    private int[] getColors() {
-
-        // have as many colors as stack-values per entry
-        int[] colors = new int[3];
-
-        System.arraycopy(ColorTemplate.MATERIAL_COLORS, 0, colors, 0, 3);
-
-        return colors;
     }
 
     /**
