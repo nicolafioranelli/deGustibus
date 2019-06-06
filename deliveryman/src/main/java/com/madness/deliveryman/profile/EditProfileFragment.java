@@ -376,6 +376,8 @@ public class EditProfileFragment extends Fragment {
         map.put("phone", phone.getText().toString());
         if(getArguments()!= null) {
             map.put("totalKM", 0);
+            map.put("rating", 0);
+            map.put("count", 0);
         }
 
         if (mImageUri != null) {

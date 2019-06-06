@@ -22,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.algolia.instantsearch.core.helpers.Searcher;
 import com.algolia.instantsearch.core.model.NumericRefinement;
@@ -169,8 +170,11 @@ public class HomeFragment extends Fragment {
                 CheckBox checkBox = customView.findViewById(R.id.checkBox);
                 SeekBar seekBar = customView.findViewById(R.id.seekbar);
                 // Facet allows to understand if a filter is already set (in that case the state
-                // of checkbox is marked
+                // of checkbox is marked)
                 List<String> facet = searcher.getFacetRefinements("id");
+                // Retrieve preferred from shared preferences
+                final SharedPreferences sharedPref = getActivity().getSharedPreferences("Restaurants", Context.MODE_PRIVATE);
+
                 if (facet != null) {
                     if (facet.size() != 0) {
                         checkBox.setChecked(true);
@@ -180,10 +184,6 @@ public class HomeFragment extends Fragment {
                 } else {
                     checkBox.setChecked(false);
                 }
-
-                // Retrieve preferred from shared preferences
-                SharedPreferences sharedPref = getActivity().getSharedPreferences("Restaurants", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
 
                 final List<String> filter = new ArrayList<>();
                 HashMap<String, String> map = (HashMap<String, String>) sharedPref.getAll();
@@ -197,6 +197,9 @@ public class HomeFragment extends Fragment {
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(sharedPref.getAll().size()==0) {
+                            Toast.makeText(getContext(), getString(R.string.no_favourite), Toast.LENGTH_SHORT).show();
+                        }
                         if (isChecked) {
                             searcher.addFacetRefinement("id", filter, true).search();
                             window.dismiss();

@@ -87,7 +87,6 @@ public class IncomingFragment extends Fragment {
 
         FirebaseRecyclerOptions<IncomingData> options =
                 new FirebaseRecyclerOptions.Builder<IncomingData>()
-                        //.setQuery(query, IncomingData.class)
                         .setQuery(query, new SnapshotParser<IncomingData>() {
                             @NonNull
                             @Override
@@ -117,7 +116,6 @@ public class IncomingFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull final IncomingHolder holder, final int position, @NonNull final IncomingData model) {
-                //km = Integer.parseInt(model.getMileage()); TODO fix
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
@@ -184,9 +182,6 @@ public class IncomingFragment extends Fragment {
                     holder.map.setVisibility(View.GONE);
                 }
 
-
-
-
                 if (model.getStatus().equals("incoming")) {
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);
@@ -221,8 +216,6 @@ public class IncomingFragment extends Fragment {
                         public void onClick(View v) {
                             pick(position, model.getCustomerID());
                             //adding km to total km routes from rider
-
-
                         }
                     });
                 } else if (model.getStatus().equals("delivering")) {
@@ -235,7 +228,6 @@ public class IncomingFragment extends Fragment {
             }
 
         };
-
         recyclerView.setAdapter(adapter);
 
         /* Listener to check if the recycler view is empty */
@@ -254,7 +246,6 @@ public class IncomingFragment extends Fragment {
 
             }
         });
-
         return rootView;
     }
 
@@ -278,7 +269,6 @@ public class IncomingFragment extends Fragment {
 
     private void refuse(final int position, final String restaurantID) {
         Query refuseQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
-
         refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -436,44 +426,6 @@ public class IncomingFragment extends Fragment {
 
             }
         });
-
-    }
-
-    private void deliver(final int position, final String restaurantID) {
-
-        Query updateQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
-
-        updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    /* Set order as done */
-
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    objectMap.put("status", "done");
-                    databaseReference.child("orders").child(dataSnapshot.getKey()).updateChildren(objectMap);
-
-                    /* Send notification to user */
-                    final Map<String, Object> newNotification = new HashMap<String, Object>();
-                    newNotification.put("type", getString(R.string.typeNot_done));
-
-                    newNotification.put("description", getString(R.string.desc3) + adapter.getRef(position).getKey().substring(1, 6) + getString(R.string.desc9));
-
-                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Date date = new Date();
-                    newNotification.put("date", dateFormat.format(date));
-
-                    databaseReference.child("notifications").child(restaurantID).push().setValue(newNotification);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
     }
 
     public interface Maps{

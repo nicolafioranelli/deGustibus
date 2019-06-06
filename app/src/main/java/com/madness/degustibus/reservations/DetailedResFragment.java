@@ -81,6 +81,10 @@ public class DetailedResFragment extends Fragment {
     private TextView restName;
     private RatingBar ratingBar2;
     private EditText comment;
+    private CircleImageView riderImage;
+    private TextView riderName;
+    private RatingBar riderRatingBar;
+    private EditText riderComment;
 
     /* Data */
     private ProfileClass userProfile;
@@ -134,6 +138,10 @@ public class DetailedResFragment extends Fragment {
         restName = rootView.findViewById(R.id.restaurantName);
         ratingBar2 = rootView.findViewById(R.id.ratingBar);
         comment = rootView.findViewById(R.id.comment);
+        riderImage = rootView.findViewById(R.id.riderImage);
+        riderName = rootView.findViewById(R.id.riderName);
+        riderComment = rootView.findViewById(R.id.riderComment);
+        riderRatingBar = rootView.findViewById(R.id.riderRatingBar);
 
         userReference = databaseReference.child("customers").child(user.getUid());
         userListener = userReference.addValueEventListener(new ValueEventListener() {
@@ -287,12 +295,21 @@ public class DetailedResFragment extends Fragment {
                     } else {
                         loadRestaurant(order.getRestaurantID(), Math.round(Float.parseFloat(order.getRestaurantRating())));
                     }
+                    if(order.getRiderRating().equals("null")) {
+                        loadRider(order.getDeliverymanID(), 0);
+                    } else {
+                        loadRider(order.getDeliverymanID(), Math.round(Float.parseFloat(order.getRiderRating())));
+                    }
+
                     view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     if (!order.getRestaurantRating().equals("null")) {
                         reviewButton.setVisibility(View.GONE);
                         ratingBar2.setClickable(false);
+                        riderRatingBar.setClickable(false);
                         comment.setEnabled(false);
                         comment.setFocusable(false);
+                        riderComment.setFocusable(false);
+                        riderComment.setEnabled(false);
                     }
 
                 } else if (order.getStatus().equals("elaboration")) {
@@ -394,6 +411,54 @@ public class DetailedResFragment extends Fragment {
         });
     }
 
+    private void loadRider(String riderID, Integer riderRating) {
+        databaseReference.child("riders").child(riderID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println(dataSnapshot.getValue());
+                String photo = null;
+                if(dataSnapshot.child("photo").exists()) {
+                    photo = dataSnapshot.child("photo").getValue().toString();
+                }
+
+                GlideApp.with(getContext())
+                        .load(photo)
+                        .placeholder(R.drawable.user_profile)
+                        .into(riderImage);
+
+                riderName.setText(dataSnapshot.child("name").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        riderRatingBar.setRating(riderRating);
+        riderRatingBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    float touchPositionX = event.getX();
+                    float width = ratingBar2.getWidth();
+                    float starsf = (touchPositionX / width) * 5.0f;
+                    int stars = (int) starsf + 1;
+                    riderRatingBar.setRating(stars);
+                    v.setPressed(false);
+                }
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    v.setPressed(true);
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                    v.setPressed(false);
+                }
+                return true;
+            }
+        });
+    }
+
     private void foodReceived() {
         Query updateQuery = databaseReference.child("orders").child(order.getId());
         updateQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -443,6 +508,10 @@ public class DetailedResFragment extends Fragment {
             ok = false;
         }
 
+        if (riderRatingBar.getRating() == 0) {
+            ok = false;
+        }
+
         if (ok) {
             /* Update ratings */
             Map<String, Object> restRating = new HashMap<>();
@@ -453,6 +522,14 @@ public class DetailedResFragment extends Fragment {
             restRating.put("date", dateFormat.format(date));
             restRating.put("rating", ratingBar2.getRating());
             databaseReference.child("ratings").child("restaurants").child(order.getRestaurantID()).push().updateChildren(restRating);
+
+            /* Update ratings */
+            Map<String, Object> riderRating = new HashMap<>();
+            riderRating.put("name", userProfile.getName());
+            riderRating.put("comment", riderComment.getText().toString());
+            riderRating.put("date", dateFormat.format(date));
+            riderRating.put("rating", riderRatingBar.getRating());
+            databaseReference.child("ratings").child("riders").child(order.getDeliverymanID()).push().updateChildren(riderRating);
 
             /* Update dishes */
             for (int i = 0; i < dishes.size(); i++) {
@@ -501,14 +578,35 @@ public class DetailedResFragment extends Fragment {
                 }
             });
 
+            /* Update rider */
+            final DatabaseReference refRider = databaseReference.child("riders").child(order.getDeliverymanID());
+            refRider.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Object rating = dataSnapshot.child("rating").getValue();
+                    Object count = dataSnapshot.child("count").getValue();
+                    ref.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating()));
+                    ref.child("count").setValue(Integer.parseInt(count.toString()) + 1);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             /* Update orders */
             order.setRestaurantComment(comment.getText().toString());
             order.setRestaurantRating(Float.toString(ratingBar2.getRating()));
+            order.setRiderComment(riderComment.getText().toString());
+            order.setRiderRating(Float.toString(ratingBar2.getRating()));
             order.setCart(dishes);
 
             HashMap<String, Object> updateMap = new HashMap<>();
             updateMap.put("restaurantComment", comment.getText().toString());
             updateMap.put("restaurantRating", Float.toString(ratingBar2.getRating()));
+            updateMap.put("riderComment", riderComment.getText().toString());
+            updateMap.put("riderRating", Float.toString(riderRatingBar.getRating()));
             databaseReference.child("orders").child(order.getId()).updateChildren(updateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
