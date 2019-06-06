@@ -130,7 +130,7 @@ public class HomeActivity extends AppCompatActivity
                 args.putBoolean("isNew", true);
                 fragment.setArguments(args);
 
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
                 navigationView.getMenu().getItem(1).setChecked(true);
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
@@ -181,7 +181,7 @@ public class HomeActivity extends AppCompatActivity
                                 args.putBoolean("isNew", true);
                                 fragment.setArguments(args);
 
-                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
                                 navigationView.getMenu().getItem(1).setChecked(true);
                             } catch (Exception e) {
                                 Log.e("MAD", "onCreate: ", e);
