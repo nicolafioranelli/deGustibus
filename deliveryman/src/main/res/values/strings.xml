@@ -139,7 +139,6 @@
     <string name="no_reviews">No rating has been received yet!</string>
     <string name="ratings">Ratings</string>
 
-
     <string name="sort_by">Sort by</string>
     <string name="by_name">Name</string>
     <string name="by_rating">Rating</string>
@@ -149,4 +148,6 @@
     <string name="map_address">Address:</string>
     <string name="map_time">Time:</string>
     <string name="map_distance" translatable="false">Km:</string>
+
+    <string name="exitMap">Press back to exit from map mode!</string>
 </resources>

@@ -155,6 +155,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
         try {
             listenerReference = databaseReference.child("riders").child(user.getUid());
@@ -369,6 +370,22 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        String fragmentTag = null;
+        fragment = null;
+        fragment = fragmentManager.findFragmentById(R.id.flContent);
+
+        if (fragment instanceof ProfileFragment) {
+            fragmentTag = "Profile";
+        } else if (fragment instanceof EditProfileFragment) {
+            fragmentTag = "Edit";
+        } else if (fragment instanceof IncomingFragment) {
+            fragmentTag = "Incoming";
+        } else if (fragment instanceof NotificationsFragment) {
+            fragmentTag = "Notifications";
+        } else if (fragment instanceof SettingsFragment) {
+            fragmentTag = "Settings";
+        }
+
         fragment = null;
         Class fragmentClass;
 
@@ -378,7 +395,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = HomeFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -388,7 +405,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = IncomingFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Incoming").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Incoming").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -398,7 +415,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = ProfileFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -408,7 +425,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = SettingsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -462,16 +479,26 @@ public class HomeActivity extends AppCompatActivity
         if (fragment != null) {
             if (fragment instanceof ProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             } else if (fragment instanceof EditProfileFragment) {
                 navigationView.getMenu().findItem(R.id.nav_profile).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             } else if (fragment instanceof IncomingFragment) {
                 navigationView.getMenu().findItem(R.id.nav_incoming).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             } else if (fragment instanceof NotificationsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             } else if (fragment instanceof SettingsFragment) {
                 navigationView.getMenu().findItem(R.id.nav_settings).setChecked(true);
-            } else{
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            } else if (fragment instanceof MapFragment) {
+                navigationView.getMenu().findItem(R.id.nav_incoming).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                Toast.makeText(getApplicationContext(), getString(R.string.exitMap), Toast.LENGTH_LONG).show();
+            } else {
                 navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             }
         }
 

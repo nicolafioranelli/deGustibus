@@ -64,14 +64,9 @@ public class EditProfileFragment extends Fragment {
     private EditText desc;
     private EditText phone;
     private ImageView img;
-    private RadioGroup vehicles;
-    private RadioButton button;
 
     private String cameraFilePath;
-    private String vehicle;
-
     private Uri mImageUri = null;
-    private String selector;
 
     private DatabaseReference databaseReference;
     private ValueEventListener listener;
@@ -356,20 +351,9 @@ public class EditProfileFragment extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
-        if ((button = getView().findViewById(R.id.rb_edit_bike)).isChecked()) {
-            vehicle = "bike";
-        }
-        if ((button = getView().findViewById(R.id.rb_edit_car)).isChecked()) {
-            vehicle = "car";
-        } else if ((button = getView().findViewById(R.id.rb_edit_motorbike)).isChecked()) {
-            vehicle = "motorbike";
-        }
-
         if(getArguments()!= null) {
             map.put("totalKM", 0);
         }
-
-        map.put("vehicle", this.vehicle);
 
         if (mImageUri != null) {
             try (InputStream inputStream = getContext().getContentResolver().openInputStream(mImageUri)) {
@@ -455,49 +439,6 @@ public class EditProfileFragment extends Fragment {
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
-
-                    if (userData.get("vehicle") == null) {
-                        selector = "bike";
-                    } else {
-                        selector = userData.get("vehicle").toString();
-                    }
-                    switch (selector) {
-                        case "bike": {
-                            button = getView().findViewById(R.id.rb_edit_bike);
-                            button.toggle();
-                        }
-                        break;
-                        case "car": {
-                            button = getView().findViewById(R.id.rb_edit_car);
-                            button.toggle();
-                        }
-                        break;
-                        case "motorbike": {
-                            button = getView().findViewById(R.id.rb_edit_motorbike);
-                            button.toggle();
-                        }
-                        break;
-                    }
-                    vehicles.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId) {
-                            button = getView().findViewById(checkedId);
-                            switch (button.getId()) {
-                                case R.id.rb_edit_bike: {
-                                    vehicle = "bike";
-                                }
-                                break;
-                                case R.id.rb_edit_car: {
-                                    vehicle = "car";
-                                }
-                                break;
-                                case R.id.rb_edit_motorbike: {
-                                    vehicle = "motorbike";
-                                }
-                                break;
-                            }
-                        }
-                    });
                 } else {
                     email.setText(user.getEmail());
                     String pic = null;
@@ -506,9 +447,6 @@ public class EditProfileFragment extends Fragment {
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
-                    button = getView().findViewById(R.id.rb_edit_bike);
-                    vehicle = "bike";
-                    button.toggle();
                 }
                 getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
@@ -527,7 +465,6 @@ public class EditProfileFragment extends Fragment {
         desc = view.findViewById(R.id.et_edit_desc);
         phone = view.findViewById(R.id.et_edit_phone);
         img = view.findViewById(R.id.imageview);
-        vehicles = view.findViewById(R.id.rg_edit_vehicle);
     }
 
     @Override

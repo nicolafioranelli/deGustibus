@@ -43,7 +43,6 @@ public class ProfileFragment extends Fragment {
     private TextView desc;
     private TextView phone;
     private RatingBar simpleRatingBar;
-    private TextView vehicle;
     private Button reviews;
     private CircleImageView img;
     private ProfileListener listener;
@@ -114,7 +113,6 @@ public class ProfileFragment extends Fragment {
         email = getView().findViewById(R.id.tv_show_email);
         desc = getView().findViewById(R.id.tv_show_desc);
         phone = getView().findViewById(R.id.tv_show_phone);
-        vehicle = getView().findViewById(R.id.tv_show_vehicle);
         img = getView().findViewById(R.id.imageview);
         simpleRatingBar = getView().findViewById(R.id.simpleRatingBar);// initiate a rating bar
         simpleRatingBar.setNumStars(5);
@@ -165,24 +163,6 @@ public class ProfileFragment extends Fragment {
                             .placeholder(R.drawable.user_profile)
                             .into(img);
 
-                    String selector = user.get("vehicle").toString();
-                    switch (selector) {
-                        case "bike": {
-                            String v = getString(R.string.bike);
-                            vehicle.setText(v);
-                        }
-                        break;
-                        case "car": {
-                            String v = getString(R.string.car);
-                            vehicle.setText(v);
-                        }
-                        break;
-                        case "motorbike": {
-                            String v = getString(R.string.motorbike);
-                            vehicle.setText(v);
-                        }
-                        break;
-                    }
                 }catch (Exception e) {
 
                 }
