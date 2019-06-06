@@ -117,19 +117,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/TextViewShow" />
-
-            <TextView
-                android:id="@+id/tv_showD_vehicle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/default_car"
-                android:theme="@style/TextView" />
-
-            <TextView
-                android:id="@+id/tv_show_vehicle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/TextViewShow" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
