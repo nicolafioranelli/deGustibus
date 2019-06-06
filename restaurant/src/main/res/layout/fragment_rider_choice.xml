@@ -239,7 +239,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="visible"> <!-- TODO set to gone -->
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
