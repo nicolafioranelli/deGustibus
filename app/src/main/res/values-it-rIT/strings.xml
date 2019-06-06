@@ -139,4 +139,5 @@
     <string name="title_Reservations">Prenotazioni</string>
     <string name="title_Details">Dettagli</string>
     <string name="nothing">Ops... sembra che qui non ci sei nulla!</string>
+    <string name="no_favourite">Sembra che tu non abbia ancora ristoranti preferiti!</string>
 </resources>

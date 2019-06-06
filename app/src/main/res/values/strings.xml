@@ -188,4 +188,5 @@
     <string name="title_Reservations">Reservations</string>
     <string name="title_Details">Details</string>
     <string name="nothing">Ops&#8230; there\'s nothing here!</string>
+    <string name="no_favourite">It seems you havent\'t any favourite restaurant!</string>
 </resources>

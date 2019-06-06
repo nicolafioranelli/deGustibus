@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -158,8 +159,14 @@ public class RestaurantDetailsFragment extends Fragment {
     private void populate(String restaurantProfileString) {
         try {
             restaurant = new JSONObject(restaurantProfileString);
+            String photo = null;
+
+            if(restaurant.has("photo")) {
+                photo = restaurant.get("photo").toString();
+            }
+
             GlideApp.with(getContext())
-                    .load(restaurant.get("photo").toString())
+                    .load(photo)
                     .placeholder(R.drawable.restaurant)
                     .into(imageView);
 
@@ -172,74 +179,71 @@ public class RestaurantDetailsFragment extends Fragment {
 
         }
 
+        try {
+            Query query = databaseReference.child("ratings").child("restaurants").child(restID).orderByChild("date");
 
-        Query query = databaseReference.child("ratings").child("restaurants").child(restID).orderByChild("date");
+            FirebaseRecyclerOptions<RatingsClass> options =
+                    new FirebaseRecyclerOptions.Builder<RatingsClass>()
+                            .setQuery(query, new SnapshotParser<RatingsClass>() {
+                                @NonNull
+                                @Override
+                                public RatingsClass parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                    RatingsClass object = new RatingsClass(
+                                            snapshot.child("name").getValue().toString(),
+                                            Float.parseFloat(snapshot.child("rating").getValue().toString()),
+                                            snapshot.child("comment").getValue().toString(),
+                                            snapshot.child("date").getValue().toString().substring(0, 10)
+                                    );
+                                    return object;
+                                }
+                            })
+                            .build();
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println(dataSnapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        FirebaseRecyclerOptions<RatingsClass> options =
-                new FirebaseRecyclerOptions.Builder<RatingsClass>()
-                        .setQuery(query, new SnapshotParser<RatingsClass>() {
-                            @NonNull
-                            @Override
-                            public RatingsClass parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                RatingsClass object = new RatingsClass(
-                                        snapshot.child("name").getValue().toString(),
-                                        Float.parseFloat(snapshot.child("rating").getValue().toString()),
-                                        snapshot.child("comment").getValue().toString(),
-                                        snapshot.child("date").getValue().toString().substring(0, 10)
-                                );
-                                System.out.println(snapshot.getValue());
-
-                                return object;
-                            }
-                        })
-                        .build();
-
-        adapter = new FirebaseRecyclerAdapter<RatingsClass, RatingsHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull RatingsHolder holder, final int position, @NonNull RatingsClass model) {
-                holder.name.setText(model.getName());
-                holder.comment.setText(model.getComment());
-                holder.date.setText(model.getDate());
-                holder.rating.setRating(model.getValue());
-                if(model.getComment().equals("")) {
-                    holder.comment.setVisibility(View.GONE);
+            adapter = new FirebaseRecyclerAdapter<RatingsClass, RatingsHolder>(options) {
+                @Override
+                protected void onBindViewHolder(@NonNull RatingsHolder holder, final int position, @NonNull RatingsClass model) {
+                    holder.name.setText(model.getName());
+                    holder.comment.setText(model.getComment());
+                    holder.date.setText(model.getDate());
+                    holder.rating.setRating(model.getValue());
+                    if (model.getComment().equals("")) {
+                        holder.comment.setVisibility(View.GONE);
+                    }
                 }
-            }
 
-            @NonNull
-            @Override
-            public RatingsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext()).
-                        inflate(R.layout.reviews_listitem, viewGroup, false);
-                return new RatingsHolder(view);
-            }
-        };
+                @NonNull
+                @Override
+                public RatingsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                    View view = LayoutInflater.from(viewGroup.getContext()).
+                            inflate(R.layout.reviews_listitem, viewGroup, false);
+                    return new RatingsHolder(view);
+                }
+            };
 
-        recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(adapter);
+        } catch (Exception e) {
+            Log.e("MAD", "populate: ", e);
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        try {
+            adapter.startListening();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        try {
+            adapter.stopListening();
+        } catch (Exception e) {
+
+        }
     }
 
     public interface DetailsInterface {

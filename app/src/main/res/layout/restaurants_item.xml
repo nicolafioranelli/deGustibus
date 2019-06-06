@@ -27,6 +27,7 @@
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
                     algolia:attribute='@{"photo"}'
+                    android:src="@drawable/restaurant"
                     tools:srcCompat="@tools:sample/avatars" />
             </LinearLayout>
 
