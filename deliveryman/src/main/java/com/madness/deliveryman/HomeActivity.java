@@ -73,6 +73,8 @@ public class HomeActivity extends AppCompatActivity
     private LocationCallback locationCallback;
     private boolean avail;
     private Switch available;
+    private boolean setProfile;
+    private boolean profileDataHavebeenSet;
     private DatabaseReference databaseReference;
     private DatabaseReference listenerReference;
     private ValueEventListener listener;
@@ -119,7 +121,10 @@ public class HomeActivity extends AppCompatActivity
 
 
         fragmentManager = getSupportFragmentManager();
+        //if it is a registration go to EditProfile, in order to write all mandatory
+        //Profile info
         if (getIntent().hasExtra("newCreation")) {
+            setProfile=false;
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -146,20 +151,29 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-        try {
+
+        profileDataHavebeenSet=false;
+        if(user!=null) {
+            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
             listenerReference = databaseReference.child("riders").child(user.getUid());
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if (objectMap.get("name") != null) {
+                    //since "available" is a datasnapshot's child created inside onCreate of HomeActivity
+                    //and every mandatory profile info is written all at once and can not be set to null
+                    // in a second time, if the datasnapshot has more than one child, Profile mandatory informations
+                    //are already been set, so the default Fragment must be HomeFragment
+                        if (dataSnapshot.getChildrenCount()>1 && !profileDataHavebeenSet) {
+                            setProfile=true;
+                            profileDataHavebeenSet=true;
                             try {
                                 fragment = null;
                                 Class fragmentClass;
                                 fragmentClass = HomeFragment.class;
                                 fragment = (Fragment) fragmentClass.newInstance();
                                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                                navigationView.getMenu().getItem(0).setChecked(true);
                             } catch (Exception e) {
                                 Log.e("MAD", "onCreate: ", e);
                             }
@@ -170,7 +184,13 @@ public class HomeActivity extends AppCompatActivity
                             } else {
                                 available.setChecked(false);
                             }
-                        }else {
+                        }
+                        //if login info are already set but profile info are not, i.e. if the user closed the app
+                        // after the login but before setting profile info, or if login info were set by the user
+                        // when signing in as a customer or a rider
+                        else  if(!profileDataHavebeenSet){
+
+                            setProfile=false;
                             try {
                                 fragment = null;
                                 Class fragmentClass;
@@ -194,10 +214,7 @@ public class HomeActivity extends AppCompatActivity
 
                 }
             });
-        } catch (Exception e) {
-            Log.e("MAD", "onCreate: ", e);
         }
-
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
@@ -386,6 +403,8 @@ public class HomeActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_home:
+                profileisSet();
+                if(setProfile){
                 try {
                     fragmentClass = HomeFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -394,8 +413,13 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_incoming:
+                profileisSet();
+                if(setProfile){
                 try {
                     fragmentClass = IncomingFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -404,25 +428,44 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_profile:
-                try {
-                    fragmentClass = ProfileFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                profileisSet();
+                if(setProfile){
+                    try {
+                        fragmentClass = ProfileFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.nav_settings:
-                try {
-                    fragmentClass = SettingsFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                profileisSet();
+                if(setProfile){
+                    try {
+                        fragmentClass = SettingsFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.nav_available:
+                profileisSet();
+                if(!setProfile){
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -433,6 +476,29 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+
+    //check if the mandatory profile info are on the database
+    public void profileisSet() {
+        FirebaseDatabase.getInstance().getReference().child("riders")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //since "available" is a datasnapshot's child created inside onCreate of HomeActivity
+                        //and every mandatory profile info is written all at once and can not be set to null
+                        // in a second time, in order to set setProfile to true, the condition is that datasnapshot
+                        //must have more than one child
+                            if(dataSnapshot.getChildrenCount()>1){
+                                setProfile=true;
+                            }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
     @Override
     public void editProfileClick() {
         try {
@@ -495,7 +561,11 @@ public class HomeActivity extends AppCompatActivity
             FirebaseDatabase.getInstance().getReference().child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.exists()) {
+                    //since "available" is a datasnapshot's child created inside onCreate of HomeActivity
+                    //and every mandatory profile info is written all at once and can not be set to null
+                    // in a second time, if the datasnapshot has less than two children, Profile mandatory informations
+                    //are not been set yet
+                    if (dataSnapshot.getChildrenCount()<2) {
                         Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                     }
                 }

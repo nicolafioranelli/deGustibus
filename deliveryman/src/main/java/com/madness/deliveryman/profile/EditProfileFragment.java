@@ -160,14 +160,8 @@ public class EditProfileFragment extends Fragment {
                     }
 
                 } else {
-                    if(settedProfile){
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    }
-                    else{
-                        getActivity().finish();
-                    }
-                    return true;
                 }
             }
         }

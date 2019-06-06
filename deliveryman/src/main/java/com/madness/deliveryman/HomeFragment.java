@@ -1,6 +1,7 @@
 package com.madness.deliveryman;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -58,6 +59,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     // Declare Context variable at class level in Fragment
     private Context mContext;
+    private Activity mActivity;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -68,6 +70,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+        mActivity= this.getActivity();
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -180,7 +183,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     //getting the device current location
     private void getDeviceLocation() {
 
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
 
         try{
             if(mLocationPermissionGaranted){
@@ -233,17 +236,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
         };
-        if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 //if fine and coarse location permissions are granted set this flag for future checks, else no
                 mLocationPermissionGaranted = true;
                 mapView.getMapAsync(this);
             } else {
-                ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(mActivity, permission, LOCATION_PERMISSION_REQUEST_CODE);
             }
         } else {
-            ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(mActivity, permission, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
     //moving the camera to latLng with zoom

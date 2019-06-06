@@ -49,6 +49,7 @@ import com.madness.degustibus.reservations.DetailedResFragment;
 import com.madness.degustibus.reservations.ReservationsFragment;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -88,7 +89,8 @@ public class HomeActivity extends AppCompatActivity
 
     /* Listeners */
     private ValueEventListener listener;
-    private HashMap<String, Object> userData;
+    private boolean setProfile;
+    private boolean profileDataHavebeenSet;
 
     /* Lifecycle */
 
@@ -134,7 +136,10 @@ public class HomeActivity extends AppCompatActivity
 
         /* Check if it has happened a registration task or it is a login, in case registration redirect to edit profile*/
         fragmentManager = getSupportFragmentManager();
+        //if it is a registration go to EditProfile, in order to write all mandatory
+        //Profile info
         if (getIntent().hasExtra("newCreation")) {
+            setProfile=false;
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -145,17 +150,8 @@ public class HomeActivity extends AppCompatActivity
                 args.putBoolean("isNew", true);
                 fragment.setArguments(args);
 
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = com.madness.degustibus.home.HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
+                navigationView.getMenu().getItem(1).setChecked(true);
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
             }
@@ -170,7 +166,10 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        try {
+
+        profileDataHavebeenSet=false;
+        if(user!=null) {
+            navigationView.getMenu().getItem(0).setChecked(true);
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
             final TextView email = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
             final CircleImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.userImage);
@@ -178,9 +177,20 @@ public class HomeActivity extends AppCompatActivity
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    userData = (HashMap<String, Object>) dataSnapshot.getValue();
-                    try {
-                        if (userData.get("name") != null) {
+                    Map<String, Object> userData = (HashMap<String, Object>) dataSnapshot.getValue();
+                    //sinceevery mandatory profile info is written all at once and can not be set to null
+                    // in a second time, if the datasnapshot exists Profile mandatory informations
+                    //are already been set, so the default Fragment must be HomeFragment
+                    if (dataSnapshot.exists()&& !profileDataHavebeenSet) {
+                        setProfile = true;
+                        profileDataHavebeenSet=true;
+                        try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = HomeFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                            navigationView.getMenu().getItem(0).setChecked(true);
                             userName.setText(userData.get("name").toString());
                             email.setText(userData.get("email").toString());
                             /* Glide */
@@ -188,9 +198,32 @@ public class HomeActivity extends AppCompatActivity
                                     .load(userData.get("photo").toString())
                                     .placeholder(R.drawable.user_profile)
                                     .into(imageView);
-                        }
-                    } catch (Exception e) {
+                        } catch (Exception e) {
 
+                        }
+                    }
+
+                    //if login info are already set but profile info are not, i.e. if the user closed the app
+                    // after the login but before setting profile info, or if login info were set by the user
+                    // when signing in as a customer or a rider
+                    else if(!profileDataHavebeenSet){
+
+                        setProfile=false;
+                        try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = EditProfileFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+
+                            Bundle args = new Bundle();
+                            args.putBoolean("isNew", true);
+                            fragment.setArguments(args);
+
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
+                            navigationView.getMenu().getItem(1).setChecked(true);
+                        } catch (Exception e) {
+                            Log.e("MAD", "onCreate: ", e);
+                        }
                     }
                 }
 
@@ -199,8 +232,6 @@ public class HomeActivity extends AppCompatActivity
 
                 }
             });
-        } catch (Exception e) {
-
         }
 
         // Update highlights in the navigation menu
@@ -328,6 +359,8 @@ public class HomeActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_home:
+                profileIsSet();
+                if(setProfile){
                 try {
                     fragmentClass = HomeFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -336,8 +369,13 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_profile:
+                profileIsSet();
+                if(setProfile){
                 try {
                     fragmentClass = ProfileFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -346,8 +384,13 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_settings:
+                profileIsSet();
+                if(setProfile){
                 try {
                     fragmentClass = SettingsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -356,8 +399,13 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.nav_reservations:
+                profileIsSet();
+                if(setProfile){
                 try {
                     fragmentClass = ReservationsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
@@ -366,6 +414,9 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         item.setChecked(true);
@@ -373,6 +424,31 @@ public class HomeActivity extends AppCompatActivity
         drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //check if the mandatory profile info are on the database
+    public void profileIsSet() {
+        FirebaseDatabase.getInstance().getReference().child("customers")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                            if (objectMap.get("name") != null&&
+                                    objectMap.get("desc") != null&&
+                                    objectMap.get("address") != null&&
+                                    objectMap.get("phone") != null) {
+                                setProfile=true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void updateMenu() {

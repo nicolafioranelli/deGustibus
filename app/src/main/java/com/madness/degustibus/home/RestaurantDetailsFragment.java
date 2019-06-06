@@ -172,6 +172,7 @@ public class RestaurantDetailsFragment extends Fragment {
 
         }
 
+
         Query query = databaseReference.child("ratings").child("restaurants").child(restID).orderByChild("date");
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {

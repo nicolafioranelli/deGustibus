@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:background="#FFFFFF"
         android:gravity="center"
-        android:orientation="vertical"> <!-- This layout's visibility will be set on GONE only in the RiderReviewsFragment -->
+        android:orientation="vertical">
 
         <ImageView
             android:layout_width="100dp"

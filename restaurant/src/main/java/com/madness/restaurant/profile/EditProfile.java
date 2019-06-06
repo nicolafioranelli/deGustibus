@@ -223,7 +223,7 @@ public class EditProfile extends Fragment {
                 Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
 
                 if (getArguments() != null) {
-                    /*
+
                     try {
                         Fragment fragment = null;
                         Class fragmentClass;
@@ -234,7 +234,7 @@ public class EditProfile extends Fragment {
                     } catch (Exception e) {
 
                     }
-                    return true;*/
+                    return true;
                 } else {
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -883,6 +883,7 @@ public class EditProfile extends Fragment {
                     saturdayClose.setText(getResources().getString(R.string.frProfile_defClose));
                     sundayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
                     sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
+                    img.setImageDrawable(getResources().getDrawable(R.drawable.user_profile));
                 }
                 view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 view.findViewById(R.id.layout).setVisibility(View.VISIBLE);

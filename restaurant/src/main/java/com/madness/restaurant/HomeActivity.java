@@ -67,7 +67,8 @@ public class HomeActivity extends AppCompatActivity
     private DatabaseReference databaseReference;
     private DatabaseReference listenerReference;
     private ValueEventListener listener;
-    private boolean settedProfile;
+    private boolean setProfile;
+    private boolean profileDataHaveBeenSet;
     private FirebaseUser user;
     private final String CHANNEL_ID = "channelRestaurant";
     private final int NOTIFICATION_ID = 001;
@@ -96,8 +97,10 @@ public class HomeActivity extends AppCompatActivity
         };
 
         fragmentManager = getSupportFragmentManager();
+        //if it is a registration go to EditProfile, in order to write all mandatory
+        //Profile info
         if(getIntent().hasExtra("newCreation")) {
-            settedProfile=false;
+            setProfile=false;
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -124,14 +127,19 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        profileDataHaveBeenSet=false;
         if(user!=null) {
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
             listenerReference=databaseReference.child("restaurants").child(user.getUid());
             listener=listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        settedProfile=true;
+                    //sinceevery mandatory profile info is written all at once and can not be set to null
+                    // in a second time, if the datasnapshot exists Profile mandatory informations
+                    //are already been set, so the default Fragment must be HomeFragment
+                    if (dataSnapshot.exists()&& !profileDataHaveBeenSet) {
+                        setProfile=true;
+                        profileDataHaveBeenSet=true;
                         try {
                             fragment = null;
                             Class fragmentClass;
@@ -147,11 +155,11 @@ public class HomeActivity extends AppCompatActivity
                     }
 
 
-                    //if login info are already setted but profile info are not, i.e. if the user closed the app
-                    // after the login but before setting profile info, or if login info were setted by the user
+                    //if login info are already set but profile info are not, i.e. if the user closed the app
+                    // after the login but before setting profile info, or if login info were set by the user
                     // when signing in as a customer or a rider
-                    else {
-                        settedProfile=false;
+                    else if(!profileDataHaveBeenSet){
+                        setProfile=false;
                         try {
                             fragment = null;
                             Class fragmentClass;
@@ -369,32 +377,26 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        //if the current fragment is editProfile and the Profile is not setted, close the app
-        EditProfile editProfile = (EditProfile)
-                getSupportFragmentManager().findFragmentByTag("EditP");
-        if (editProfile != null &&editProfile.isVisible()&&!settedProfile) {
-            finish();
-            super.onBackPressed();
-        }
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            /*
+            //if the current fragment is editProfile and the Profile is not set, close the app
+            EditProfile editProfile = (EditProfile)
+                    getSupportFragmentManager().findFragmentByTag("EditP");
+            if (editProfile != null &&editProfile.isVisible()&&!setProfile) {
+                finish();
+            }
 
-        //if the current fragment is HomeFragment, close the app
-        HomeFragment homeFragment = (HomeFragment)
-                getSupportFragmentManager().findFragmentByTag("HOME");
-        if (homeFragment != null &&homeFragment.isVisible()) {
-            finish();
-            super.onBackPressed();
-        }
+            //if the current fragment is HomeFragment, close the app
+            HomeFragment homeFragment = (HomeFragment)
+                    getSupportFragmentManager().findFragmentByTag("HOME");
+            if (homeFragment != null &&homeFragment.isVisible()) {
+                finish();
+            }*/
 
-        //otherwise, go to HomeFragment ??? TODO
-        fragment = null;
-        Class fragmentClass;
-        try {
-            fragmentClass = HomeFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-        } catch (Exception e) {
-            e.printStackTrace();
+            super.onBackPressed();
         }
     }
 
@@ -406,8 +408,8 @@ public class HomeActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_profile:
-                profileIsSetted();
-                if(settedProfile){
+                profileIsSet();
+                if(setProfile){
                     try {
                         fragmentClass = ProfileFragment.class;
                         fragment = (Fragment) fragmentClass.newInstance();
@@ -421,8 +423,8 @@ public class HomeActivity extends AppCompatActivity
             }
                 break;
             case R.id.nav_reservations:
-                profileIsSetted();
-                if(settedProfile){
+                profileIsSet();
+                if(setProfile){
                         try {
                             fragmentClass = ReservationFragment.class;
                             fragment = (Fragment) fragmentClass.newInstance();
@@ -436,8 +438,8 @@ public class HomeActivity extends AppCompatActivity
                     }
                 break;
             case R.id.nav_daily:
-                    profileIsSetted();
-                    if(settedProfile){
+                    profileIsSet();
+                    if(setProfile){
                     try {
                         fragmentClass = DailyFragment.class;
                         fragment = (Fragment) fragmentClass.newInstance();
@@ -451,8 +453,8 @@ public class HomeActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_settings:
-                profileIsSetted();
-                if(settedProfile){
+                profileIsSet();
+                if(setProfile){
                     try {
                         fragmentClass = SettingsFragment.class;
                         fragment = (Fragment) fragmentClass.newInstance();
@@ -466,8 +468,8 @@ public class HomeActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_insights:
-                profileIsSetted();
-                if(settedProfile){
+                profileIsSet();
+                if(setProfile){
                     try {
                         fragmentClass = InsightsFragment.class;
                         fragment = (Fragment) fragmentClass.newInstance();
@@ -481,8 +483,8 @@ public class HomeActivity extends AppCompatActivity
                 }
                 break;
             default:
-                profileIsSetted();
-                if(settedProfile){
+                profileIsSet();
+                if(setProfile){
                     try {
                         fragmentClass = HomeFragment.class;
                         fragment = (Fragment) fragmentClass.newInstance();
@@ -503,7 +505,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    public void profileIsSetted() {
+    //check if the mandatory profile info are on the database
+    public void profileIsSet() {
         FirebaseDatabase.getInstance().getReference().child("restaurants")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -515,7 +518,7 @@ public class HomeActivity extends AppCompatActivity
                             objectMap.get("desc") != null&&
                             objectMap.get("address") != null&&
                             objectMap.get("phone") != null) {
-                        settedProfile=true;
+                        setProfile=true;
                     }
                 }
             }
