@@ -362,7 +362,6 @@ public class EditProfileFragment extends Fragment {
         map.put("address", autocompleteView.getText().toString());
 
         if (mImageUri != null) {
-
             try (InputStream inputStream = getContext().getContentResolver().openInputStream(mImageUri)) {
                 Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageUri);
 

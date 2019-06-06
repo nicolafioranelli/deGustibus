@@ -62,7 +62,7 @@
     <string name="title_Order">Nuovo ordine</string>
     <string name="done">Fatto!</string>
     <string name="desc">Hai ricevuto un nuovo ordine! Verifica i dettagli nel box Prenotazioni!</string>
-    <string name="address">"Consegna a: "</string>
+    <string name="address">"Consegna in: "</string>
     <string name="order">Completa ordine</string>
     <string name="products">Prodotti</string>
     <string name="summary">Riepilogo</string>
@@ -137,4 +137,5 @@
     <string name="err_passSame">Le password non coincidono!</string>
     <string name="title_Reservations">Prenotazioni</string>
     <string name="title_Details">Dettagli</string>
+    <string name="nothing">Ops... sembra che qui non ci sei nulla!</string>
 </resources>
