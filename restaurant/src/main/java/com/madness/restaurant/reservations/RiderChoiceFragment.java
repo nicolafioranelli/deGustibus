@@ -256,6 +256,7 @@ public class RiderChoiceFragment extends Fragment {
                 } else if (order.getStatus().equals("done")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
+                    view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     status.setText(R.string.status_done);
                     isNew = false;
                 } else if (order.getStatus().equals("delivering")) {
