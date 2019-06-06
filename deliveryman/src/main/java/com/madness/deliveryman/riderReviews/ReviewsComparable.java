@@ -1,6 +1,6 @@
 package com.madness.deliveryman.riderReviews;
 
-public class RiderReviewsComparable {
+public class ReviewsComparable {
 
     private String date;
     private String rating;
@@ -9,7 +9,7 @@ public class RiderReviewsComparable {
     private String key;
 
 
-    public RiderReviewsComparable(String date, String rating, String name, String comment, String key) {
+    public ReviewsComparable(String date, String rating, String name, String comment, String key) {
         this.date = date;
         this.rating = rating;
         this.name = name;
@@ -17,7 +17,7 @@ public class RiderReviewsComparable {
         this.key = key;
     }
 
-    public RiderReviewsComparable() {
+    public ReviewsComparable() {
     }
 
     public String getDate() {

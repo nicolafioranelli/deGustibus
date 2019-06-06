@@ -12,13 +12,13 @@ import com.madness.deliveryman.R;
 
 import java.util.List;
 
-public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapter.RiderReviewsHolder> {
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsHolder> {
 
     Context context;
     View view;
-    List<RiderReviewsComparable> riderList;
+    List<ReviewsComparable> riderList;
 
-    public RiderReviewsAdapter(Context context, View view, List<RiderReviewsComparable> riderList) {
+    public ReviewsAdapter(Context context, View view, List<ReviewsComparable> riderList) {
         this.context = context;
         this.view = view;
         this.riderList = riderList;
@@ -32,9 +32,9 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
      */
     @NonNull
     @Override
-    public RiderReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.rider_reviews_listitem, viewGroup, false);
-        RiderReviewsHolder viewHolder = new RiderReviewsHolder(view);
+        ReviewsHolder viewHolder = new ReviewsHolder(view);
         return viewHolder;
     }
 
@@ -44,8 +44,8 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
      * @param position in the set
      */
     @Override
-    public void onBindViewHolder(@NonNull RiderReviewsHolder holder, int position) {
-        final RiderReviewsComparable riderReviewsComparable = riderList.get(position);
+    public void onBindViewHolder(@NonNull ReviewsHolder holder, int position) {
+        final ReviewsComparable riderReviewsComparable = riderList.get(position);
         holder.name.setText(riderReviewsComparable.getName());
         holder.comment.setText(riderReviewsComparable.getComment());
         holder.date.setText(riderReviewsComparable.getDate());
@@ -66,7 +66,7 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
      * Update the set of reviews
      * @param viewModels
      */
-    public void updateData(List<RiderReviewsComparable> viewModels) {
+    public void updateData(List<ReviewsComparable> viewModels) {
         for (int i = 0; i < viewModels.size(); i++) {
             riderList.set(i, viewModels.get(i));
         }
@@ -77,12 +77,12 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
     /**
      * ViewHolder class
      */
-    class RiderReviewsHolder extends RecyclerView.ViewHolder {
+    class ReviewsHolder extends RecyclerView.ViewHolder {
 
         public TextView name, comment, date;
         RatingBar restSimpleRatingBar;
 
-        public RiderReviewsHolder(final View itemView) {
+        public ReviewsHolder(final View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             date = itemView.findViewById(R.id.date);

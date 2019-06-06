@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RiderReviewsFragment extends Fragment {
+public class ReviewsFragment extends Fragment {
 
     /* Database references */
     private DatabaseReference databaseReference;
@@ -52,12 +52,12 @@ public class RiderReviewsFragment extends Fragment {
     private View progressBar;
 
     private LinearLayoutManager linearLayoutManager;
-    private RiderReviewsAdapter adapter;
-    private RiderReviewsComparable review;
+    private ReviewsAdapter adapter;
+    private ReviewsComparable review;
     private String sortBy="NULL";
     private View view;
 
-    public RiderReviewsFragment() {
+    public ReviewsFragment() {
         // Required empty public constructor
     }
 
@@ -159,11 +159,11 @@ public class RiderReviewsFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         /* Get all the current Rider's reviews */
         getReviews(new GetReviewsCallback() {
-            /* Save the reviews in a List of RiderReviewsComparable type */
-            List<RiderReviewsComparable> list = new ArrayList<>();
+            /* Save the reviews in a List of ReviewsComparable type */
+            List<ReviewsComparable> list = new ArrayList<>();
 
             @Override
-            public void onCallback(RiderReviewsComparable review) {
+            public void onCallback(ReviewsComparable review) {
                 boolean exists = false;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i).getKey().equals(review.getKey())) {
@@ -178,24 +178,24 @@ public class RiderReviewsFragment extends Fragment {
                     list.add(review);
                     //Sort the reviews, if asked
                     if(sortBy.compareTo("byName")==0){
-                        Collections.sort(list, new Comparator<RiderReviewsComparable>() {
-                            public int compare(RiderReviewsComparable obj1, RiderReviewsComparable obj2) {
+                        Collections.sort(list, new Comparator<ReviewsComparable>() {
+                            public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Name
                                 return obj1.getName().compareTo((obj2.getName()));
                             }
                         });
                     }
                     if(sortBy.compareTo("byRating")==0){
-                        Collections.sort(list, new Comparator<RiderReviewsComparable>() {
-                            public int compare(RiderReviewsComparable obj1, RiderReviewsComparable obj2) {
+                        Collections.sort(list, new Comparator<ReviewsComparable>() {
+                            public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Rating
                                 return obj2.getRating().compareTo((obj1.getRating()));
                             }
                         });
                     }
                     if(sortBy.compareTo("byDate")==0){
-                        Collections.sort(list, new Comparator<RiderReviewsComparable>() {
-                            public int compare(RiderReviewsComparable obj1, RiderReviewsComparable obj2) {
+                        Collections.sort(list, new Comparator<ReviewsComparable>() {
+                            public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Date
                                 String date1=obj1.getDate().substring(6)+ // get yyyy
                                         obj1.getDate().substring(3,5)+ // get MM
@@ -210,7 +210,7 @@ public class RiderReviewsFragment extends Fragment {
                     /* Set the adapter and show the recycler view while make invisible the progress bar */
                     linearLayoutManager = new LinearLayoutManager(getContext());
                     recyclerView.setLayoutManager(linearLayoutManager);
-                    adapter = new RiderReviewsAdapter(getContext(), view, list);
+                    adapter = new ReviewsAdapter(getContext(), view, list);
                     recyclerView.setAdapter(adapter);
                     view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
                 }
@@ -274,7 +274,7 @@ public class RiderReviewsFragment extends Fragment {
                                                 public void onCallback(Map user) {
                                                     /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
                                                     review = null;
-                                                    review = new RiderReviewsComparable();
+                                                    review = new ReviewsComparable();
                                                     review.setName(user.get("name").toString());
                                                     review.setDate(user.get("date").toString());
                                                     review.setRating(user.get("value").toString());
@@ -318,6 +318,6 @@ public class RiderReviewsFragment extends Fragment {
     }
 
     public interface GetReviewsCallback {
-        void onCallback(RiderReviewsComparable rider);
+        void onCallback(ReviewsComparable rider);
     }
 }
