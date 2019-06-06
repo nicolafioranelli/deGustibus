@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.geofire.GeoFire;
@@ -168,6 +171,12 @@ public class RiderChoiceFragment extends Fragment {
         final Button button = view.findViewById(R.id.orderButton);
         final Button refuse = view.findViewById(R.id.refuseButton);
 
+        // review items
+        final ImageView riderImage = view.findViewById(R.id.delImage);
+        final TextView riderName = view.findViewById(R.id.deliverymanName);
+        final RatingBar rating = view.findViewById(R.id.ratingBar);
+        final EditText comment = view.findViewById(R.id.comment);
+
         summaryReference = databaseReference.child("orders").child(id);
         summaryListener = summaryReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -256,6 +265,7 @@ public class RiderChoiceFragment extends Fragment {
                 } else if (order.getStatus().equals("done")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
+                    view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     status.setText(R.string.status_done);
                     isNew = false;
                 } else if (order.getStatus().equals("delivering")) {

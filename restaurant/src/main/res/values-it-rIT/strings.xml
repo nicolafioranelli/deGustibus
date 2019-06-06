@@ -142,4 +142,5 @@
     <string name="rating_score">Punteggio:</string>
     <string name="comment">Scrivi qui il tuo commento</string>
     <string name="sendButton">Invia la recensione</string>
+    <string name="exitMap">Premi indietro per uscire dalla modalità mappa!</string>
 </resources>

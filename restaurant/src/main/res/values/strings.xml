@@ -183,4 +183,5 @@
     <string name="rating_name" >Name:</string>
     <string name="sendButton">Send review</string>
     <string name="comment">Write here your comment</string>
+    <string name="exitMap">Press back to exit from map mode!</string>
 </resources>
