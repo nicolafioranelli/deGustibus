@@ -117,15 +117,26 @@ public class EditProfile extends Fragment {
     private DatabaseReference referenceListener;
     private Client client;
     private Index index;
+    private boolean settedProfile;
+    // Declare Context variable at class level in Fragment
+    private Context mContext;
 
     public EditProfile() {
         // Required empty public constructor
+    }
+
+    /* Define the listener here to manage clicks on the toolbar edit button */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
     /* The method allows to retrieve the shared preferences and to let the toolbar be available */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        settedProfile=false;
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -173,7 +184,13 @@ public class EditProfile extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        loadFromFirebase();
+        loadFromFirebase(view);
+
+        if(settedProfile=true)
+            getActivity().setTitle(getString(R.string.title_Edit));
+        else
+            getActivity().setTitle(getString(R.string.title_first_Edit));
+
         takeTimeTextViews();
         getPhoto(view);
     }
@@ -206,6 +223,7 @@ public class EditProfile extends Fragment {
                 Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
 
                 if (getArguments() != null) {
+                    /*
                     try {
                         Fragment fragment = null;
                         Class fragmentClass;
@@ -216,11 +234,11 @@ public class EditProfile extends Fragment {
                     } catch (Exception e) {
 
                     }
-                    return true;
+                    return true;*/
                 } else {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    return true;
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        return true;
                 }
             }
         }
@@ -520,13 +538,13 @@ public class EditProfile extends Fragment {
             switch (requestCode) {
                 case 0:
                     mImageUri = Uri.parse(getPrefPhoto());
-                    Glide.with(getContext()).load(mImageUri).into(img);
+                    Glide.with(mContext).load(mImageUri).into(img);
                     setPrefPhoto(mImageUri.toString());
                     break;
                 case 1:
                     mImageUri = data.getData();
                     setPrefPhoto(mImageUri.toString());
-                    Glide.with(getContext()).load(mImageUri).into(img);
+                    Glide.with(mContext).load(mImageUri).into(img);
                     break;
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -566,7 +584,7 @@ public class EditProfile extends Fragment {
      * operations, otherwise will do nothing.
      */
     private void checkPermissionsAndStartGallery() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 21);
         } else {
@@ -584,7 +602,7 @@ public class EditProfile extends Fragment {
     }
 
     private void checkPermissionsAndStartCamera() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             /* Check permissions, if not ask for them, the result will be catched in the method on RequestPermissionsResult */
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 20);
         } else {
@@ -606,7 +624,7 @@ public class EditProfile extends Fragment {
 
                 /* Start Intent for camera */
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", image));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", image));
                 startActivityForResult(intent, 0);
             } catch (Exception e) {
                 Log.e("MAD", "getPhoto: ", e);
@@ -807,12 +825,13 @@ public class EditProfile extends Fragment {
         }
     }
 
-    private void loadFromFirebase() {
+    private void loadFromFirebase(final View view) {
         referenceListener = databaseReference.child("restaurants").child(user.getUid());
         listener = referenceListener.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    settedProfile=true;
                     ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
 
                     fullname.setText(profile.getName());
@@ -842,7 +861,7 @@ public class EditProfile extends Fragment {
                         pic = profile.getPhoto();
                     }
                     /* Glide */
-                    GlideApp.with(getContext())
+                    GlideApp.with(mContext)
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
@@ -865,8 +884,8 @@ public class EditProfile extends Fragment {
                     sundayOpen.setText(getResources().getString(R.string.frProfile_defOpen));
                     sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
                 }
-                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
             }
 
             @Override

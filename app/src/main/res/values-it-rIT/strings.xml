@@ -29,6 +29,7 @@
     <string name="set_TitleLogout">Esci</string>
     <string name="set_TitleModify">Modifica password</string>
     <string name="title_EditProfile">Modifica</string>
+    <string name="title_first_Edit">Imposta Profilo</string>
     <string name="title_Notifications">Notifiche</string>
     <string name="title_Profile">Profilo</string>
     <string name="title_Settings">Impostazioni</string>

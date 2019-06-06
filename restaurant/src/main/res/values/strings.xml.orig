@@ -1,0 +1,189 @@
+<resources>
+    <string name="app_name">deGustibus</string>
+
+    <!-- Fragments Titles -->
+    <string name="title_Profile">Profile</string>
+    <string name="title_Daily">Daily Offer</string>
+    <string name="title_Reservations">Reservations</string>
+    <string name="title_Edit">Edit</string>
+    <string name="title_first_Edit">Set Your Profile</string>
+    <string name="title_Activity_home" translatable="false">deGustibus</string>
+    <string name="title_Settings">Settings</string>
+    <string name="title_Notifications">Notifications</string>
+
+    <!-- Menu Titles -->
+    <string name="menu_home" translatable="false">Home</string>
+    <string name="menu_daily">Daily offer</string>
+    <string name="menu_reservations">Reservations</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_settings">Settings</string>
+
+    <!-- Daily Fragment -->
+    <string name="frDaily_avail">Availability:&#160;</string>
+    <string name="frDaily_price">Price:&#160;</string>
+    <string name="frDaily_dishName">Dish name</string>
+    <string name="frDaily_desc">Description</string>
+
+    <string name="frDaily_defName">Pizza</string>
+    <string name="frDaily_defDesc">Sausage Pizza, gluten free, no lactose</string>
+
+    <!-- Home Fragment -->
+    <string name="frHome_title">Welcome back, Jack!</string>
+    <string name="frHome_notifications">Check your\nnotifications!</string>
+
+    <!-- Profile Fragment -->
+    <string name="frProfile_name">Restaurant Name</string>
+    <string name="frProfile_email">Email</string>
+    <string name="frProfile_desc">Description</string>
+    <string name="frProfile_phone">Phone</string>
+    <string name="frProfile_address">Address</string>
+    <string name="frProfile_open">Opening</string>
+    <string name="frProfile_close">Closing</string>
+    <string name="frProfile_defHours">General working hours</string>
+    <string name="frProfile_monday">Monday</string>
+    <string name="frProfile_tuesday">Tuesday</string>
+    <string name="frProfile_wednesday">Wednesday</string>
+    <string name="frProfile_thursday">Thursday</string>
+    <string name="frProfile_friday">Friday</string>
+    <string name="frProfile_saturday">Saturday</string>
+    <string name="frProfile_sunday">Sunday</string>
+
+    <string name="camera">Capture photo from camera</string>
+    <string name="saved">Saved!</string>
+    <string name="gallery">Select from gallery</string>
+    <string name="select_action">Select action</string>
+    <string name="permission_denied">Please, enable the requested permissions to access this functionality!</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <string name="frProfile_defName" translatable="false">Pizza Express</string>
+    <string name="frProfile_defEmail" translatable="false">info@pizzaexpress.it</string>
+    <string name="frProfile_defDesc">Over 30 different types of pizzas directly at your home!</string>
+    <string name="frProfile_defPhone" translatable="false">011 5638897</string>
+    <string name="frProfile_defAddress" translatable="false">Corso Vittorio Emanuele II, 4</string>
+    <string name="frProfile_defOpen" translatable="false">08:00</string>
+    <string name="frProfile_defClose" translatable="false">20:00</string>
+
+    <!-- Reservation Fragment -->
+    <string name="reservation_customerName">Customer name</string>
+    <string name="reservation_customerNameEdit">John Snow</string>
+    <string name="reservation_portions">Portions</string>
+    <string name="reservation_date">Date</string>
+    <string name="reservation_time">Time</string>
+
+    <string name="reservation_dishesOrderededit">Dish names</string>
+    <string name="reservation_reservationDescedit">Notes</string>
+    <string name="reservation_dishesOrdered">Dishes Ordered</string>
+    <string name="reservation_reservationDesc">Description</string>
+    <string name="reservation_quantity">Portions:&#160;</string>
+
+    <string name="defaultdish">"Pizza Margherita"</string>
+    <string name="defaultdishdesc">Pizza with tomato sauce</string>
+    <string name="reservation_adapter_quantity">"Quantity: "</string>
+    <string name="reservation_adapter_time">Reservation time:</string>
+
+    <!-- Settings -->
+    <string name="set_TitleModify">Modify Password</string>
+    <string name="set_TitleDelete">Delete Account</string>
+    <string name="set_TitleLogout">Logout</string>
+    <string name="set_CatAccount" translatable="false">Account</string>
+    <string name="set_SumModify">Click here to insert a new password</string>
+    <string name="set_SumDelete">This operation will remove the account permanently</string>
+
+    <!-- Authentication -->
+    <string name="action_sign_in_short">Register</string>
+    <string name="reg_email" translatable="false">Email</string>
+    <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
+    <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
+    <string name="connect_failed">Please, check your internet connection!</string>
+    <string name="hint_email" translatable="false">Email</string>
+    <string name="hint_password" translatable="false">Password</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_link_to_register">Not a member? Get registered in deGustibus now!</string>
+    <string name="btn_link_to_login">Already registered. Login Me!</string>
+    <string name="btn_forgot_password">Forgot your password?</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="btn_back" translatable="false"><![CDATA[<< Back]]></string>
+    <string name="lbl_forgot_password">Forgot password?</string>
+    <string name="forgot_password_msg">We just need your registered Email to sent you password reset instructions.</string>
+
+    <string name="err_emailMiss">Enter email address!</string>
+    <string name="err_passMiss">Enter password!</string>
+    <string name="psw_changed">Password changed successfully!</string>
+    <string name="err_passShort">Password too short, enter minimum 6 characters!</string>
+    <string name="reg_compl">Registration completed successfully, welcome!</string>
+    <string name="err_reg">Authentication failed.</string>
+    <string name="pass_ok">We have sent you instructions to reset your password!</string>
+    <string name="pass_err">Failed to send reset email!</string>
+    <string name="image_not_saved">Image not saved</string>
+
+    <string name="welcome">Welcome back!</string>
+
+    <string name="err_notification">Well done! You\'ve managed all the notifications!</string>
+    <string name="err_daily">Ops&#8230; nothing to show here! Please insert something in your daily menu&#8230;</string>
+    <string name="err_reservations">Ops&#8230; nothing to show here!</string>
+    <string name="err_connection">It seems you\'re not connected! Please enable your Internet connection&#8230;</string>
+    <string name="status_new">new order</string>
+    <string name="status_incoming">incoming</string>
+    <string name="status_elaboration">elaboration</string>
+    <string name="status_refused">refused</string>
+    <string name="status_deliverying">deliverying</string>
+    <string name="status_done">delivered</string>
+    <string name="typeNot_new">New order</string>
+    <string name="typeNot_refused">Refused order</string>
+    <string name="typeNot_incoming">Incoming order</string>
+    <string name="typeNot_accepted">Order accepted</string>
+    <string name="typeNot_deliverying">Deliverying order</string>
+    <string name="typeNot_done">Delivered</string>
+    <string name="typeNot_noRider">No rider available</string>
+    <string name="desc1">Oh no! It seems your order has been refused by</string>
+    <string name="desc2">" because no rider is currently available!"</string>
+    <string name="desc3">Your order #</string>
+    <string name="desc4">has been confirmed by</string>
+    <string name="desc5">You have received a new order #</string>
+    <string name="desc6">to be delivered. \\nCheck details in your incoming box.</string>
+    <string name="resStatus">"Status: "</string>
+    <string name="resAccept">Accept</string>
+    <string name="resRefuse">Refuse</string>
+    <string name="resCustomer">Customer: </string>
+    <string name="resOrder">Order</string>
+    <string name="resDate">Date: </string>
+    <string name="resHour">"Hour: "</string>
+    <string name="resTotal">Total: </string>
+    <string name="delete">Delete</string>
+
+    <string name="errProfile">Complete your profile before continuing!</string>
+    <string name="select_rider">Select your rider:</string>
+    <string name="title_Order">Order</string>
+    <string name="new_notification">New notification!</string>
+    <string name="notification_message">Open the notification section ...</string>
+
+    <string name="genHours">Set general opening hours for all days.</string>
+    <string name="specHours">Set different opening hours for each day.</string>
+
+    <string name="name">Name is required!</string>
+    <string name="email">Email is required!</string>
+    <string name="phone">Phone is required!</string>
+    <string name="descr">Description is required!</string>
+    <string name="address">Address is required!</string>
+    <string name="menu_insights">Insights</string>
+    <string name="insights_preferences">Preferences</string>
+    <string name="insights_time">Time distribution</string>
+    <string name="see_reviews">Reviews</string>
+    <string name="reviews">Reviews</string>
+    <string name="no_reviews">No rating has been received yet!</string>
+    <string name="ratings">Ratings</string>
+
+
+    <string name="sort_by">Sort by</string>
+    <string name="by_name">Name</string>
+    <string name="by_rating">Rating</string>
+    <string name="by_date">Date</string>
+    <string name="rating_score" >Score:</string>
+    <string name="rating_name" >Name:</string>
+<<<<<<< HEAD
+=======
+    <string name="sendButton">Send review</string>
+    <string name="comment">Write here your comment</string>
+>>>>>>> master
+</resources>

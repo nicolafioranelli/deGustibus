@@ -1,5 +1,6 @@
 package com.madness.restaurant.reservations;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -161,16 +162,21 @@ public class ReservationFragment extends Fragment {
                 holder.status.setText(model.getStatus());
                 if (model.getStatus().equals("new")) {
                     holder.status.setText(R.string.status_new);
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (model.getStatus().equals("refused")) {
                     holder.status.setText(R.string.status_refused);
+                    holder.status.setTextColor(Color.RED);
                 } else if (model.getStatus().equals("incoming")) {
                     holder.status.setText(R.string.status_elaboration);
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
                 } else if (model.getStatus().equals("delivering")) {
                     holder.status.setText(getString(R.string.status_deliverying));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (model.getStatus().equals("elaboration")) {
                     holder.status.setText(R.string.status_elaboration);
+                    holder.status.setTextColor(getResources().getColor(R.color.colorAccent));
                 }
 
                 holder.button.setOnClickListener(new View.OnClickListener() {

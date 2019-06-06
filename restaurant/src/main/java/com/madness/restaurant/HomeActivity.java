@@ -47,6 +47,7 @@ import com.madness.restaurant.notifications.NotificationsFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
 import com.madness.restaurant.reservations.ReservationFragment;
+import com.madness.restaurant.reviews.ReviewsFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +63,10 @@ public class HomeActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private DatabaseReference databaseReference;
+    private DatabaseReference listenerReference;
+    private ValueEventListener listener;
+    private boolean settedProfile;
     private FirebaseUser user;
     private final String CHANNEL_ID = "channelRestaurant";
     private final int NOTIFICATION_ID = 001;
@@ -73,7 +78,8 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         toolbar = findViewById(R.id.toolbarhome);
         setSupportActionBar(toolbar);
-
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         firebaseAuth = FirebaseAuth.getInstance();
 
         /* Check if there is an user authenticated, in case no user launch the login screen */
@@ -90,6 +96,7 @@ public class HomeActivity extends AppCompatActivity
 
         fragmentManager = getSupportFragmentManager();
         if(getIntent().hasExtra("newCreation")) {
+            settedProfile=false;
             try {
                 fragment = null;
                 Class fragmentClass;
@@ -100,19 +107,8 @@ public class HomeActivity extends AppCompatActivity
                 args.putBoolean("isNew", true);
                 fragment.setArguments(args);
 
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditP").commit();
                 navigationView.getMenu().getItem(1).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
             }
@@ -127,19 +123,48 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {
             final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-            databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            listenerReference=databaseReference.child("restaurants").child(user.getUid());
+            listener=listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
+                        settedProfile=true;
                         try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = HomeFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                            navigationView.getMenu().getItem(0).setChecked(true);
+                        } catch (Exception e) {
+                            Log.e("MAD", "onCreate: ", e);
+                        }
                             Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
                             userName.setText(objectMap.get("name").toString());
-                        } catch (Exception e) {
+                    }
 
+
+                    //if login info are already setted but profile info are not, i.e. if the user closed the app
+                    // after the login but before setting profile info, or if login info were setted by the user
+                    // when signing in as a customer or a rider
+                    else {
+                        settedProfile=false;
+                        try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = EditProfile.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+
+                            Bundle args = new Bundle();
+                            args.putBoolean("isNew", true);
+                            fragment.setArguments(args);
+
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditP").commit();
+                            navigationView.getMenu().getItem(1).setChecked(true);
+                        } catch (Exception e) {
+                            Log.e("MAD", "onCreate: ", e);
                         }
                     }
                 }
@@ -259,6 +284,24 @@ public class HomeActivity extends AppCompatActivity
         ft.commit();
     }
 
+    @Override
+    public void reviewsClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = ReviewsFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "reviewsClick: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "RestarantReviews");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
+    }
+
     private void updateMenu() {
         fragment = fragmentManager.findFragmentById(R.id.flContent);
         if (fragment != null) {
@@ -325,7 +368,33 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //if the current fragment is editProfile and the Profile is not setted, close the app
+        EditProfile editProfile = (EditProfile)
+                getSupportFragmentManager().findFragmentByTag("EditP");
+        if (editProfile != null &&editProfile.isVisible()&&!settedProfile) {
+            finish();
+            super.onBackPressed();
+        }
+
+        //if the current fragment is HomeFragment, close the app
+        HomeFragment homeFragment = (HomeFragment)
+                getSupportFragmentManager().findFragmentByTag("HOME");
+        if (homeFragment != null &&homeFragment.isVisible()) {
+            finish();
+            super.onBackPressed();
+        }
+
+        //otherwise, go to HomeFragment ??? TODO
+        fragment = null;
+        Class fragmentClass;
+        try {
+            fragmentClass = HomeFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -336,63 +405,93 @@ public class HomeActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_profile:
-                try {
-                    fragmentClass = ProfileFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "PROFILE").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                profileIsSetted();
+                if(settedProfile){
+                    try {
+                        fragmentClass = ProfileFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "PROFILE").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+            }
                 break;
             case R.id.nav_reservations:
-                try {
-                    fragmentClass = ReservationFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                profileIsSetted();
+                if(settedProfile){
+                        try {
+                            fragmentClass = ReservationFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+                            fragmentManager = getSupportFragmentManager();
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "RESERVATION").addToBackStack("HOME").commit();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                } else{
+                        Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
+                    }
                 break;
             case R.id.nav_daily:
-                try {
-                    fragmentClass = DailyFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    profileIsSetted();
+                    if(settedProfile){
+                    try {
+                        fragmentClass = DailyFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "DAILY").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.nav_settings:
-                try {
-                    fragmentClass = SettingsFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "SETTINGS").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                profileIsSetted();
+                if(settedProfile){
+                    try {
+                        fragmentClass = SettingsFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "SETTINGS").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.nav_insights:
-                try {
-                    fragmentClass = InsightsFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "INSIGHTS").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                profileIsSetted();
+                if(settedProfile){
+                    try {
+                        fragmentClass = InsightsFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "INSIGHTS").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
-                try {
-                    fragmentClass = HomeFragment.class;
-                    fragment = (Fragment) fragmentClass.newInstance();
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                profileIsSetted();
+                if(settedProfile){
+                    try {
+                        fragmentClass = HomeFragment.class;
+                        fragment = (Fragment) fragmentClass.newInstance();
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), getString(R.string.errProfile), Toast.LENGTH_SHORT).show();
                 }
         }
         item.setChecked(true);
@@ -400,6 +499,31 @@ public class HomeActivity extends AppCompatActivity
         drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    public void profileIsSetted() {
+        FirebaseDatabase.getInstance().getReference().child("restaurants")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (objectMap.get("name") != null&&
+                            objectMap.get("desc") != null&&
+                            objectMap.get("address") != null&&
+                            objectMap.get("phone") != null) {
+                        settedProfile=true;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -413,11 +537,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        /*NewReservationFragment editRes = (NewReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("AddReservation");
-        if (editRes != null) {
-            editRes.setDate(year, month, dayOfMonth);
-        }*/
+        // empty method
     }
 
     /* Check if connection is enabled! */
@@ -436,4 +556,13 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            listenerReference.removeEventListener(listener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

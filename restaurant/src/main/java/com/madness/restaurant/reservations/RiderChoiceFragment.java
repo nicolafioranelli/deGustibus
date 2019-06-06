@@ -1,6 +1,7 @@
 package com.madness.restaurant.reservations;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -244,11 +245,13 @@ public class RiderChoiceFragment extends Fragment {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_refused);
+                    status.setTextColor(Color.RED);
                     isNew = false;
                 } else if (order.getStatus().equals("incoming")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                     isNew = false;
                 } else if (order.getStatus().equals("done")) {
                     refuse.setVisibility(View.GONE);
@@ -259,11 +262,13 @@ public class RiderChoiceFragment extends Fragment {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(getString(R.string.status_deliverying));
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                     isNew = false;
                 } else if (order.getStatus().equals("elaboration")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
+                    status.setTextColor(getResources().getColor(R.color.colorAccent));
                     isNew = false;
                 }
 

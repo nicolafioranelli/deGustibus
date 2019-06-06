@@ -6,6 +6,7 @@
     <string name="title_Daily">Daily Offer</string>
     <string name="title_Reservations">Reservations</string>
     <string name="title_Edit">Edit</string>
+    <string name="title_first_Edit">Set Your Profile</string>
     <string name="title_Activity_home" translatable="false">deGustibus</string>
     <string name="title_Settings">Settings</string>
     <string name="title_Notifications">Notifications</string>
@@ -180,4 +181,6 @@
     <string name="by_date">Date</string>
     <string name="rating_score" >Score:</string>
     <string name="rating_name" >Name:</string>
+    <string name="sendButton">Send review</string>
+    <string name="comment">Write here your comment</string>
 </resources>
