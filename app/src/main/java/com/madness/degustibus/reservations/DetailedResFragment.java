@@ -441,7 +441,7 @@ public class DetailedResFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     float touchPositionX = event.getX();
-                    float width = ratingBar2.getWidth();
+                    float width = riderRatingBar.getWidth();
                     float starsf = (touchPositionX / width) * 5.0f;
                     int stars = (int) starsf + 1;
                     riderRatingBar.setRating(stars);
@@ -585,8 +585,8 @@ public class DetailedResFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Object rating = dataSnapshot.child("rating").getValue();
                     Object count = dataSnapshot.child("count").getValue();
-                    ref.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating()));
-                    ref.child("count").setValue(Integer.parseInt(count.toString()) + 1);
+                    refRider.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating()));
+                    refRider.child("count").setValue(Integer.parseInt(count.toString()) + 1);
                 }
 
                 @Override

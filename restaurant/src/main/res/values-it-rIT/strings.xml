@@ -143,4 +143,7 @@
     <string name="comment">Scrivi qui il tuo commento</string>
     <string name="sendButton">Invia la recensione</string>
     <string name="exitMap">Premi indietro per uscire dalla modalità mappa!</string>
+    <string name="evaluation_Desc">Grazie per la tua valutazione! I ristoratori potranno così migliorare il proprio lavoro!</string>
+    <string name="evaluation_Title">Valutazione completata</string>
+    <string name="evaluation_Err">Valuta tutti gli elementi per favore!</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.madness.restaurant.reservations;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
@@ -8,10 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,11 +22,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,17 +37,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.haversine.ComputeDistance;
 import com.madness.restaurant.haversine.Point;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RiderChoiceFragment extends Fragment {
 
@@ -72,6 +87,11 @@ public class RiderChoiceFragment extends Fragment {
     private boolean isNew;
     private View view;
     private ReservationClass order;
+    private CircleImageView riderImage;
+    private TextView riderName;
+    private RatingBar riderRatingBar;
+    private EditText riderComment;
+    private Button reviewButton;
 
     public RiderChoiceFragment() {
         // Required empty public constructor
@@ -140,6 +160,13 @@ public class RiderChoiceFragment extends Fragment {
                 }
             }
         });
+
+        reviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateRatings();
+            }
+        });
         return rootView;
     }
 
@@ -172,10 +199,11 @@ public class RiderChoiceFragment extends Fragment {
         final Button refuse = view.findViewById(R.id.refuseButton);
 
         // review items
-        final ImageView riderImage = view.findViewById(R.id.delImage);
-        final TextView riderName = view.findViewById(R.id.deliverymanName);
-        final RatingBar rating = view.findViewById(R.id.ratingBar);
-        final EditText comment = view.findViewById(R.id.comment);
+        riderImage = view.findViewById(R.id.delImage);
+        riderName = view.findViewById(R.id.deliverymanName);
+        riderRatingBar = view.findViewById(R.id.ratingBar);
+        riderComment = view.findViewById(R.id.comment);
+        reviewButton = view.findViewById(R.id.reviewButton);
 
         summaryReference = databaseReference.child("orders").child(id);
         summaryListener = summaryReference.addValueEventListener(new ValueEventListener() {
@@ -232,6 +260,7 @@ public class RiderChoiceFragment extends Fragment {
                     listOfDishes.append(order.getCart().get(i).getQuantity());
                     listOfDishes.append(" x ");
                     listOfDishes.append(order.getCart().get(i).getName());
+                    listOfDishes.append("\n");
                 }
                 description.setText(listOfDishes.toString());
                 price.setText(order.getTotalPrice());
@@ -268,6 +297,19 @@ public class RiderChoiceFragment extends Fragment {
                     view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     status.setText(R.string.status_done);
                     isNew = false;
+
+                    if(!dataSnapshot.child("restRiderRating").exists()) {
+                        loadRider(order.getDeliverymanID(), 0);
+                    } else {
+                        loadRider(order.getDeliverymanID(), Math.round(Float.parseFloat(dataSnapshot.child("restRiderRating").getValue(String.class))));
+                    }
+                    if (dataSnapshot.child("restRiderRating").exists()) {
+                        reviewButton.setVisibility(View.GONE);
+                        riderRatingBar.setClickable(false);
+                        riderComment.setFocusable(false);
+                        riderComment.setEnabled(false);
+                        riderComment.setText(dataSnapshot.child("restRiderComment").getValue(String.class));
+                    }
                 } else if (order.getStatus().equals("delivering")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
@@ -300,6 +342,130 @@ public class RiderChoiceFragment extends Fragment {
 
             }
         });
+    }
+
+    private void loadRider (String riderID, Integer riderRating) {
+        databaseReference.child("riders").child(riderID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String photo = null;
+                if(dataSnapshot.child("photo").exists()) {
+                    photo = dataSnapshot.child("photo").getValue().toString();
+                }
+
+                GlideApp.with(getContext())
+                        .load(photo)
+                        .placeholder(R.drawable.user_profile)
+                        .into(riderImage);
+
+                riderName.setText(dataSnapshot.child("name").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        riderRatingBar.setRating(riderRating);
+        riderRatingBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    float touchPositionX = event.getX();
+                    float width = riderRatingBar.getWidth();
+                    float starsf = (touchPositionX / width) * 5.0f;
+                    int stars = (int) starsf + 1;
+                    riderRatingBar.setRating(stars);
+                    v.setPressed(false);
+                }
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    v.setPressed(true);
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                    v.setPressed(false);
+                }
+                return true;
+            }
+        });
+    }
+
+    private void updateRatings () {
+        Boolean ok = true;
+
+        if (riderRatingBar.getRating() == 0) {
+            ok = false;
+        }
+
+        if (ok) {
+            /* Update ratings */
+
+            FirebaseDatabase.getInstance().getReference().child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Map<String, Object> riderRating = new HashMap<>();
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    Date date = new Date();
+                    riderRating.put("name", dataSnapshot.child("name").getValue().toString());
+                    riderRating.put("comment", riderComment.getText().toString());
+                    riderRating.put("date", dateFormat.format(date));
+                    riderRating.put("rating", riderRatingBar.getRating());
+                    databaseReference.child("ratings").child("riders").child(order.getDeliverymanID()).push().updateChildren(riderRating);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+            /* Update rider */
+            final DatabaseReference refRider = databaseReference.child("riders").child(order.getDeliverymanID());
+            refRider.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Object rating = dataSnapshot.child("rating").getValue();
+                    Object count = dataSnapshot.child("count").getValue();
+                    refRider.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating()));
+                    refRider.child("count").setValue(Integer.parseInt(count.toString()) + 1);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            HashMap<String, Object> updateMap = new HashMap<>();
+            updateMap.put("restRiderComment", riderComment.getText().toString());
+            updateMap.put("restRiderRating", Float.toString(riderRatingBar.getRating()));
+            databaseReference.child("orders").child(order.getId()).updateChildren(updateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(getString(R.string.evaluation_Title))
+                            .setMessage(getString(R.string.evaluation_Desc))
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Continue with delete operation
+                                    reviewButton.setVisibility(View.GONE);
+                                }
+                            })
+
+                            // A null listener allows the button to dismiss the dialog and take no further action.
+                            .setNegativeButton(android.R.string.no, null)
+                            .show();
+                }
+            });
+
+        } else {
+            Toast.makeText(getContext(), getString(R.string.evaluation_Err), Toast.LENGTH_SHORT);
+        }
     }
 
     /* This method allows to download data from Firebase through different calls to Event Listeners

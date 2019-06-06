@@ -184,4 +184,9 @@
     <string name="sendButton">Send review</string>
     <string name="comment">Write here your comment</string>
     <string name="exitMap">Press back to exit from map mode!</string>
+
+    <!-- Evaluation -->
+    <string name="evaluation_Title">Evaluation completed</string>
+    <string name="evaluation_Desc">Thanks for your evaluations! Restaurateurs will collect them to improve their work!</string>
+    <string name="evaluation_Err">Please, evaluate all items!</string>
 </resources>
