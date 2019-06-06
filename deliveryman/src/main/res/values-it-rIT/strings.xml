@@ -115,4 +115,5 @@
     <string name="rating_score">Punteggio:</string>
     <string name="map_address">Indirizzo:</string>
     <string name="map_time">Durata:</string>
+    <string name="exitMap">Premi indietro per uscire dalla modalità mappa!</string>
 </resources>

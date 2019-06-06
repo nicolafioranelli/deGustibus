@@ -140,6 +140,9 @@
     <string name="by_date">Data</string>
     <string name="rating_name">Nome:</string>
     <string name="rating_score">Punteggio:</string>
+<<<<<<< HEAD
+=======
     <string name="comment">Scrivi qui il tuo commento</string>
     <string name="sendButton">Invia la recensione</string>
+>>>>>>> master
 </resources>

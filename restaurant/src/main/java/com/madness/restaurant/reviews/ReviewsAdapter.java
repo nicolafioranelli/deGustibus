@@ -69,4 +69,3 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.Restaura
         }
     }
 }
-

@@ -158,8 +158,14 @@ public class EditProfileFragment extends Fragment {
                     }
 
                 } else {
+                    if(settedProfile){
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    }
+                    else{
+                        getActivity().finish();
+                    }
+                    return true;
                 }
             }
         }
@@ -368,6 +374,10 @@ public class EditProfileFragment extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         if(getArguments()!= null) {
             map.put("totalKM", 0);
         }

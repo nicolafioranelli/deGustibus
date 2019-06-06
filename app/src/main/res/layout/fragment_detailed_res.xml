@@ -284,6 +284,8 @@
                             android:id="@+id/comment"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:maxLines="2"
+                            android:lines="2"
                             android:hint="@string/comment" />
                     </LinearLayout>
                 </LinearLayout>
