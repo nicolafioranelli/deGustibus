@@ -47,6 +47,7 @@
     <string name="reg_compl">Registrazione completata, benvenuto!</string>
     <string name="title_Completed">Ordini completati</string>
     <string name="title_Edit">Modifica</string>
+    <string name="title_first_Edit">Imposta Profilo</string>
     <string name="title_Incoming">Da consegnare</string>
     <string name="notifications_done">Ben fatto! Qua non c\'è più nulla da fare :)</string>
 

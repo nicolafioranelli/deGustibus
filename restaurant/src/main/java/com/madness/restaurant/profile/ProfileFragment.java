@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,18 +54,21 @@ public class ProfileFragment extends Fragment {
     private TextView sundayOpen;
     private TextView sundayClose;
     private ImageView img;
+    private Button reviews;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private FirebaseUser user;
+    // Declare Context variable at class level in Fragment
+    private Context mContext;
 
     public ProfileFragment() {
         // Required empty public constructor
     }
-
     /* Define the listener here to manage clicks on the toolbar edit button */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         if (context instanceof ProfileListener) {
             listener = (ProfileListener) context;
         } else {
@@ -88,9 +93,6 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Profile));
-
-        findViews(rootView);
-        loadFromFirebase();
         return rootView;
     }
 
@@ -118,7 +120,8 @@ public class ProfileFragment extends Fragment {
         listener.onItemClicked();
     }
 
-    private void findViews(View view) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         fullname = view.findViewById(R.id.tv_show_fullName);
         email = view.findViewById(R.id.tv_show_email);
         desc = view.findViewById(R.id.tv_show_desc);
@@ -139,10 +142,24 @@ public class ProfileFragment extends Fragment {
         sundayOpen = view.findViewById(R.id.tv_show_sundayOpen);
         sundayClose = view.findViewById(R.id.tv_show_sundayClose);
         img = view.findViewById(R.id.imageview);
+        reviews = view.findViewById(R.id.reviewsButton);
+        view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
+
+        loadFromFirebase(view);
+        listenToButton();
     }
 
-    private void loadFromFirebase() {
-        databaseReference.child("restaurants").child(user.getUid()).addValueEventListener(new ValueEventListener() {
+    private void listenToButton() {
+        reviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.reviewsClick();
+            }
+        });
+    }
+
+    private void loadFromFirebase(final View view) {
+        databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
@@ -173,13 +190,13 @@ public class ProfileFragment extends Fragment {
                         pic = profile.getPhoto();
                     }
                     /* Glide */
-                    GlideApp.with(getContext())
+                    GlideApp.with(mContext)
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
                 } else {
                     String pic = null;
-                    GlideApp.with(getContext())
+                    GlideApp.with(mContext)
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
@@ -201,8 +218,8 @@ public class ProfileFragment extends Fragment {
                     sundayClose.setText(getResources().getString(R.string.frProfile_defClose));
                 }
 
-                getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                getView().findViewById(R.id.layout).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE); //TODO remove,please?
+                view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -215,6 +232,6 @@ public class ProfileFragment extends Fragment {
     /* Interface for the listener */
     public interface ProfileListener {
         void onItemClicked();
+        void reviewsClick();
     }
-
 }

@@ -117,6 +117,7 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
+
         fragmentManager = getSupportFragmentManager();
         if (getIntent().hasExtra("newCreation")) {
             try {
@@ -131,16 +132,6 @@ public class HomeActivity extends AppCompatActivity
 
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
                 navigationView.getMenu().getItem(1).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
             }
@@ -162,8 +153,16 @@ public class HomeActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    try {
                         if (objectMap.get("name") != null) {
+                            try {
+                                fragment = null;
+                                Class fragmentClass;
+                                fragmentClass = HomeFragment.class;
+                                fragment = (Fragment) fragmentClass.newInstance();
+                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                            } catch (Exception e) {
+                                Log.e("MAD", "onCreate: ", e);
+                            }
                             userName.setText(objectMap.get("name").toString());
                             avail = (boolean) objectMap.get("available");
                             if (avail) {
@@ -171,10 +170,23 @@ public class HomeActivity extends AppCompatActivity
                             } else {
                                 available.setChecked(false);
                             }
-                        }
-                    } catch (Exception e) {
+                        }else {
+                            try {
+                                fragment = null;
+                                Class fragmentClass;
+                                fragmentClass = EditProfileFragment.class;
+                                fragment = (Fragment) fragmentClass.newInstance();
 
-                    }
+                                Bundle args = new Bundle();
+                                args.putBoolean("isNew", true);
+                                fragment.setArguments(args);
+
+                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                                navigationView.getMenu().getItem(1).setChecked(true);
+                            } catch (Exception e) {
+                                Log.e("MAD", "onCreate: ", e);
+                            }
+                        }
                 }
 
                 @Override

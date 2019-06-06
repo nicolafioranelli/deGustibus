@@ -5,6 +5,7 @@
     <string name="title_Home" translatable="false">Home</string>
     <string name="title_Completed">Completed</string>
     <string name="title_Edit">Edit</string>
+    <string name="title_first_Edit">Set Your Profile</string>
     <string name="title_Incoming">Incoming</string>
     <string name="title_Notifications">Notifications</string>
     <string name="title_Profile">Profile</string>

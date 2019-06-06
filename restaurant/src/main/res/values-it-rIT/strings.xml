@@ -5,6 +5,7 @@
     <string name="title_Daily">Offerta del Giorno</string>
     <string name="title_Reservations">Prenotazioni</string>
     <string name="title_Edit">Modifica</string>
+    <string name="title_first_Edit">Imposta Profilo</string>
     <string name="menu_daily">Offerta del Giorno</string>
     <string name="menu_reservations">Prenotazioni</string>
     <string name="menu_profile">Profilo</string>
@@ -128,4 +129,12 @@
     <string name="menu_insights">Statistiche</string>
     <string name="insights_preferences">Preferenze</string>
     <string name="insights_time">Distribuzione temporale</string>
+    <string name="ratings">Valutazioni</string>
+    <string name="see_reviews">Recensioni</string>
+    <string name="no_reviews">Non è stata effettuata nessuna valutazione</string>
+    <string name="reviews">Recensioni</string>
+    <string name="sort_by">Ordina per</string>
+    <string name="by_name">Nome</string>
+    <string name="by_rating">Valutazione</string>
+    <string name="by_date">Data</string>
 </resources>
