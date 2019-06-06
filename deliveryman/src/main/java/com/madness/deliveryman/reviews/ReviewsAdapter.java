@@ -1,4 +1,4 @@
-package com.madness.restaurant.restaurantReviews;
+package com.madness.deliveryman.reviews;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,36 +6,46 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
 import android.widget.TextView;
-
-import com.madness.restaurant.R;
+import android.widget.RatingBar;
+import com.madness.deliveryman.R;
 
 import java.util.List;
 
-public class RestaurantReviewsAdapter extends RecyclerView.Adapter<RestaurantReviewsAdapter.RestaurantReviewsHolder>{
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsHolder> {
 
     Context context;
     View view;
-    List<RestaurantReviewsComparable> riderList;
+    List<ReviewsComparable> riderList;
 
-    public RestaurantReviewsAdapter(Context context, View view, List<RestaurantReviewsComparable> riderList) {
+    public ReviewsAdapter(Context context, View view, List<ReviewsComparable> riderList) {
         this.context = context;
         this.view = view;
         this.riderList = riderList;
     }
 
+    /**
+     * Generate a single listitem
+     * @param viewGroup
+     * @param i
+     * @return
+     */
     @NonNull
     @Override
-    public RestaurantReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.reviews_listitem, viewGroup, false);
-        RestaurantReviewsHolder viewHolder = new RestaurantReviewsHolder(view);
+        ReviewsHolder viewHolder = new ReviewsHolder(view);
         return viewHolder;
     }
 
+    /**
+     * Populate the listitem
+     * @param holder reviewholder
+     * @param position in the set
+     */
     @Override
-    public void onBindViewHolder(@NonNull RestaurantReviewsHolder holder, int position) {
-        final RestaurantReviewsComparable riderReviewsComparable = riderList.get(position);
+    public void onBindViewHolder(@NonNull ReviewsHolder holder, int position) {
+        final ReviewsComparable riderReviewsComparable = riderList.get(position);
         holder.name.setText(riderReviewsComparable.getName());
         holder.comment.setText(riderReviewsComparable.getComment());
         holder.date.setText(riderReviewsComparable.getDate());
@@ -43,24 +53,36 @@ public class RestaurantReviewsAdapter extends RecyclerView.Adapter<RestaurantRev
         holder.restSimpleRatingBar.setRating(Float.valueOf(riderReviewsComparable.getRating()));
     }
 
+    /**
+     * Get the size of the set
+     * @return
+     */
     @Override
     public int getItemCount() {
         return riderList.size();
     }
 
-    public void updateData(List<RestaurantReviewsComparable> viewModels) {
+    /**
+     * Update the set of reviews
+     * @param viewModels
+     */
+    public void updateData(List<ReviewsComparable> viewModels) {
         for (int i = 0; i < viewModels.size(); i++) {
             riderList.set(i, viewModels.get(i));
         }
         notifyDataSetChanged();
     }
 
-    class RestaurantReviewsHolder extends RecyclerView.ViewHolder {
+
+    /**
+     * ViewHolder class
+     */
+    class ReviewsHolder extends RecyclerView.ViewHolder {
 
         public TextView name, comment, date;
         RatingBar restSimpleRatingBar;
 
-        public RestaurantReviewsHolder(final View itemView) {
+        public ReviewsHolder(final View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             date = itemView.findViewById(R.id.date);

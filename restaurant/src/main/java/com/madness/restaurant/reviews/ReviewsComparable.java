@@ -1,15 +1,15 @@
-package com.madness.restaurant.restaurantReviews;
+package com.madness.restaurant.reviews;
 
-public class RestaurantReviewsComparable {
+public class ReviewsComparable {
 
     private String date;
-    private Long rating;
+    private String rating;
     private String name;
     private String comment;
     private String key;
 
 
-    public RestaurantReviewsComparable(String date, Long rating, String name, String comment, String key) {
+    public ReviewsComparable(String date, String rating, String name, String comment, String key) {
         this.date = date;
         this.rating = rating;
         this.name = name;
@@ -17,7 +17,7 @@ public class RestaurantReviewsComparable {
         this.key = key;
     }
 
-    public RestaurantReviewsComparable() {
+    public ReviewsComparable() {
     }
 
     public String getDate() {
@@ -28,11 +28,11 @@ public class RestaurantReviewsComparable {
         this.date = date;
     }
 
-    public float getRating() {
+    public String getRating() {
         return rating;}
 
 
-    public void setRating(Long rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 

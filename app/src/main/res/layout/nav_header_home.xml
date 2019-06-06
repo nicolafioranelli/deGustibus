@@ -26,8 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/comfortaa_font"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+        android:paddingTop="@dimen/nav_header_vertical_spacing" />
 
     <TextView
         android:id="@+id/userEmail"

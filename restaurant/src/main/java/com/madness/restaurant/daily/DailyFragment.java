@@ -108,7 +108,7 @@ public class DailyFragment extends Fragment {
             protected void onBindViewHolder(@NonNull DishHolder holder, int position, @NonNull DishClass model) {
                 holder.dish.setText(model.getDish());
                 holder.desc.setText(model.getDescription());
-                holder.avail.setText(model.getAvail());
+                holder.avail.setText(String.valueOf(model.getAvail()));
                 holder.price.setText(model.getPrice().toString());
 
                 GlideApp.with(holder.pic.getContext())

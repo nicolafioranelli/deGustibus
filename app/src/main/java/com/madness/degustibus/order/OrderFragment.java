@@ -1,12 +1,14 @@
 package com.madness.degustibus.order;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -213,7 +215,22 @@ public class OrderFragment extends Fragment {
 
                     increaseRestAndNotify();
 
-                    Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_LONG).show();
+
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(getString(R.string.orderTitle))
+                            .setMessage(getString(R.string.orderDesc))
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+
+                            .show();
+
                     performNoBackStackTransaction();
                 }
             }
@@ -332,7 +349,7 @@ public class OrderFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(ProfileClass.class);
-                address.setText(userProfile.getAddress());
+                customerAddress.setText(userProfile.getAddress());
             }
 
             @Override

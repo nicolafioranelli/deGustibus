@@ -34,7 +34,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="75">
+                android:layout_weight="70">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -57,13 +57,13 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="25"
+                android:layout_weight="30"
                 android:gravity="right">
 
                 <Button
                     android:id="@+id/button"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="true"
                     android:text="@string/received"
@@ -190,11 +190,13 @@
                 app:spb_animateToCurrentProgressState="true"
                 app:spb_checkStateCompleted="true"
                 app:spb_currentStateDescriptionColor="#009688"
-                app:spb_currentStateNumber="two"
+                app:spb_currentStateNumber="one"
                 app:spb_maxStateNumber="four"
                 app:spb_stateBackgroundColor="#BDBDBD"
                 app:spb_stateDescriptionColor="#808080"
                 app:spb_stateForegroundColor="#009688"
+                app:spb_stateDescriptionSize="12dp"
+                app:spb_descriptionLinesSpacing="50dp"
                 app:spb_stateNumberBackgroundColor="#808080"
                 app:spb_stateNumberForegroundColor="#eeeeee" />
         </LinearLayout>

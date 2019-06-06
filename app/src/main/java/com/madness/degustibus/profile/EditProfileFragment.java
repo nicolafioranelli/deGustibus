@@ -56,9 +56,12 @@ import com.madness.degustibus.home.HomeFragment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileFragment extends Fragment {
 
@@ -66,7 +69,7 @@ public class EditProfileFragment extends Fragment {
     private EditText email;
     private EditText desc;
     private EditText phone;
-    private ImageView img;
+    private CircleImageView img;
     private String cameraFilePath;
     private Uri mImageUri;
     private AutoCompleteTextView autocompleteView;
@@ -359,13 +362,11 @@ public class EditProfileFragment extends Fragment {
         map.put("address", autocompleteView.getText().toString());
 
         if (mImageUri != null) {
-            try {
+            try (InputStream inputStream = getContext().getContentResolver().openInputStream(mImageUri)) {
                 Bitmap bmp = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mImageUri);
-                System.out.println(mImageUri);
-                /*
-                ExifInterface ei = new ExifInterface(mImageUri.toString());
-                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_UNDEFINED);
+
+                android.support.media.ExifInterface exif = new android.support.media.ExifInterface(inputStream);
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 
                 Bitmap rotatedBitmap = null;
                 switch (orientation) {
@@ -386,10 +387,9 @@ public class EditProfileFragment extends Fragment {
                     default:
                         rotatedBitmap = bmp;
                 }
-*/
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos);
                 byte[] data = baos.toByteArray();
                 //uploading the image
                 fileReference.putBytes(data)

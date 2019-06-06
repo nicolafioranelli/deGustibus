@@ -28,6 +28,8 @@ import com.madness.degustibus.R;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ProfileFragment extends Fragment {
 
     /* Views */
@@ -36,7 +38,7 @@ public class ProfileFragment extends Fragment {
     private TextView desc;
     private TextView phone;
     private TextView address;
-    private ImageView img;
+    private CircleImageView img;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private ValueEventListener eventListener;

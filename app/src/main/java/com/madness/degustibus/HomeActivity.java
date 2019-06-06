@@ -486,6 +486,7 @@ public class HomeActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.flContent, fragment, "Order");
+        ft.addToBackStack("Details");
         ft.commit();
     }
 

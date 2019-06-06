@@ -36,14 +36,13 @@
                 android:orientation="vertical"
                 android:showDividers="end">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imageview"
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:src="@drawable/user_profile" />
+                    android:paddingBottom="16dp"/>
             </LinearLayout>
 
             <TextView

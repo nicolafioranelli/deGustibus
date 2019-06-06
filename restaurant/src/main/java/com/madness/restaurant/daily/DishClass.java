@@ -4,7 +4,7 @@ public class DishClass {
 
     private String dish;
     private String description;
-    private String avail;
+    private int avail;
     private Float price;
     private String pic;
     private String restaurant;
@@ -12,7 +12,7 @@ public class DishClass {
     private Long count;
     private Float rating;
 
-    public DishClass(String dish, String description, String avail, Float price, String pic, String restaurant, String identifier, Long count, Float rating) {
+    public DishClass(String dish, String description, int avail, Float price, String pic, String restaurant, String identifier, Long count, Float rating) {
         this.dish = dish;
         this.description = description;
         this.avail = avail;
@@ -43,11 +43,11 @@ public class DishClass {
         this.description = description;
     }
 
-    public String getAvail() {
+    public int getAvail() {
         return avail;
     }
 
-    public void setAvail(String avail) {
+    public void setAvail(int avail) {
         this.avail = avail;
     }
 

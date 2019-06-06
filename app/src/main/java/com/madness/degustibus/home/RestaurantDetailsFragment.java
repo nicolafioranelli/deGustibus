@@ -212,6 +212,9 @@ public class RestaurantDetailsFragment extends Fragment {
                 holder.comment.setText(model.getComment());
                 holder.date.setText(model.getDate());
                 holder.rating.setRating(model.getValue());
+                if(model.getComment().equals("")) {
+                    holder.comment.setVisibility(View.GONE);
+                }
             }
 
             @NonNull

@@ -103,7 +103,7 @@
     <string name="desc">You have received a new order! Check in your reservation box</string>
 
     <string name="summary">Summary</string>
-    <string name="address">Address</string>
+    <string name="address">"Address: "</string>
     <string name="products">Products</string>
     <string name="total">"Total: "</string>
     <string name="order">Complete order</string>
@@ -174,4 +174,18 @@
     <string name="minRate">Minimum rate</string>
     <string name="preferred">Preferred</string>
     <string name="filter">Filter Results</string>
+
+    <string name="orderTitle">Order completed!</string>
+    <string name="orderDesc">"Thank you! ;)\nYour order has been sent to the restaurant! You will receive a notification as soon as the restaurant will conferm the order!"</string>
+    <string name="modPassword">Modify Password</string>
+    <string name="passwordHint">New Password</string>
+    <string name="passwordRepHint">Repeat Password</string>
+    <string name="err_gen">Ops... something went wrong!</string>
+    <string name="deleteTitle">Delete account</string>
+    <string name="deleteDesc">This operation will remove your account permanently, are you sure that you want to continue?</string>
+    <string name="deleteCompleted">Account deleted!</string>
+    <string name="err_passSame">Passwords are not the same, please insert them correctly!</string>
+    <string name="title_Reservations">Reservations</string>
+    <string name="title_Details">Details</string>
+    <string name="nothing">Ops&#8230; there\'s nothing here!</string>
 </resources>
