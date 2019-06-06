@@ -24,6 +24,12 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
         this.riderList = riderList;
     }
 
+    /**
+     * Generate a single listitem
+     * @param viewGroup
+     * @param i
+     * @return
+     */
     @NonNull
     @Override
     public RiderReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -32,6 +38,11 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
         return viewHolder;
     }
 
+    /**
+     * Populate the listitem
+     * @param holder reviewholder
+     * @param position in the set
+     */
     @Override
     public void onBindViewHolder(@NonNull RiderReviewsHolder holder, int position) {
         final RiderReviewsComparable riderReviewsComparable = riderList.get(position);
@@ -42,11 +53,19 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
         holder.restSimpleRatingBar.setRating(Float.valueOf(riderReviewsComparable.getRating()));
     }
 
+    /**
+     * Get the size of the set
+     * @return
+     */
     @Override
     public int getItemCount() {
         return riderList.size();
     }
 
+    /**
+     * Update the set of reviews
+     * @param viewModels
+     */
     public void updateData(List<RiderReviewsComparable> viewModels) {
         for (int i = 0; i < viewModels.size(); i++) {
             riderList.set(i, viewModels.get(i));
@@ -54,6 +73,10 @@ public class RiderReviewsAdapter extends RecyclerView.Adapter<RiderReviewsAdapte
         notifyDataSetChanged();
     }
 
+
+    /**
+     * ViewHolder class
+     */
     class RiderReviewsHolder extends RecyclerView.ViewHolder {
 
         public TextView name, comment, date;

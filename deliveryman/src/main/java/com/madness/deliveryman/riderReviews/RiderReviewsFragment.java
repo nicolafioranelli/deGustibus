@@ -68,7 +68,6 @@ public class RiderReviewsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
     }
@@ -80,7 +79,8 @@ public class RiderReviewsFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    /* The onCreateView allows to inflate the view of the fragment, in particular here are load information
+    /**
+     * The onCreateView allows to inflate the view of the fragment, in particular here are load information
      * from Firebase related to the reviews.
      */
     @Override
@@ -151,8 +151,9 @@ public class RiderReviewsFragment extends Fragment {
     }
 
 
-    /* This method allows to download data from Firebase through different calls to Event Listeners
-     * at the end the custom Adapter is populated and are present also some methods for data change/delete.
+    /**
+     * This method allows to download data from Firebase through different calls to Event Listeners.
+     * At the end the custom Adapter is populated and are present also some methods for data change/delete.
      */
     private void loadAdapter() {
         progressBar.setVisibility(View.VISIBLE);
@@ -239,57 +240,67 @@ public class RiderReviewsFragment extends Fragment {
 
     /* This method retrieves all the rider's reviews*/
     private void getReviews(final GetReviewsCallback callback) {
-        final DatabaseReference progressRef = databaseReference.child("ratings").child("riders");
+        final DatabaseReference progressRef = FirebaseDatabase.getInstance().getReference()
+                .child("ratings")
+                .child("riders");
+
         progressRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //check out all riders who received reviews
-                    for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                        //if there is a child who's key is current rider's key
-                        if(dSnapshot.getKey().compareTo(user.getUid())==0){
-                            //Set the "No reviews available" Layout to INVISIBLE
-                            empty.setVisibility(View.GONE);
-                            progressBar.setVisibility(View.VISIBLE);
-                            progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    //for each review of the current rider
-                                    for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                                        retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
-                                            @Override
-                                            public void onCallback(Map user) {
-                                                /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
-                                                review = null;
-                                                review = new RiderReviewsComparable();
-                                                review.setName(user.get("name").toString());
-                                                review.setDate(user.get("date").toString());
-                                                review.setRating(user.get("value").toString());
-                                                review.setComment(user.get("comment").toString());
-                                                review.setKey(user.get("key").toString());
-                                                callback.onCallback(review);
-                                            }
-                                        });
+
+                    if(dataSnapshot.getValue() == null){
+                        // no reviews are available
+                        empty.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }else{
+                        //at least one review exist
+
+                        //check out all riders who received reviews
+                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                            //if there is a child who's key is current rider's key
+                            if(dSnapshot.getKey().compareTo(user.getUid())==0){
+
+                                //Set the "No reviews available" LayoutdatabaseReference to INVISIBLE
+                                empty.setVisibility(View.GONE);
+                                progressBar.setVisibility(View.VISIBLE);
+
+                                progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        //for each review of the current rider
+                                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                                            retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
+                                                @Override
+                                                public void onCallback(Map user) {
+                                                    /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
+                                                    review = null;
+                                                    review = new RiderReviewsComparable();
+                                                    review.setName(user.get("name").toString());
+                                                    review.setDate(user.get("date").toString());
+                                                    review.setRating(user.get("value").toString());
+                                                    review.setComment(user.get("comment").toString());
+                                                    review.setKey(user.get("key").toString());
+                                                    callback.onCallback(review);
+                                                }
+                                            });
+                                        }
+                                        view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                                        view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE                                    );
                                     }
-                                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                                    view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE
 
-
-
-
-
-
-
-
-                                    );
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    // A review cannot be deleted
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        // A review cannot be deleted
+                                    }
+                                });
+                            }else{
+                                // the selected userhas not yet been reviewed
+                                empty.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
                         }
                     }
+
             }
 
             @Override
