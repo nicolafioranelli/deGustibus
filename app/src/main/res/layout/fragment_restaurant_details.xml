@@ -89,10 +89,11 @@
 
             <Button
                 android:id="@+id/orderButton"
+                style="@style/FirebaseUI.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|end"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="8dp"
                 android:text="@string/orderButton"
                 android:theme="@style/Widget.AppCompat.Button.Borderless.Colored" />
 

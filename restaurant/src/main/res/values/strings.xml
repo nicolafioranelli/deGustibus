@@ -181,4 +181,6 @@
     <string name="by_date">Date</string>
     <string name="rating_score" >Score:</string>
     <string name="rating_name" >Name:</string>
+    <string name="sendButton">Send review</string>
+    <string name="comment">Write here your comment</string>
 </resources>
