@@ -1,4 +1,4 @@
-package com.madness.deliveryman.riderReviews;
+package com.madness.deliveryman.reviews;
 
 public class ReviewsComparable {
 

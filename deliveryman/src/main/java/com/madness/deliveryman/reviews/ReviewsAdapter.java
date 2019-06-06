@@ -1,4 +1,4 @@
-package com.madness.deliveryman.riderReviews;
+package com.madness.deliveryman.reviews;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -33,7 +33,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
     @NonNull
     @Override
     public ReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.rider_reviews_listitem, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.reviews_listitem, viewGroup, false);
         ReviewsHolder viewHolder = new ReviewsHolder(view);
         return viewHolder;
     }

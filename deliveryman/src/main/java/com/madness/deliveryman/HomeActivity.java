@@ -42,7 +42,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.madness.deliveryman.riderReviews.ReviewsFragment;
+import com.madness.deliveryman.reviews.ReviewsFragment;
 import com.madness.deliveryman.auth.LoginActivity;
 import com.madness.deliveryman.incoming.IncomingFragment;
 import com.madness.deliveryman.location.Tracker;

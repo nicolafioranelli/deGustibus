@@ -1,4 +1,4 @@
-package com.madness.deliveryman.riderReviews;
+package com.madness.deliveryman.reviews;
 
 
 import android.app.AlertDialog;
@@ -87,7 +87,7 @@ public class ReviewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_rider_reviews, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_reviews, container, false);
         getActivity().setTitle(getResources().getString(R.string.reviews));
 
         empty=rootView.findViewById(R.id.emptyLayout);
