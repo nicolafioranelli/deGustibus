@@ -22,7 +22,7 @@
     <color name="theme_colorTertiaryDark">#105252</color>
 
     <!-- Authentication -->
-    <color name="authBackground">#0097a7</color>
+    <color name="authBackground">#FFFFFF</color>
     <color name="bg_login">#26ae90</color>
     <color name="bg_register">#2e3237</color>
     <color name="bg_main">#428bca</color>
