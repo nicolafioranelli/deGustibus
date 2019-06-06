@@ -13,7 +13,7 @@ import com.madness.restaurant.R;
 
 import java.util.List;
 
-public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsHolder> {
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.RestaurantReviewsHolder>{
 
     Context context;
     View view;
@@ -25,27 +25,16 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
         this.riderList = riderList;
     }
 
-    /**
-     * Generate a single listitem
-     * @param viewGroup
-     * @param i
-     * @return
-     */
     @NonNull
     @Override
-    public ReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RestaurantReviewsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.reviews_listitem, viewGroup, false);
-        ReviewsHolder viewHolder = new ReviewsHolder(view);
+        RestaurantReviewsHolder viewHolder = new RestaurantReviewsHolder(view);
         return viewHolder;
     }
 
-    /**
-     * Populate the listitem
-     * @param holder reviewholder
-     * @param position in the set
-     */
     @Override
-    public void onBindViewHolder(@NonNull ReviewsHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RestaurantReviewsHolder holder, int position) {
         final ReviewsComparable riderReviewsComparable = riderList.get(position);
         holder.name.setText(riderReviewsComparable.getName());
         holder.comment.setText(riderReviewsComparable.getComment());
@@ -54,19 +43,11 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
         holder.restSimpleRatingBar.setRating(Float.valueOf(riderReviewsComparable.getRating()));
     }
 
-    /**
-     * Get the size of the set
-     * @return
-     */
     @Override
     public int getItemCount() {
         return riderList.size();
     }
 
-    /**
-     * Update the set of reviews
-     * @param viewModels
-     */
     public void updateData(List<ReviewsComparable> viewModels) {
         for (int i = 0; i < viewModels.size(); i++) {
             riderList.set(i, viewModels.get(i));
@@ -74,16 +55,12 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
         notifyDataSetChanged();
     }
 
-
-    /**
-     * ViewHolder class
-     */
-    class ReviewsHolder extends RecyclerView.ViewHolder {
+    class RestaurantReviewsHolder extends RecyclerView.ViewHolder {
 
         public TextView name, comment, date;
         RatingBar restSimpleRatingBar;
 
-        public ReviewsHolder(final View itemView) {
+        public RestaurantReviewsHolder(final View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             date = itemView.findViewById(R.id.date);

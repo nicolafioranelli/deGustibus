@@ -27,7 +27,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.DatePicker;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -48,7 +47,7 @@ import com.madness.restaurant.notifications.NotificationsFragment;
 import com.madness.restaurant.profile.EditProfile;
 import com.madness.restaurant.profile.ProfileFragment;
 import com.madness.restaurant.reservations.ReservationFragment;
-import com.madness.restaurant.restaurantReviews.RestaurantReviewsFragment;
+import com.madness.restaurant.reviews.ReviewsFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -298,7 +297,7 @@ public class HomeActivity extends AppCompatActivity
         try {
             fragment = null;
             Class fragmentClass;
-            fragmentClass = RestaurantReviewsFragment.class;
+            fragmentClass = ReviewsFragment.class;
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             Log.e("MAD", "reviewsClick: ", e);
@@ -541,11 +540,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        /*NewReservationFragment editRes = (NewReservationFragment)
-                getSupportFragmentManager().findFragmentByTag("AddReservation");
-        if (editRes != null) {
-            editRes.setDate(year, month, dayOfMonth);
-        }*/
+        // empty method
     }
 
     /* Check if connection is enabled! */
