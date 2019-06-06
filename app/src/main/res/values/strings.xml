@@ -186,4 +186,5 @@
     <string name="err_passSame">Passwords are not the same, please insert them correctly!</string>
     <string name="title_Reservations">Reservations</string>
     <string name="title_Details">Details</string>
+    <string name="nothing">Ops&#8230; there\'s nothing here!</string>
 </resources>

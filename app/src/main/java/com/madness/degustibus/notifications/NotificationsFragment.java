@@ -75,7 +75,7 @@ public class NotificationsFragment extends Fragment {
 
         adapter = new FirebaseRecyclerAdapter<NotificationsClass, NotificationHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull NotificationHolder holder, final int position, @NonNull NotificationsClass model) {
+            protected void onBindViewHolder(@NonNull final NotificationHolder holder, final int position, @NonNull NotificationsClass model) {
                 holder.type.setText(model.getType());
                 holder.description.setText(model.getDescription());
                 holder.date.setText(model.getDate());
@@ -84,7 +84,7 @@ public class NotificationsFragment extends Fragment {
                 holder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        remove(position);
+                        remove(holder.getAdapterPosition());
                     }
                 });
             }

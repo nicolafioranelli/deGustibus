@@ -25,6 +25,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Profile Fragment class is used to manage the Restaurateur profile. The methods available
  * are used mainly to retrieve the shared preferences saved by the user. The switch to the
@@ -51,7 +53,7 @@ public class ProfileFragment extends Fragment {
     private TextView saturdayClose;
     private TextView sundayOpen;
     private TextView sundayClose;
-    private ImageView img;
+    private CircleImageView img;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private FirebaseUser user;
