@@ -1,6 +1,5 @@
 package com.madness.restaurant.reviews;
 
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -26,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +67,7 @@ public class ReviewsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
     }
@@ -74,19 +75,18 @@ public class ReviewsFragment extends Fragment {
     /* Menu inflater for toolbar (adds elements inserted in res/menu/menu_sort.xml) */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_sort, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    /**
-     * The onCreateView allows to inflate the view of the fragment, in particular here are load information
+    /* The onCreateView allows to inflate the view of the fragment, in particular here are load information
      * from Firebase related to the reviews.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_reviews, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_restaurant_reviews, container, false);
         getActivity().setTitle(getResources().getString(R.string.reviews));
 
         empty=rootView.findViewById(R.id.emptyLayout);
@@ -150,13 +150,12 @@ public class ReviewsFragment extends Fragment {
     }
 
 
-    /**
-     * This method allows to download data from Firebase through different calls to Event Listeners.
-     * At the end the custom Adapter is populated and are present also some methods for data change/delete.
+    /* This method allows to download data from Firebase through different calls to Event Listeners
+     * at the end the custom Adapter is populated and are present also some methods for data change/delete.
      */
     private void loadAdapter() {
         progressBar.setVisibility(View.VISIBLE);
-        /* Get all the current Rider's reviews */
+        /* Get all the current Restaurant's reviews */
         getReviews(new GetReviewsCallback() {
             /* Save the reviews in a List of ReviewsComparable type */
             List<ReviewsComparable> list = new ArrayList<>();
@@ -188,7 +187,7 @@ public class ReviewsFragment extends Fragment {
                         Collections.sort(list, new Comparator<ReviewsComparable>() {
                             public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Rating
-                                return obj2.getRating().compareTo((obj1.getRating()));
+                                return Float.compare(obj2.getRating(), obj1.getRating());
                             }
                         });
                     }
@@ -221,7 +220,7 @@ public class ReviewsFragment extends Fragment {
     /* This method retrieves data about the reviews */
     private void retrieveData(String key, final DataRetrieveCallback callback) {
         final String userKey=key;
-        reviewReference = databaseReference.child("ratings").child("riders").child(user.getUid()).child(key);
+        reviewReference = databaseReference.child("ratings").child("restaurants").child(user.getUid()).child(key);
         reviewListener = reviewReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -237,86 +236,78 @@ public class ReviewsFragment extends Fragment {
         });
     }
 
-    /* This method retrieves all the rider's reviews*/
+    /* This method retrieves all the restaurant's reviews*/
     private void getReviews(final GetReviewsCallback callback) {
-        final DatabaseReference progressRef = FirebaseDatabase.getInstance().getReference()
-                .child("ratings")
-                .child("riders");
-
+        final DatabaseReference progressRef = databaseReference.child("ratings").child("restaurants");
+        // do not update `count` `rating` and `popular`
         progressRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if(dataSnapshot.getValue() == null){
-                        // no reviews are available
-                        empty.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }else{
-                        //at least one review exist
-
-                        //check out all riders who received reviews
-                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                            //if there is a child who's key is current rider's key
-                            if(dSnapshot.getKey().compareTo(user.getUid())==0){
-
-                                //Set the "No reviews available" LayoutdatabaseReference to INVISIBLE
-                                empty.setVisibility(View.GONE);
-                                progressBar.setVisibility(View.VISIBLE);
-
-                                progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        //for each review of the current rider
-                                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                                            retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
-                                                @Override
-                                                public void onCallback(Map user) {
-                                                    /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
-                                                    review = null;
-                                                    review = new ReviewsComparable();
-                                                    review.setName(user.get("name").toString());
-                                                    review.setDate(user.get("date").toString());
-                                                    review.setRating(user.get("value").toString());
-                                                    review.setComment(user.get("comment").toString());
-                                                    review.setKey(user.get("key").toString());
-                                                    callback.onCallback(review);
-                                                }
-                                            });
-                                        }
-                                        view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                                        view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE                                    );
+                if(dataSnapshot.getValue() == null) {
+                    // no reviews are available
+                    empty.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                }else{
+                    //check out all restaurants who received reviews
+                    for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                        //if there is a child who's key is current restaurant's key
+                        if(dSnapshot.getKey().compareTo(user.getUid())==0){
+                            //Set the "No reviews available" Layout to INVISIBLE
+                            empty.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.VISIBLE);
+                            progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    //for each review of the current restaurant
+                                    for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                                        retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
+                                            @Override
+                                            public void onCallback(Map user) {
+                                                /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
+                                                review = null;
+                                                review = new ReviewsComparable();
+                                                review.setName(user.get("name").toString());
+                                                review.setDate(user.get("date").toString());
+                                                review.setRating((Long)user.get("rating"));
+                                                review.setComment(user.get("comment").toString());
+                                                review.setKey(user.get("key").toString());
+                                                callback.onCallback(review);
+                                            }
+                                        });
                                     }
+                                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                                    view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE);
+                                }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        // A review cannot be deleted
-                                    }
-                                });
-                            }else{
-                                // the selected userhas not yet been reviewed
-                                empty.setVisibility(View.VISIBLE);
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // A review cannot be deleted
+                                }
+                            });
+                        }else{
+                            // the selected userhas not yet been reviewed
+                            empty.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
+                }
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // A rider cannot be deleted
+                // A restaurant cannot be deleted
             }
         });
     }
 
     /* Interfaces for callbacks */
-
-
     public interface DataRetrieveCallback {
         void onCallback(Map user);
     }
 
     public interface GetReviewsCallback {
-        void onCallback(ReviewsComparable rider);
+        void onCallback(ReviewsComparable restaurant);
     }
 }

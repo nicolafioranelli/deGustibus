@@ -126,6 +126,17 @@
     <string name="phone">Il telefono è obbligatorio!</string>
     <string name="address">L\'indirizzo è obbligatorio!</string>
     <string name="menu_insights">Statistiche</string>
+
     <string name="insights_preferences">Preferenze</string>
     <string name="insights_time">Distribuzione temporale</string>
+    <string name="ratings">Valutazioni</string>
+    <string name="see_reviews">Recensioni</string>
+    <string name="no_reviews">Non è stata effettuata nessuna valutazione</string>
+    <string name="reviews">Recensioni</string>
+    <string name="sort_by">Ordina per</string>
+    <string name="by_name">Nome</string>
+    <string name="by_rating">Valutazione</string>
+    <string name="by_date">Data</string>
+    <string name="rating_name">Nome:</string>
+    <string name="rating_score">Punteggio:</string>
 </resources>

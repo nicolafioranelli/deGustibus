@@ -3,13 +3,13 @@ package com.madness.restaurant.reviews;
 public class ReviewsComparable {
 
     private String date;
-    private String rating;
+    private Long rating;
     private String name;
     private String comment;
     private String key;
 
 
-    public ReviewsComparable(String date, String rating, String name, String comment, String key) {
+    public ReviewsComparable(String date, Long rating, String name, String comment, String key) {
         this.date = date;
         this.rating = rating;
         this.name = name;
@@ -28,11 +28,11 @@ public class ReviewsComparable {
         this.date = date;
     }
 
-    public String getRating() {
+    public float getRating() {
         return rating;}
 
 
-    public void setRating(String rating) {
+    public void setRating(Long rating) {
         this.rating = rating;
     }
 
