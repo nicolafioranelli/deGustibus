@@ -153,21 +153,22 @@ public class ReservationsFragment extends Fragment {
 
                 if (model.getStatus().equals("new")) {
                     holder.status.setText(R.string.status_new);
-                    holder.status.setTextColor(getResources().getColor(R.color.colorAccent));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (model.getStatus().equals("incoming")) {
                     holder.status.setText(R.string.status_elaboration);
-                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                 } else if (model.getStatus().equals("refused")) {
                     holder.status.setText(R.string.status_refused);
                     holder.status.setTextColor(Color.RED);
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
+                    holder.status.setTextColor(Color.BLACK);
                 } else if (model.getStatus().equals("elaboration")) {
                     holder.status.setText(R.string.status_elaboration);
-                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                 } else if (model.getStatus().equals("delivering")) {
                     holder.status.setText(R.string.status_delivering);
-                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                 }
 
                 holder.button.setOnClickListener(new View.OnClickListener() {

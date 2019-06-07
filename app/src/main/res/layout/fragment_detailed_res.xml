@@ -44,9 +44,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="@string/resStatus"
-                        android:textSize="15dp"
-                        android:textStyle="bold" />
+                        android:text="@string/resStatus" />
 
                     <TextView
                         android:id="@+id/status"

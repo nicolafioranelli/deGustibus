@@ -179,6 +179,7 @@ public class IncomingFragment extends Fragment {
                     holder.refuse.setVisibility(View.GONE);
                     holder.button.setVisibility(View.GONE);
                     holder.map.setVisibility(View.GONE);
+                    holder.status.setTextColor(Color.BLACK);
                 } else if (model.getStatus().equals("elaboration")) {
                     // show the position of the restaurant
                     holder.map.setVisibility(View.VISIBLE);
@@ -199,7 +200,7 @@ public class IncomingFragment extends Fragment {
                             //adding km to total km routes from rider
                         }
                     });
-                    holder.status.setTextColor(getResources().getColor(R.color.colorAccent));
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                 } else if (model.getStatus().equals("delivering")) {
                     // show the position of the customer
                     holder.map.setVisibility(View.VISIBLE);

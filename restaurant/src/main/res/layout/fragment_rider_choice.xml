@@ -44,6 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:textSize="15dp"
+                android:textStyle="bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 app:layout_constraintBaseline_toBaselineOf="@+id/textView4"
                 app:layout_constraintStart_toEndOf="@+id/textView4"

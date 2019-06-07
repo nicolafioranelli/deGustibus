@@ -274,23 +274,27 @@ public class RiderChoiceFragment extends Fragment {
                         }
                     });
                     isNew = true;
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (order.getStatus().equals("refused")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_refused);
                     status.setTextColor(Color.RED);
                     isNew = false;
+                    status.setTextColor(Color.RED);
                 } else if (order.getStatus().equals("incoming")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
-                    status.setText(R.string.status_elaboration);
+                    status.setText(R.string.status_incoming);
                     status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                     isNew = false;
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                 } else if (order.getStatus().equals("done")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     status.setText(R.string.status_done);
+                    status.setTextColor(Color.BLACK);
                     isNew = false;
 
                     if (!dataSnapshot.child("restRiderRating").exists()) {
@@ -299,23 +303,24 @@ public class RiderChoiceFragment extends Fragment {
                         loadRider(order.getDeliverymanID(), Math.round(Float.parseFloat(dataSnapshot.child("restRiderRating").getValue(String.class))));
                     }
                     if (dataSnapshot.child("restRiderRating").exists()) {
-                        reviewButton.setVisibility(View.GONE);
+                        view.findViewById(R.id.reviews).setVisibility(View.GONE);
+                        /*reviewButton.setVisibility(View.GONE);
                         riderRatingBar.setClickable(false);
                         riderComment.setFocusable(false);
                         riderComment.setEnabled(false);
-                        riderComment.setText(dataSnapshot.child("restRiderComment").getValue(String.class));
+                        riderComment.setText(dataSnapshot.child("restRiderComment").getValue(String.class));*/
                     }
                 } else if (order.getStatus().equals("delivering")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(getString(R.string.status_deliverying));
-                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                     isNew = false;
+                    status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                 } else if (order.getStatus().equals("elaboration")) {
                     refuse.setVisibility(View.GONE);
                     view.findViewById(R.id.select_rider).setVisibility(View.GONE);
                     status.setText(R.string.status_elaboration);
-                    status.setTextColor(getResources().getColor(R.color.colorAccent));
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                     isNew = false;
                 }
 

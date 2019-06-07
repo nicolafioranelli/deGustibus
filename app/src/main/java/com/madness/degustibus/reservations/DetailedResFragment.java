@@ -1,6 +1,7 @@
 package com.madness.degustibus.reservations;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -280,20 +281,24 @@ public class DetailedResFragment extends Fragment {
 
                 if (order.getStatus().equals("new")) {
                     status.setText(R.string.status_new);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
                     button.setVisibility(View.GONE);
                 } else if (order.getStatus().equals("incoming")) {
                     status.setText(R.string.status_elaboration);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
                     button.setVisibility(View.GONE);
                 } else if (order.getStatus().equals("refused")) {
                     status.setText(R.string.status_refused);
+                    status.setTextColor(Color.RED);
                     stateProgressBar.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
                 } else if (order.getStatus().equals("done")) {
                     status.setText(R.string.status_done);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FOUR);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(Color.BLACK);
                     if (order.getRestaurantRating().equals("null")) {
                         loadRestaurant(order.getRestaurantID(), 0);
                     } else {
@@ -307,21 +312,24 @@ public class DetailedResFragment extends Fragment {
 
                     view.findViewById(R.id.reviews).setVisibility(View.VISIBLE);
                     if (!order.getRestaurantRating().equals("null")) {
-                        reviewButton.setVisibility(View.GONE);
+                        view.findViewById(R.id.reviews).setVisibility(View.GONE);
+                        /*reviewButton.setVisibility(View.GONE);
                         ratingBar2.setClickable(false);
                         riderRatingBar.setClickable(false);
                         comment.setEnabled(false);
                         comment.setFocusable(false);
                         riderComment.setFocusable(false);
-                        riderComment.setEnabled(false);
+                        riderComment.setEnabled(false);*/
                     }
 
                 } else if (order.getStatus().equals("elaboration")) {
                     status.setText(R.string.status_elaboration);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiaryDark));
                 } else if (order.getStatus().equals("delivering")) {
                     status.setText(R.string.status_delivering);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
                     button.setVisibility(View.VISIBLE);
                 }
@@ -508,15 +516,18 @@ public class DetailedResFragment extends Fragment {
         for (int i = 0; i < dishes.size(); i++) {
             if (dishes.get(i).getRating() == 0) {
                 ok = false;
+                Toast.makeText(getContext(), getResources().getString(R.string.compulsoryRating),Toast.LENGTH_SHORT).show();
             }
         }
 
         if (ratingBar2.getRating() == 0) {
             ok = false;
+            Toast.makeText(getContext(), getResources().getString(R.string.compulsoryRating),Toast.LENGTH_SHORT).show();
         }
 
         if (riderRatingBar.getRating() == 0) {
             ok = false;
+            Toast.makeText(getContext(), getResources().getString(R.string.compulsoryRating),Toast.LENGTH_SHORT).show();
         }
 
         if (ok) {
