@@ -59,6 +59,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.GlideApp;
+import com.madness.restaurant.HomeActivity;
 import com.madness.restaurant.R;
 import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.picker.TimePickerFragment;
@@ -235,6 +236,11 @@ public class EditProfile extends Fragment {
 
                     }
                     return true;*/
+                    try {
+                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                        getActivity().finish(); // it terminate the activity
+                    } catch (Exception e) {
+                    }
                 } else {
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);

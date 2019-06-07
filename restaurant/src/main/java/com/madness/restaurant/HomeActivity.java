@@ -52,25 +52,36 @@ import com.madness.restaurant.reviews.ReviewsFragment;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
         ProfileFragment.ProfileListener, DailyFragment.DailyListener {
 
-    Toolbar toolbar;
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Fragment fragment;
-    FragmentManager fragmentManager;
-    FirebaseAuth firebaseAuth;
+    /* Widgets */
+    private Toolbar toolbar;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+    private TextView userName;
+    private TextView userEmail;
+    private CircleImageView userPhoto;
+
+    /* Firebase */
+    private Fragment fragment;
+    private FragmentManager fragmentManager;
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
     private DatabaseReference listenerReference;
     private ValueEventListener listener;
-    private boolean settedProfile;
     private FirebaseUser user;
+
+    /* Data */
+    private boolean settedProfile;
     private final String CHANNEL_ID = "channelRestaurant";
     private final int NOTIFICATION_ID = 001;
 
+    /* Lifecycle */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,24 +106,6 @@ public class HomeActivity extends AppCompatActivity
         };
 
         fragmentManager = getSupportFragmentManager();
-        if(getIntent().hasExtra("newCreation")) {
-            settedProfile=false;
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = EditProfile.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-
-                Bundle args = new Bundle();
-                args.putBoolean("isNew", true);
-                fragment.setArguments(args);
-
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditP").commit();
-                navigationView.getMenu().getItem(1).setChecked(true);
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        }
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -123,12 +116,33 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
+        userEmail = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
+        userPhoto = navigationView.getHeaderView(0).findViewById(R.id.userImage);
+
         if(user!=null) {
-            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
-            listenerReference=databaseReference.child("restaurants").child(user.getUid());
-            listener=listenerReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            try {
+                listenerReference = databaseReference.child("restaurants").child(user.getUid());
+                listener = listenerReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild("name")) {
+                            settedProfile=true;
+                            userName.setText(dataSnapshot.child("name").getValue(String.class));
+                            userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                            String photo = null;
+                            if (dataSnapshot.hasChild("photo")) {
+                                photo = dataSnapshot.child("photo").getValue(String.class);
+                            }
+
+                            /* Glide */
+                            GlideApp.with(getApplicationContext())
+                                    .load(photo)
+                                    .placeholder(R.drawable.user_profile)
+                                    .into(userPhoto);
+                        }
+                    }
+                /*
                     if (dataSnapshot.exists()) {
                         settedProfile=true;
                         try {
@@ -167,13 +181,75 @@ public class HomeActivity extends AppCompatActivity
                             Log.e("MAD", "onCreate: ", e);
                         }
                     }
-                }
+                }*/
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    }
+                });
+            }catch (Exception e) {
+
+            }
+        }
+
+        System.out.println("Extra: " + getIntent().hasExtra("newCreation") + "\nUser: " + user + "\nSetted: " + settedProfile);
+
+        if(getIntent().hasExtra("newCreation")) {
+            settedProfile=false;
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = EditProfile.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+
+                Bundle args = new Bundle();
+                args.putBoolean("isNew", true);
+                fragment.setArguments(args);
+
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
+                navigationView.getMenu().getItem(1).setChecked(true);
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
+        } else {
+            if(user!=null && settedProfile) {
+                try {
+                    fragment = null;
+                    Class fragmentClass;
+                    fragmentClass = HomeFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                } catch (Exception e) {
+                    Log.e("MAD", "onCreate: ", e);
                 }
-            });
+            } else if(user==null && !settedProfile) {
+                try {
+                    fragment = null;
+                    Class fragmentClass;
+                    fragmentClass = HomeFragment.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                } catch (Exception e) {
+                    Log.e("MAD", "onCreate: ", e);
+                }
+            } else {
+                try {
+                    fragment = null;
+                    Class fragmentClass;
+                    fragmentClass = EditProfile.class;
+                    fragment = (Fragment) fragmentClass.newInstance();
+
+                    Bundle args = new Bundle();
+                    args.putBoolean("isNew", true);
+                    fragment.setArguments(args);
+
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
+                    navigationView.getMenu().getItem(1).setChecked(true);
+                } catch (Exception e) {
+                    Log.e("MAD", "onCreate: ", e);
+                }
+            }
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -204,6 +280,43 @@ public class HomeActivity extends AppCompatActivity
                 });
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String extras = intent.getStringExtra("notification");
+        if (extras != null && extras.equals("open")) {
+            fragment =  new NotificationsFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            listenerReference.removeEventListener(listener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    // end Lifecycle
+
+    /* Notifications */
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -240,32 +353,9 @@ public class HomeActivity extends AppCompatActivity
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
 
     }
+    // end Notifications
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String extras = intent.getStringExtra("notification");
-        if (extras != null && extras.equals("open")) {
-            fragment =  new NotificationsFragment();
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        firebaseAuth.addAuthStateListener(authStateListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (authStateListener != null) {
-            firebaseAuth.removeAuthStateListener(authStateListener);
-        }
-    }
-
+    /* Helpers */
     @Override
     public void onItemClicked() {
         try {
@@ -501,7 +591,6 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-
     public void profileIsSetted() {
         FirebaseDatabase.getInstance().getReference().child("restaurants")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -555,14 +644,5 @@ public class HomeActivity extends AppCompatActivity
         }
         return false;
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            listenerReference.removeEventListener(listener);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+    // end Helpers
 }
