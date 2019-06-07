@@ -52,7 +52,7 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RiderHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RiderHolder holder, int position) {
         final RiderComparable riderComparable = riderList.get(position);
         holder.name.setText(riderComparable.getName());
         String pic;
@@ -126,6 +126,13 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
 
                         }
                     });
+
+                    // set the rider not available
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("riders")
+                            .child(riderComparable.getKey())
+                            .child("available")
+                            .setValue(false);
 
                 }
             });
