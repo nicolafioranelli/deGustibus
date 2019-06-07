@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private TextView sundayClose;
     private CircleImageView img;
     private Button reviews;
+    private RatingBar simpleRatingBar;
     private ProfileListener listener;
     private DatabaseReference databaseReference;
     private FirebaseUser user;
@@ -143,6 +145,7 @@ public class ProfileFragment extends Fragment {
         sundayClose = view.findViewById(R.id.tv_show_sundayClose);
         img = view.findViewById(R.id.imageview);
         reviews = view.findViewById(R.id.reviewsButton);
+        simpleRatingBar = view.findViewById(R.id.simpleRatingBar);
         view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
         loadFromFirebase(view);
@@ -194,6 +197,13 @@ public class ProfileFragment extends Fragment {
                             .load(pic)
                             .placeholder(R.drawable.user_profile)
                             .into(img);
+
+                    if(profile.getRating() != null){
+                        Float rating = Float.valueOf(profile.getRating().toString());
+                        Float count = Float.valueOf(profile.getCount().toString());
+                        simpleRatingBar.setRating((rating / count));
+                    }
+
                 } else {
                     String pic = null;
                     GlideApp.with(mContext)
@@ -220,6 +230,8 @@ public class ProfileFragment extends Fragment {
 
                 view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE); //TODO remove,please?
                 view.findViewById(R.id.layout).setVisibility(View.VISIBLE);
+
+
             }
 
             @Override
