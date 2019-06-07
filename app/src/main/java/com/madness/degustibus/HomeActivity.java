@@ -74,6 +74,9 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private TextView userName;
+    private TextView userEmail;
+    private CircleImageView userPhoto;
 
     /* Fragments */
     private Fragment fragment;
@@ -118,6 +121,7 @@ public class HomeActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         user = firebaseAuth.getCurrentUser();
+        fragmentManager = getSupportFragmentManager();
 
         /* Check if there is an user authenticated, in case no user launch the login screen */
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -127,38 +131,14 @@ public class HomeActivity extends AppCompatActivity
                 if (user == null) {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finish();
+                } else {
+                    userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
+                    userEmail = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
+                    userPhoto = navigationView.getHeaderView(0).findViewById(R.id.userImage);
+                    manageNewUser();
                 }
             }
         };
-
-        /* Check if it has happened a registration task or it is a login, in case registration redirect to edit profile*/
-        fragmentManager = getSupportFragmentManager();
-        if (getIntent().hasExtra("newCreation")) {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = EditProfileFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-
-                Bundle args = new Bundle();
-                args.putBoolean("isNew", true);
-                fragment.setArguments(args);
-
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        } else {
-            try {
-                fragment = null;
-                Class fragmentClass;
-                fragmentClass = com.madness.degustibus.home.HomeFragment.class;
-                fragment = (Fragment) fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-            } catch (Exception e) {
-                Log.e("MAD", "onCreate: ", e);
-            }
-        }
 
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -169,39 +149,6 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        try {
-            final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
-            final TextView email = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
-            final CircleImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.userImage);
-            listenerReference = databaseReference.child("customers").child(user.getUid());
-            listener = listenerReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild("name")) {
-                        userName.setText(dataSnapshot.child("name").getValue(String.class));
-                        email.setText(dataSnapshot.child("email").getValue(String.class));
-
-                        String photo = null;
-                        if (dataSnapshot.hasChild("photo")) {
-                            photo = dataSnapshot.child("photo").getValue(String.class);
-                        }
-
-                        /* Glide */
-                        GlideApp.with(getApplicationContext())
-                                .load(photo)
-                                .placeholder(R.drawable.user_profile)
-                                .into(imageView);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        } catch (Exception e) {
-
-        }
 
         // Update highlights in the navigation menu
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -231,15 +178,68 @@ public class HomeActivity extends AppCompatActivity
                 });
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String extras = intent.getStringExtra("notification");
-        if (extras != null && extras.equals("open")) {
-            fragment = new NotificationsFragment();
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
-        }
+    private void manageNewUser() {
+        fragment = null;
+
+        listenerReference = databaseReference.child("customers").child(user.getUid());
+        listener = listenerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild("name")) {
+                    // User created and populated, so retrieve data
+                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    userName.setText(dataSnapshot.child("name").getValue(String.class));
+                    userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                    String photo = null;
+                    if (dataSnapshot.hasChild("photo")) {
+                        photo = dataSnapshot.child("photo").getValue(String.class);
+                    }
+
+                    /* Glide */
+                    GlideApp.with(getApplicationContext())
+                            .load(photo)
+                            .placeholder(R.drawable.user_profile)
+                            .into(userPhoto);
+
+                    if (fragmentManager.findFragmentById(R.id.flContent) == null) {
+                        try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = HomeFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                        } catch (Exception e) {
+                            Log.e("MAD", "onCreate: ", e);
+                        }
+                    }
+                } else {
+                    // User created but not populated => go to edit profile
+                    if (fragmentManager.findFragmentById(R.id.flContent) == null) {
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        try {
+                            fragment = null;
+                            Class fragmentClass;
+                            fragmentClass = EditProfileFragment.class;
+                            fragment = (Fragment) fragmentClass.newInstance();
+
+                            Bundle args = new Bundle();
+                            args.putBoolean("isNew", true);
+                            fragment.setArguments(args);
+
+                            fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
+                            navigationView.getMenu().getItem(1).setChecked(true);
+                        } catch (Exception e) {
+                            Log.e("MAD", "onCreate: ", e);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

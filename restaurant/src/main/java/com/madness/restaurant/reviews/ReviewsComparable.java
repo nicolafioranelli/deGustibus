@@ -29,7 +29,8 @@ public class ReviewsComparable {
     }
 
     public float getRating() {
-        return rating;}
+        return rating;
+    }
 
 
     public void setRating(Long rating) {

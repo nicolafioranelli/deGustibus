@@ -13,7 +13,7 @@ import com.madness.restaurant.R;
 
 import java.util.List;
 
-public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.RestaurantReviewsHolder>{
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.RestaurantReviewsHolder> {
 
     Context context;
     View view;

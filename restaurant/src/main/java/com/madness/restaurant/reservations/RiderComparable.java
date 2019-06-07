@@ -63,11 +63,19 @@ public class RiderComparable {
         this.key = key;
     }
 
-    public int getCount() {return count;}
+    public int getCount() {
+        return count;
+    }
 
-    public void setCount(int count) {this.count = count; }
+    public void setCount(int count) {
+        this.count = count;
+    }
 
-    public float getRating() { return rating;}
+    public float getRating() {
+        return rating;
+    }
 
-    public void setRating(float rating) { this.rating = rating;}
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
 }

@@ -14,17 +14,17 @@ import org.json.JSONObject;
 
 public class DistanceCalculator {
 
+    private static String KEY = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
     private String from;
     private String to;
     private Context context;
-    private static String KEY = "AIzaSyAfDRqzomh-tP7Twu64hMJzWKG4hpG2UmA";
     private double result;
 
     public DistanceCalculator(Context context) {
         this.context = context;
     }
 
-    private String makeURL (){
+    private String makeURL() {
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
         urlString.append("?origin=");// from
@@ -37,7 +37,7 @@ public class DistanceCalculator {
         return urlString.toString();
     }
 
-    public void computeDistance(final DistanceCallback callback){
+    public void computeDistance(final DistanceCallback callback) {
         result = 0;
         String url = makeURL();
         //Creating a string request
@@ -52,7 +52,7 @@ public class DistanceCalculator {
                             JSONObject routes = routeArray.getJSONObject(0);
                             JSONArray legsArray = routes.getJSONArray("legs");
                             JSONObject legs = legsArray.getJSONObject(0);
-                            JSONObject distance  = legs.getJSONObject("distance");
+                            JSONObject distance = legs.getJSONObject("distance");
                             result = distance.getDouble("value");
                             callback.onDistanceComputed(result);
                         } catch (JSONException e) {
@@ -73,12 +73,6 @@ public class DistanceCalculator {
         requestQueue.add(stringRequest);
     }
 
-
-
-    public interface DistanceCallback{
-        void onDistanceComputed(double distance);
-    }
-
     public void setFrom(String from) {
         this.from = from;
     }
@@ -93,5 +87,9 @@ public class DistanceCalculator {
 
     public void setTo(double latitude, double longitude) {
         this.to = latitude + "," + longitude;
+    }
+
+    public interface DistanceCallback {
+        void onDistanceComputed(double distance);
     }
 }

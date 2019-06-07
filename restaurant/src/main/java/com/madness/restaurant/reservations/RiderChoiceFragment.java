@@ -1,7 +1,6 @@
 package com.madness.restaurant.reservations;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,9 +39,6 @@ import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.haversine.ComputeDistance;
 import com.madness.restaurant.haversine.Point;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -256,7 +251,7 @@ public class RiderChoiceFragment extends Fragment {
 
                 /* Set other fields and update correctly the current status */
                 StringBuilder listOfDishes = new StringBuilder();
-                for(int i=0; i<order.getCart().size(); i++) {
+                for (int i = 0; i < order.getCart().size(); i++) {
                     listOfDishes.append(order.getCart().get(i).getQuantity());
                     listOfDishes.append(" x ");
                     listOfDishes.append(order.getCart().get(i).getName());
@@ -298,7 +293,7 @@ public class RiderChoiceFragment extends Fragment {
                     status.setText(R.string.status_done);
                     isNew = false;
 
-                    if(!dataSnapshot.child("restRiderRating").exists()) {
+                    if (!dataSnapshot.child("restRiderRating").exists()) {
                         loadRider(order.getDeliverymanID(), 0);
                     } else {
                         loadRider(order.getDeliverymanID(), Math.round(Float.parseFloat(dataSnapshot.child("restRiderRating").getValue(String.class))));
@@ -344,12 +339,12 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
-    private void loadRider (String riderID, Integer riderRating) {
+    private void loadRider(String riderID, Integer riderRating) {
         databaseReference.child("riders").child(riderID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String photo = null;
-                if(dataSnapshot.child("photo").exists()) {
+                if (dataSnapshot.child("photo").exists()) {
                     photo = dataSnapshot.child("photo").getValue().toString();
                 }
 
@@ -391,7 +386,7 @@ public class RiderChoiceFragment extends Fragment {
         });
     }
 
-    private void updateRatings () {
+    private void updateRatings() {
         Boolean ok = true;
 
         if (riderRatingBar.getRating() == 0) {
@@ -489,7 +484,7 @@ public class RiderChoiceFragment extends Fragment {
                     }
                 }
 
-                if(exists) {
+                if (exists) {
                     adapter.updateData(list);
                 } else {
                     list.add(rider);
@@ -592,35 +587,35 @@ public class RiderChoiceFragment extends Fragment {
                 retrieveData(key, new DataRetrieveCallback() {
                     @Override
                     public void onCallback(Map user) {
-                            /* This method retrieves the information of the rider and will add them to the item to be passed to the adapter */
-                            rider = null;
-                            rider = new RiderComparable();
-                            rider.setAvailable((boolean) user.get("available"));
-                            rider.setName(user.get("name").toString());
-                            try {
-                                rider.setPhoto(user.get("photo").toString());
-                            } catch (Exception e) {
-                                rider.setPhoto("default");
-                            }
-                            rider.setKey(key);
-                            Point customer = new Point();
-                            customer.setLatitude(location.latitude);
-                            customer.setLongitude(location.longitude);
+                        /* This method retrieves the information of the rider and will add them to the item to be passed to the adapter */
+                        rider = null;
+                        rider = new RiderComparable();
+                        rider.setAvailable((boolean) user.get("available"));
+                        rider.setName(user.get("name").toString());
+                        try {
+                            rider.setPhoto(user.get("photo").toString());
+                        } catch (Exception e) {
+                            rider.setPhoto("default");
+                        }
+                        rider.setKey(key);
+                        Point customer = new Point();
+                        customer.setLatitude(location.latitude);
+                        customer.setLongitude(location.longitude);
 
-                            // Get haversine class and call method to calculate distance, then display it on the recycler view
-                            ComputeDistance computeDistance = new ComputeDistance();
-                            rider.setDistance(computeDistance.getDistance(customer, restaurant));
+                        // Get haversine class and call method to calculate distance, then display it on the recycler view
+                        ComputeDistance computeDistance = new ComputeDistance();
+                        rider.setDistance(computeDistance.getDistance(customer, restaurant));
 
-                            try {
-                                rider.setCount(Integer.valueOf(user.get("count").toString()));
-                                rider.setRating(Float.valueOf(user.get("rating").toString()));
-                            }catch (Exception e){
-                                rider.setCount(0);
-                                rider.setRating(0);
-                            }
+                        try {
+                            rider.setCount(Integer.valueOf(user.get("count").toString()));
+                            rider.setRating(Float.valueOf(user.get("rating").toString()));
+                        } catch (Exception e) {
+                            rider.setCount(0);
+                            rider.setRating(0);
+                        }
 
 
-                            callback.onCallback(rider, location);
+                        callback.onCallback(rider, location);
                     }
                 });
             }

@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null) {
+        if (user != null) {
             final TextView userName = rootView.findViewById(R.id.welcomeName);
             databaseReference.child("restaurants").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

@@ -149,7 +149,7 @@ public class ReservationFragment extends Fragment {
                 });
 
                 StringBuilder listOfDishes = new StringBuilder();
-                for(int i=0; i<model.getCart().size(); i++) {
+                for (int i = 0; i < model.getCart().size(); i++) {
                     listOfDishes.append(model.getCart().get(i).getQuantity());
                     listOfDishes.append(" x ");
                     listOfDishes.append(model.getCart().get(i).getName());

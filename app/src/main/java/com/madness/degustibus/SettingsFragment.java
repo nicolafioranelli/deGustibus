@@ -143,7 +143,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     Toast.makeText(getContext(), getString(R.string.err_passSame), Toast.LENGTH_LONG).show();
                 }
 
-
                 if (closeDialog)
                     dialog.dismiss();
                 //else dialog stays open.

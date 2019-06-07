@@ -12,10 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.firebase.geofire.GeoLocation;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.R;
 import com.madness.restaurant.mapsUtilities.DistanceCalculator;
@@ -23,7 +20,6 @@ import com.madness.restaurant.mapsUtilities.DistanceCalculator;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -39,7 +35,7 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
 
     private double totalDistance;
 
-    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, ReservationClass orderData, HashMap<String,GeoLocation> locations) {
+    public RiderAdapter(Context context, View view, List<RiderComparable> riderList, ReservationClass orderData, HashMap<String, GeoLocation> locations) {
         this.context = context;
         this.view = view;
         this.riderList = riderList;
@@ -60,7 +56,7 @@ public class RiderAdapter extends RecyclerView.Adapter<RiderAdapter.RiderHolder>
         final RiderComparable riderComparable = riderList.get(position);
         holder.name.setText(riderComparable.getName());
         String pic;
-        if(riderComparable.getPhoto().equals("default")) {
+        if (riderComparable.getPhoto().equals("default")) {
             pic = null;
         } else {
             pic = riderComparable.getPhoto();

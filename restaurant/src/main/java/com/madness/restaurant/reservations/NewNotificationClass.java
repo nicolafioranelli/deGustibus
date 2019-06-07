@@ -53,7 +53,6 @@ public class NewNotificationClass {
         });
 
 
-
     }
 
     public void refuseAndNotify(final ReservationClass orderData) {

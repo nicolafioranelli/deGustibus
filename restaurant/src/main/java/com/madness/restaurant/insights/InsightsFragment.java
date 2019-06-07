@@ -1,24 +1,16 @@
 package com.madness.restaurant.insights;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +27,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.formatter.StackedValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
@@ -46,15 +37,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.restaurant.R;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -65,7 +52,7 @@ public class InsightsFragment extends Fragment {
     private PieChart pieChart;
     private BarChart barChart;
     private FirebaseUser user;
-    private HashMap<String,HashMap<String,Object>> dishes;
+    private HashMap<String, HashMap<String, Object>> dishes;
     private int[] orders;
     private Long total = 0L;  // total sales;
     private ChildEventListener listenerPieChart;
@@ -104,7 +91,7 @@ public class InsightsFragment extends Fragment {
         barChart.setTouchEnabled(false);
         barChart.getDescription().setEnabled(false);        // no description
         barChart.setMaxVisibleValueCount(40);               // if more than 40 entries are displayed in the chart,
-                                                            // no values will be drawn
+        // no values will be drawn
         barChart.setPinchZoom(false);
         barChart.setDrawGridBackground(false);
         barChart.setDrawBarShadow(false);
@@ -117,7 +104,7 @@ public class InsightsFragment extends Fragment {
         setBarChartData(); // load with empty data
     }
 
-    private void halfPieConfigurations(View rootView){
+    private void halfPieConfigurations(View rootView) {
         pieChart = rootView.findViewById(R.id.pieChart);
         pieChart.setBackgroundColor(Color.TRANSPARENT);
         //pieChart.setDrawSliceText(false);
@@ -153,13 +140,13 @@ public class InsightsFragment extends Fragment {
             String name = "";
             Long popular = 0L;
             for (Map.Entry<String, Object> entry : dish.getValue().entrySet()) {    // for each property
-                if(entry.getKey().equals("dish")) name = entry.getValue().toString();
-                if(entry.getKey().equals("popular")) popular = (Long) entry.getValue();
+                if (entry.getKey().equals("dish")) name = entry.getValue().toString();
+                if (entry.getKey().equals("popular")) popular = (Long) entry.getValue();
             }
 
             // add a new entry onfly if is != 0
-            if(popular != 0L){
-                PieEntry entry = new PieEntry(popular,name);
+            if (popular != 0L) {
+                PieEntry entry = new PieEntry(popular, name);
                 this.pieChartValues.add(entry);
             }
 
@@ -170,7 +157,7 @@ public class InsightsFragment extends Fragment {
         dataSet.setSelectionShift(5f);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         PieData data = new PieData(dataSet);
-        PercentFormatter formatter= new PercentFormatter(pieChart);
+        PercentFormatter formatter = new PercentFormatter(pieChart);
 
         data.setValueFormatter(formatter);
         data.setValueTextSize(10f);
@@ -181,6 +168,7 @@ public class InsightsFragment extends Fragment {
 
     /**
      * generate the text inside the half-piechart
+     *
      * @return
      */
     private SpannableString generateCenterSpannableText() {
@@ -197,7 +185,7 @@ public class InsightsFragment extends Fragment {
     }
 
     /**
-     *  Set the data to display in the bar chart
+     * Set the data to display in the bar chart
      */
     private void setBarChartData() {
 
@@ -207,8 +195,8 @@ public class InsightsFragment extends Fragment {
 
         this.barChartValues = new ArrayList<>();
 
-        for(int i=0; i < orders.length; i++){
-            barChartValues.add(new BarEntry(i,orders[i]));
+        for (int i = 0; i < orders.length; i++) {
+            barChartValues.add(new BarEntry(i, orders[i]));
         }
 
         BarDataSet set1;
@@ -239,74 +227,61 @@ public class InsightsFragment extends Fragment {
         barChart.invalidate();
     }
 
-    /**
-     * Custom format of x axis
-     */
-    class MyValueFormatter extends ValueFormatter{
-
-        @Override
-        public String getAxisLabel(float value, AxisBase axis) {
-            if(value < 10){
-                return "0" + (int)value + ":00";
-            }else
-                return (int)value + ":00";
-        }
-    }
-
-
-    private void loadDataFromFirebase(){
+    private void loadDataFromFirebase() {
         // get offers
-        this.listenerPieChart =  FirebaseDatabase.getInstance().getReference()
-            .child("offers")
-            .child(user.getUid()).addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    // insert a single dish
-                    HashMap<String,Object> tmp = new HashMap<>();
-                    String name = dataSnapshot.child("dish").getValue(String.class);
-                    Long popular = dataSnapshot.child("popular").getValue(Long.class);
-                    tmp.put("dish",name);
-                    tmp.put("popular",popular);
-                    total += popular;
-                    dishes.put(dataSnapshot.getKey(),tmp);
-                    setHalfPieData();
+        this.listenerPieChart = FirebaseDatabase.getInstance().getReference()
+                .child("offers")
+                .child(user.getUid()).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        // insert a single dish
+                        HashMap<String, Object> tmp = new HashMap<>();
+                        String name = dataSnapshot.child("dish").getValue(String.class);
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("dish", name);
+                        tmp.put("popular", popular);
+                        total += popular;
+                        dishes.put(dataSnapshot.getKey(), tmp);
+                        setHalfPieData();
 
-                }
+                    }
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    //remove it
-                    Long prevPopular = (Long) dishes.get(dataSnapshot.getKey()).get("popular");
-                    total -= prevPopular;
-                    dishes.remove(dataSnapshot.getKey());
-                    //insert the new one
-                    HashMap<String,Object> tmp = new HashMap<>();
-                    String name = dataSnapshot.child("dish").getValue(String.class);
-                    Long popular = dataSnapshot.child("popular").getValue(Long.class);
-                    tmp.put("dish",name);
-                    tmp.put("popular",popular);
-                    total += popular;
-                    dishes.put(dataSnapshot.getKey(),tmp);
-                    setHalfPieData();
-                }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        //remove it
+                        Long prevPopular = (Long) dishes.get(dataSnapshot.getKey()).get("popular");
+                        total -= prevPopular;
+                        dishes.remove(dataSnapshot.getKey());
+                        //insert the new one
+                        HashMap<String, Object> tmp = new HashMap<>();
+                        String name = dataSnapshot.child("dish").getValue(String.class);
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("dish", name);
+                        tmp.put("popular", popular);
+                        total += popular;
+                        dishes.put(dataSnapshot.getKey(), tmp);
+                        setHalfPieData();
+                    }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    //remove it
-                    HashMap<String,Object> tmp = new HashMap<>();
-                    Long popular = dataSnapshot.child("popular").getValue(Long.class);
-                    tmp.put("popular",popular);
-                    total -= popular;
-                    dishes.remove(dataSnapshot.getKey());
-                    setHalfPieData();
-                }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        //remove it
+                        HashMap<String, Object> tmp = new HashMap<>();
+                        Long popular = dataSnapshot.child("popular").getValue(Long.class);
+                        tmp.put("popular", popular);
+                        total -= popular;
+                        dishes.remove(dataSnapshot.getKey());
+                        setHalfPieData();
+                    }
 
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {}
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
 
 
         this.listenerBarChart = FirebaseDatabase.getInstance().getReference()
@@ -318,28 +293,31 @@ public class InsightsFragment extends Fragment {
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         // get time
                         String time = dataSnapshot.child("deliveryHour").getValue(String.class);
-                        String index = time.substring(0,2); // select only the hour
+                        String index = time.substring(0, 2); // select only the hour
                         orders[Integer.valueOf(index).intValue()] += 1;
                         setBarChartData();
                     }
 
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
 
                     @Override
                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                         // get time
                         String time = dataSnapshot.child("deliveryHour").getValue(String.class);
-                        String index = time.substring(0,2); // select only the hour
+                        String index = time.substring(0, 2); // select only the hour
                         orders[Integer.valueOf(index).intValue()] -= 1;
                         setBarChartData();
                     }
 
                     @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
                 });
     }
 
@@ -357,5 +335,19 @@ public class InsightsFragment extends Fragment {
                 .orderByChild("restaurantID")
                 .equalTo(user.getUid())
                 .removeEventListener(this.listenerBarChart);
+    }
+
+    /**
+     * Custom format of x axis
+     */
+    class MyValueFormatter extends ValueFormatter {
+
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            if (value < 10) {
+                return "0" + (int) value + ":00";
+            } else
+                return (int) value + ":00";
+        }
     }
 }

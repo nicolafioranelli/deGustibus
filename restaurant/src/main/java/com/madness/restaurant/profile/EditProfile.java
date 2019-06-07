@@ -41,7 +41,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,7 +63,6 @@ import com.madness.restaurant.BuildConfig;
 import com.madness.restaurant.GlideApp;
 import com.madness.restaurant.HomeActivity;
 import com.madness.restaurant.R;
-import com.madness.restaurant.home.HomeFragment;
 import com.madness.restaurant.picker.TimePickerFragment;
 
 import org.json.JSONException;
@@ -118,12 +119,19 @@ public class EditProfile extends Fragment {
     private DatabaseReference referenceListener;
     private Client client;
     private Index index;
-    private boolean settedProfile;
     // Declare Context variable at class level in Fragment
     private Context mContext;
+    private View view;
 
     public EditProfile() {
         // Required empty public constructor
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
     }
 
     /* Define the listener here to manage clicks on the toolbar edit button */
@@ -137,7 +145,6 @@ public class EditProfile extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settedProfile=false;
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -157,6 +164,7 @@ public class EditProfile extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         getActivity().setTitle(getResources().getString(R.string.title_Edit));
         findViews(rootView);
+        view = rootView;
 
         aSwitch = rootView.findViewById(R.id.switchGenWork);
         aSwitch.setChecked(true);
@@ -187,7 +195,7 @@ public class EditProfile extends Fragment {
 
         loadFromFirebase(view);
 
-        if(settedProfile=true)
+        if (getArguments() == null)
             getActivity().setTitle(getString(R.string.title_Edit));
         else
             getActivity().setTitle(getString(R.string.title_first_Edit));
@@ -218,39 +226,10 @@ public class EditProfile extends Fragment {
                 autocompleteView.setError(getResources().getString(R.string.address));
             } else {
                 storeOnFirebase();
-                delPrefPhoto();
-
-                /* Handle save option and go back */
-                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-
-                if (getArguments() != null) {
-                    /*
-                    try {
-                        Fragment fragment = null;
-                        Class fragmentClass;
-                        fragmentClass = HomeFragment.class;
-                        fragment = (Fragment) fragmentClass.newInstance();
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                    } catch (Exception e) {
-
-                    }
-                    return true;*/
-                    try {
-                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
-                        getActivity().finish(); // it terminate the activity
-                    } catch (Exception e) {
-                    }
-                } else {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        return true;
-                }
             }
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     /* The method allows to set the listeners in the corresponding items in order to get the
      * time pickers once clicked.
@@ -699,6 +678,7 @@ public class EditProfile extends Fragment {
      * the database under the child "restaurants" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
+        view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         final Map<String, Object> map = new HashMap<>();
         map.put("name", fullname.getText().toString());
         map.put("email", email.getText().toString());
@@ -792,15 +772,8 @@ public class EditProfile extends Fragment {
         }
     }
 
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
-    }
-
-    private void doOnAlgolia(Map<String, Object> map, Boolean photo){
-        if(getArguments()!= null) {
+    private void doOnAlgolia(Map<String, Object> map, Boolean photo) {
+        if (getArguments() != null) {
             try {
                 JSONObject object = new JSONObject()
                         .put("name", map.get("name").toString())
@@ -808,10 +781,30 @@ public class EditProfile extends Fragment {
                         .put("address", map.get("address").toString())
                         .put("id", user.getUid())
                         .put("rating", 0);
-                if(photo) {
+                if (photo) {
                     object.put("photo", map.get("photo").toString());
                 }
-                index.addObjectAsync(object, user.getUid(), null);
+                index.addObjectAsync(object, user.getUid(), new CompletionHandler() {
+                    @Override
+                    public void requestCompleted(@Nullable JSONObject jsonObject, @Nullable AlgoliaException e) {
+                        delPrefPhoto();
+
+                        /* Handle save option and go back */
+                        Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                        if (getArguments() != null) {
+                            try {
+                                startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                                getActivity().finish(); // it terminate the activity
+                            } catch (Exception ex) {
+
+                            }
+                        } else {
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        }
+                    }
+                });
             } catch (JSONException e) {
 
             }
@@ -821,10 +814,30 @@ public class EditProfile extends Fragment {
                         .put("name", map.get("name").toString())
                         .put("desc", map.get("desc").toString())
                         .put("address", map.get("address").toString());
-                if(photo) {
+                if (photo) {
                     object.put("photo", map.get("photo").toString());
                 }
-                index.partialUpdateObjectAsync(object, user.getUid(), null);
+                index.partialUpdateObjectAsync(object, user.getUid(), new CompletionHandler() {
+                    @Override
+                    public void requestCompleted(@Nullable JSONObject jsonObject, @Nullable AlgoliaException e) {
+                        delPrefPhoto();
+
+                        /* Handle save option and go back */
+                        Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                        if (getArguments() != null) {
+                            try {
+                                startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                                getActivity().finish(); // it terminate the activity
+                            } catch (Exception ex) {
+
+                            }
+                        } else {
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        }
+                    }
+                });
             } catch (JSONException e) {
 
             }
@@ -837,7 +850,6 @@ public class EditProfile extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    settedProfile=true;
                     ProfileClass profile = dataSnapshot.getValue(ProfileClass.class);
 
                     fullname.setText(profile.getName());
@@ -866,6 +878,7 @@ public class EditProfile extends Fragment {
                     if (profile.getPhoto() != null) {
                         pic = profile.getPhoto();
                     }
+
                     /* Glide */
                     GlideApp.with(mContext)
                             .load(pic)
@@ -902,6 +915,7 @@ public class EditProfile extends Fragment {
     }
 
     private void findViews(View view) {
+        view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         fullname = view.findViewById(R.id.et_edit_fullName);
         email = view.findViewById(R.id.et_edit_email);
         desc = view.findViewById(R.id.et_edit_desc);
@@ -924,6 +938,7 @@ public class EditProfile extends Fragment {
         sundayOpen = view.findViewById(R.id.et_edit_sundayOpen);
         sundayClose = view.findViewById(R.id.et_edit_sundayClose);
         img = view.findViewById(R.id.imageviewedit);
+
     }
 
     @Override

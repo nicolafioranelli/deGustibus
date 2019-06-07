@@ -94,7 +94,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     Intent mIntent = new Intent(RegisterActivity.this, HomeActivity.class);
                                     Bundle mBundle = new Bundle();
                                     mBundle.putBoolean("newCreation", true);
-                                    System.out.println("HEre");
                                     mIntent.putExtras(mBundle);
                                     startActivity(mIntent);
                                     finish();

@@ -33,7 +33,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -120,7 +122,7 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         loadFromFirebase();
-        if (settedProfile)
+        if (getArguments() == null)
             getActivity().setTitle(getString(R.string.title_Edit));
         else
             getActivity().setTitle(getString(R.string.title_first_Edit));
@@ -147,27 +149,6 @@ public class EditProfileFragment extends Fragment {
                 phone.setError(getResources().getString(R.string.err_phone));
             } else {
                 storeOnFirebase();
-                delPrefPhoto();
-
-                /* Handle save option and go back */
-                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-
-                if (getArguments() != null) {
-                    try {
-                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
-                        getActivity().finish(); // it terminate the activity
-                    } catch (Exception e) {
-                    }
-
-                } else {
-                    if (settedProfile) {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    } else {
-                        getActivity().finish();
-                    }
-                    return true;
-                }
             }
         }
         return super.onOptionsItemSelected(item);
@@ -423,8 +404,27 @@ public class EditProfileFragment extends Fragment {
                                         String imageUrl = uri.toString();
                                         map.put("photo", imageUrl);
                                         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                                        mDatabase.child("riders").child(user.getUid()).updateChildren(map);
+                                        mDatabase.child("riders").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                delPrefPhoto();
 
+                                                /* Handle save option and go back */
+                                                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                                                if (getArguments() != null) {
+                                                    try {
+                                                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                                                        getActivity().finish(); // it terminate the activity
+                                                    } catch (Exception e) {
+
+                                                    }
+                                                } else {
+                                                    FragmentManager fragmentManager = getFragmentManager();
+                                                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                                }
+                                            }
+                                        });
                                     }
                                 });
                             }
@@ -433,7 +433,26 @@ public class EditProfileFragment extends Fragment {
                 Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
             }
         } else {
-            databaseReference.child("riders").child(user.getUid()).updateChildren(map);
+            databaseReference.child("riders").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    delPrefPhoto();
+                    /* Handle save option and go back */
+                    Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                    if (getArguments() != null) {
+                        try {
+                            startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                            getActivity().finish(); // it terminate the activity
+                        } catch (Exception e) {
+
+                        }
+                    } else {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    }
+                }
+            });
         }
     }
 

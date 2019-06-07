@@ -271,13 +271,13 @@ public class NewDailyOffer extends Fragment {
             // store the picture into firestore
             if (mImageUri != null) {
                 fileReference.putFile(mImageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    imageUrl = uri.toString();
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        imageUrl = uri.toString();
                                         // create a new daily class container
                                         /*DishClass dishClass = new DishClass(
                                             dishname.getText().toString(),  // dishname from textview
@@ -290,12 +290,12 @@ public class NewDailyOffer extends Fragment {
                                         );*/
                                         storeDish(false, updateItem);
 
-                                }
-                            });
-                        }
-                    });
+                                    }
+                                });
+                            }
+                        });
             } else {
-                storeDish(false,updateItem);
+                storeDish(false, updateItem);
             }
         }
     }
@@ -453,28 +453,29 @@ public class NewDailyOffer extends Fragment {
     /**
      * Create or update values in firebase.
      * All the values are stored in the class attributes.
-     * @param flag true if create, false if udate
+     *
+     * @param flag      true if create, false if udate
      * @param reference firebase reference
      */
-    private void storeDish(Boolean flag, DatabaseReference reference){
-        Map<String,Object> dish = new HashMap<>();
-        if(flag){ // create
+    private void storeDish(Boolean flag, DatabaseReference reference) {
+        Map<String, Object> dish = new HashMap<>();
+        if (flag) { // create
             dish.put("avail", Integer.parseInt(avail.getText().toString()));
             dish.put("count", 0);
             dish.put("description", desc.getText().toString());
             dish.put("dish", dishname.getText().toString());
             dish.put("pic", imageUrl);
             dish.put("popular", 0);
-            dish.put("price",Float.valueOf(price.getText().toString()));
-            dish.put("rating",0);
+            dish.put("price", Float.valueOf(price.getText().toString()));
+            dish.put("rating", 0);
             reference.setValue(dish);
-        }else{ // update
+        } else { // update
             // do not update `count` `rating` and `popular`
             dish.put("avail", Integer.parseInt(avail.getText().toString()));
             dish.put("description", desc.getText().toString());
             dish.put("dish", dishname.getText().toString());
             dish.put("pic", imageUrl);
-            dish.put("price",Float.valueOf(price.getText().toString()));
+            dish.put("price", Float.valueOf(price.getText().toString()));
             reference.updateChildren(dish);
         }
 

@@ -36,7 +36,9 @@ import android.widget.Filterable;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -77,6 +79,7 @@ public class EditProfileFragment extends Fragment {
     private DatabaseReference listenerReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
+    private View view;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -106,6 +109,7 @@ public class EditProfileFragment extends Fragment {
         // Inflate the layout for this fragment and add the title
         View rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         getActivity().setTitle(getString(R.string.title_EditProfile));
+        view = rootView;
 
         findViews(rootView);
         loadFromFirebase();
@@ -136,25 +140,8 @@ public class EditProfileFragment extends Fragment {
                 autocompleteView.setError(getResources().getString(R.string.err_addr));
             } else {
                 storeOnFirebase();
-                delPrefPhoto();
-
-                /* Handle save option and go back */
-                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
-
-                if (getArguments() != null) {
-                    try {
-                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
-                        getActivity().finish(); // it terminate the activity
-                    } catch (Exception e) {
-                    }
-                } else {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    return true;
-                }
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -352,6 +339,7 @@ public class EditProfileFragment extends Fragment {
      * the database under the child "customers" with the uid of the current authenticated user.
      */
     private void storeOnFirebase() {
+        view.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
         DatabaseReference newItem = FirebaseDatabase.getInstance().getReference().child(user.getUid()).push();
         final StorageReference fileReference = FirebaseStorage.getInstance().getReference().child(user.getUid()).child(newItem.getKey());
 
@@ -403,7 +391,27 @@ public class EditProfileFragment extends Fragment {
                                         String imageUrl = uri.toString();
                                         map.put("photo", imageUrl);
                                         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                                        mDatabase.child("customers").child(user.getUid()).updateChildren(map);
+                                        mDatabase.child("customers").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                delPrefPhoto();
+
+                                                /* Handle save option and go back */
+                                                Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                                                if (getArguments() != null) {
+                                                    try {
+                                                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                                                        getActivity().finish(); // it terminate the activity
+                                                    } catch (Exception e) {
+
+                                                    }
+                                                } else {
+                                                    FragmentManager fragmentManager = getFragmentManager();
+                                                    fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                                }
+                                            }
+                                        });
 
                                     }
                                 });
@@ -413,7 +421,26 @@ public class EditProfileFragment extends Fragment {
                 Log.e("MAD", "storeOnFirebase - Exception converting bitmap: ", e);
             }
         } else {
-            databaseReference.child("customers").child(user.getUid()).updateChildren(map);
+            databaseReference.child("customers").child(user.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    delPrefPhoto();
+
+                    /* Handle save option and go back */
+                    Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
+
+                    if (getArguments() != null) {
+                        try {
+                            startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                            getActivity().finish(); // it terminate the activity
+                        } catch (Exception e) {
+                        }
+                    } else {
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    }
+                }
+            });
         }
     }
 

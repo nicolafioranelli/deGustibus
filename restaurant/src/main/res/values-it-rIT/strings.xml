@@ -146,4 +146,13 @@
     <string name="evaluation_Desc">Grazie per la tua valutazione! I ristoratori potranno così migliorare il proprio lavoro!</string>
     <string name="evaluation_Title">Valutazione completata</string>
     <string name="evaluation_Err">Valuta tutti gli elementi per favore!</string>
+
+    <string name="modPassword">Modifica Password</string>
+    <string name="passwordHint">Nuova Password</string>
+    <string name="passwordRepHint">Ripeti Password</string>
+    <string name="err_gen">Ops... qualcosa è andato storto!</string>
+    <string name="deleteDesc">Questa operazione rimuoverà il tuo account in modo permanente, sei sicuro di voler continuare?</string>
+    <string name="deleteTitle">Elimina account</string>
+    <string name="deleteCompleted">Account eliminato!</string>
+    <string name="err_passSame">Le password non coincidono!</string>
 </resources>
