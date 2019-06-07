@@ -18,9 +18,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
-import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -130,7 +128,13 @@ public class DetailedResFragment extends Fragment {
         price = rootView.findViewById(R.id.price);
         stateProgressBar.setStateDescriptionData(labels);
 
-        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView = rootView.findViewById(R.id.recyclerView);/*
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };*/
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         reviewButton = rootView.findViewById(R.id.reviewButton);
@@ -290,12 +294,12 @@ public class DetailedResFragment extends Fragment {
                     status.setText(R.string.status_done);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FOUR);
                     button.setVisibility(View.GONE);
-                    if(order.getRestaurantRating().equals("null")) {
+                    if (order.getRestaurantRating().equals("null")) {
                         loadRestaurant(order.getRestaurantID(), 0);
                     } else {
                         loadRestaurant(order.getRestaurantID(), Math.round(Float.parseFloat(order.getRestaurantRating())));
                     }
-                    if(order.getRiderRating().equals("null")) {
+                    if (order.getRiderRating().equals("null")) {
                         loadRider(order.getDeliverymanID(), 0);
                     } else {
                         loadRider(order.getDeliverymanID(), Math.round(Float.parseFloat(order.getRiderRating())));
@@ -369,16 +373,19 @@ public class DetailedResFragment extends Fragment {
         databaseReference.child("restaurants").child(restID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println(dataSnapshot.getValue());
-                String photo = null;
-                if(dataSnapshot.child("photo").exists()) {
-                    photo = dataSnapshot.child("photo").getValue().toString();
-                }
+                try {
+                    String photo = null;
+                    if (dataSnapshot.child("photo").exists()) {
+                        photo = dataSnapshot.child("photo").getValue().toString();
+                    }
 
-                GlideApp.with(getContext())
-                        .load(photo)
-                        .placeholder(R.drawable.restaurant)
-                        .into(restImage);
+                    GlideApp.with(getContext())
+                            .load(photo)
+                            .placeholder(R.drawable.restaurant)
+                            .into(restImage);
+                } catch (Exception e) {
+
+                }
             }
 
             @Override
@@ -417,7 +424,7 @@ public class DetailedResFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 System.out.println(dataSnapshot.getValue());
                 String photo = null;
-                if(dataSnapshot.child("photo").exists()) {
+                if (dataSnapshot.child("photo").exists()) {
                     photo = dataSnapshot.child("photo").getValue().toString();
                 }
 
@@ -570,6 +577,7 @@ public class DetailedResFragment extends Fragment {
                     Object count = dataSnapshot.child("count").getValue();
                     ref.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(ratingBar2.getRating()));
                     ref.child("count").setValue(Integer.parseInt(count.toString()) + 1);
+                    ref.child("available").setValue(true);
                 }
 
                 @Override
@@ -582,10 +590,15 @@ public class DetailedResFragment extends Fragment {
             final DatabaseReference refRider = databaseReference.child("riders").child(order.getDeliverymanID());
             refRider.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                     Object rating = dataSnapshot.child("rating").getValue();
                     Object count = dataSnapshot.child("count").getValue();
-                    refRider.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating()));
+                    refRider.child("rating").setValue(Integer.parseInt(rating.toString()) + Math.round(riderRatingBar.getRating())).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            System.out.println("Rating: " + dataSnapshot.child("rating").getValue());
+                        }
+                    });
                     refRider.child("count").setValue(Integer.parseInt(count.toString()) + 1);
                 }
 

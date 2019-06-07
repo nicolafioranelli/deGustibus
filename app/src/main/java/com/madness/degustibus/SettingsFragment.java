@@ -122,7 +122,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final AlertDialog dialog = builder.create();
         dialog.show();
 
-        /* Ovveride of the on click listeners in order to manage update and password check */
+        /* Override of the on click listeners in order to manage update and password check */
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

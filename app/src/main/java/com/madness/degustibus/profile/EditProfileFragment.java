@@ -33,7 +33,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -50,12 +49,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.degustibus.BuildConfig;
 import com.madness.degustibus.GlideApp;
+import com.madness.degustibus.HomeActivity;
 import com.madness.degustibus.R;
-import com.madness.degustibus.home.HomeFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +80,13 @@ public class EditProfileFragment extends Fragment {
 
     public EditProfileFragment() {
         // Required empty public constructor
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
     }
 
     /* The method allows to retrieve the shared preferences and to let the toolbar be available */
@@ -138,12 +143,8 @@ public class EditProfileFragment extends Fragment {
 
                 if (getArguments() != null) {
                     try {
-                        Fragment fragment = null;
-                        Class fragmentClass;
-                        fragmentClass = HomeFragment.class;
-                        fragment = (Fragment) fragmentClass.newInstance();
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                        getActivity().finish(); // it terminate the activity
                     } catch (Exception e) {
                     }
                 } else {
@@ -462,13 +463,6 @@ public class EditProfileFragment extends Fragment {
             }
         });
 
-    }
-
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
     }
 
     private void findViews(View view) {

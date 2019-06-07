@@ -26,11 +26,9 @@ import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.degustibus.GlideApp;
 import com.madness.degustibus.R;
 
@@ -161,7 +159,7 @@ public class RestaurantDetailsFragment extends Fragment {
             restaurant = new JSONObject(restaurantProfileString);
             String photo = null;
 
-            if(restaurant.has("photo")) {
+            if (restaurant.has("photo")) {
                 photo = restaurant.get("photo").toString();
             }
 

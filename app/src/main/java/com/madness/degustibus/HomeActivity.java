@@ -90,8 +90,6 @@ public class HomeActivity extends AppCompatActivity
     private ValueEventListener listener;
     private HashMap<String, Object> userData;
 
-    /* Lifecycle */
-
     /* Check if connection is enabled! */
     public static boolean isNetworkAvailable(Context context) {
         try {
@@ -108,6 +106,7 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
+    /* Lifecycle */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,19 +177,20 @@ public class HomeActivity extends AppCompatActivity
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    userData = (HashMap<String, Object>) dataSnapshot.getValue();
-                    try {
-                        if (userData.get("name") != null) {
-                            userName.setText(userData.get("name").toString());
-                            email.setText(userData.get("email").toString());
-                            /* Glide */
-                            GlideApp.with(getApplicationContext())
-                                    .load(userData.get("photo").toString())
-                                    .placeholder(R.drawable.user_profile)
-                                    .into(imageView);
-                        }
-                    } catch (Exception e) {
+                    if (dataSnapshot.hasChild("name")) {
+                        userName.setText(dataSnapshot.child("name").getValue(String.class));
+                        email.setText(dataSnapshot.child("email").getValue(String.class));
 
+                        String photo = null;
+                        if (dataSnapshot.hasChild("photo")) {
+                            photo = dataSnapshot.child("photo").getValue(String.class);
+                        }
+
+                        /* Glide */
+                        GlideApp.with(getApplicationContext())
+                                .load(photo)
+                                .placeholder(R.drawable.user_profile)
+                                .into(imageView);
                     }
                 }
 
@@ -255,7 +255,6 @@ public class HomeActivity extends AppCompatActivity
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
     }
-
     // End lifecycle
 
     @Override
@@ -284,10 +283,7 @@ public class HomeActivity extends AppCompatActivity
             notificationManager.createNotificationChannel(channel);
         }
     }
-
     // end notification helpers
-
-    /* Helpers */
 
     private void makeNotification(String type, String description) {
         // Create an explicit intent for an Activity in your app
@@ -309,6 +305,7 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    /* Helpers */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -323,6 +320,28 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        String fragmentTag = null;
+        fragment = null;
+        fragment = fragmentManager.findFragmentById(R.id.flContent);
+
+        if (fragment instanceof ProfileFragment) {
+            fragmentTag = "Profile";
+        } else if (fragment instanceof EditProfileFragment) {
+            fragmentTag = "Edit";
+        } else if (fragment instanceof ReservationsFragment) {
+            fragmentTag = "Reservation";
+        } else if (fragment instanceof DetailedResFragment) {
+            fragmentTag = "Detail";
+        } else if (fragment instanceof OrderFragment) {
+            fragmentTag = "Order";
+        } else if (fragment instanceof RestaurantDetailsFragment) {
+            fragmentTag = "Restaurant";
+        } else if (fragment instanceof NotificationsFragment) {
+            fragmentTag = "Notifications";
+        } else if (fragment instanceof SettingsFragment) {
+            fragmentTag = "Settings";
+        }
+
         fragment = null;
         Class fragmentClass;
 
@@ -332,7 +351,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = HomeFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -342,7 +361,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = ProfileFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Profile").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -352,7 +371,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = SettingsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Settings").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -362,7 +381,7 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = ReservationsFragment.class;
                     fragment = (Fragment) fragmentClass.newInstance();
                     fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Reservations").addToBackStack("HOME").commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "Reservations").addToBackStack(fragmentTag).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -415,11 +434,9 @@ public class HomeActivity extends AppCompatActivity
             });
         }
     }
-
     // end Helpers
 
     /* Methods for interfaces */
-
     @Override
     public void editProfileClick() {
         try {

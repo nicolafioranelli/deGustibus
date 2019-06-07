@@ -197,7 +197,7 @@ public class HomeFragment extends Fragment {
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(sharedPref.getAll().size()==0) {
+                        if (sharedPref.getAll().size() == 0) {
                             Toast.makeText(getContext(), getString(R.string.no_favourite), Toast.LENGTH_SHORT).show();
                         }
                         if (isChecked) {
