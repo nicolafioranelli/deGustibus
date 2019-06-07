@@ -1,6 +1,7 @@
 package com.madness.restaurant;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.madness.restaurant.auth.LoginActivity;
 
 /**
  * The Settings Fragment is a fragment used to display preferences of the app (here in particular are
@@ -66,6 +68,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 firebaseAuth.signOut();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                getActivity().finish();
                 return false;
             }
         });
