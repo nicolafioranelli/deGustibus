@@ -1,6 +1,7 @@
 package com.madness.degustibus.reservations;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -278,14 +279,17 @@ public class DetailedResFragment extends Fragment {
                     status.setText(R.string.status_new);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (order.getStatus().equals("incoming")) {
                     status.setText(R.string.status_elaboration);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorAccent));
                 } else if (order.getStatus().equals("refused")) {
                     status.setText(R.string.status_refused);
                     stateProgressBar.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(Color.RED);
                 } else if (order.getStatus().equals("done")) {
                     status.setText(R.string.status_done);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FOUR);
@@ -316,10 +320,12 @@ public class DetailedResFragment extends Fragment {
                     status.setText(R.string.status_elaboration);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
                     button.setVisibility(View.GONE);
+                    status.setTextColor(getResources().getColor(R.color.colorAccent));
                 } else if (order.getStatus().equals("delivering")) {
                     status.setText(R.string.status_delivering);
                     stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
                     button.setVisibility(View.VISIBLE);
+                    status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 }
 
                 date.setText(order.getDeliveryDate());
