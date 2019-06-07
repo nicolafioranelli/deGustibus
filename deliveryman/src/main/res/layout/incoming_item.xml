@@ -203,7 +203,6 @@
                 tools:text="@tools:sample/lorem[1]" />
 
 
-
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout

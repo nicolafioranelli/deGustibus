@@ -1,12 +1,10 @@
 package com.madness.deliveryman.profile;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -25,8 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.madness.deliveryman.GlideApp;
 import com.madness.deliveryman.R;
 
@@ -145,12 +140,11 @@ public class ProfileFragment extends Fragment {
                     email.setText(user.get("email").toString());
                     desc.setText(user.get("desc").toString());
                     phone.setText(user.get("phone").toString());
-                    if(user.get("rating")!=null){
-                        Float rating=Float.valueOf(user.get("rating").toString());
-                        Float count=Float.valueOf(user.get("count").toString());
-                        simpleRatingBar.setRating((rating/count));
-                    }
-                    else
+                    if (user.get("rating") != null) {
+                        Float rating = Float.valueOf(user.get("rating").toString());
+                        Float count = Float.valueOf(user.get("count").toString());
+                        simpleRatingBar.setRating((rating / count));
+                    } else
                         simpleRatingBar.setRating(0);
 
                     String pic = null;
@@ -163,7 +157,7 @@ public class ProfileFragment extends Fragment {
                             .placeholder(R.drawable.user_profile)
                             .into(img);
 
-                }catch (Exception e) {
+                } catch (Exception e) {
 
                 }
                 getView().findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -177,12 +171,6 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    /* Interface for the listener */
-    public interface ProfileListener {
-        void editProfileClick();
-        void reviewsClick();
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -193,5 +181,12 @@ public class ProfileFragment extends Fragment {
     public void onStop() {
         super.onStop();
         listenerReference.removeEventListener(eventListener);
+    }
+
+    /* Interface for the listener */
+    public interface ProfileListener {
+        void editProfileClick();
+
+        void reviewsClick();
     }
 }

@@ -15,7 +15,8 @@ public class IncomingData {
     private String status;
 
 
-    public IncomingData() {}
+    public IncomingData() {
+    }
 
     public IncomingData(String customerID, String restaurantID, String deliverymanID, String deliveryDate, String deliveryHour, String description, String totalPrice, String customerAddress, String restaurantAddress, String status) {
         this.customerID = customerID;
@@ -31,9 +32,13 @@ public class IncomingData {
     }
 
 
-    public String getOrderID() { return orderID; }
+    public String getOrderID() {
+        return orderID;
+    }
 
-    public void setOrderID(String orderID) { this.orderID = orderID; }
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
+    }
 
     public String getCustomerID() {
         return customerID;

@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.madness.deliveryman.map.DataParser;
 
 import org.json.JSONObject;
 
@@ -18,16 +17,11 @@ import java.util.List;
  * A class to parse the Google Places in JSON format
  */
 public class PointsParser extends AsyncTask<String, String, List<List<HashMap<String, String>>>> {
+    public AsyncResponse delegate = null;
     GoogleMap map;
     private String distance;
     private String duration;
     private String distanceInt;
-    public AsyncResponse delegate = null;
-
-    //interface to comunicate with FetchUrl
-    public interface AsyncResponse {
-        void processFinish(String distance, String duration, String distanceInt);
-    }
 
     // Parsing the data in non-ui thread
     @Override
@@ -64,14 +58,14 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
             // Fetching all the points in i-th route
             for (int j = 0; j < path.size(); j++) {
                 HashMap<String, String> point = path.get(j);
-                if(j==0){    // Get distance from the list
-                    distance = (String)point.get("distance");
-                    distanceInt = (String)point.get("distanceInt");
+                if (j == 0) {    // Get distance from the list
+                    distance = (String) point.get("distance");
+                    distanceInt = (String) point.get("distanceInt");
                     continue;
-                }else if(j==1) { // Get distance from the list
+                } else if (j == 1) { // Get distance from the list
                     duration = (String) point.get("duration");
                     continue;
-                }else{
+                } else {
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
@@ -89,15 +83,17 @@ public class PointsParser extends AsyncTask<String, String, List<List<HashMap<St
         if (lineOptions != null) {
             map.addPolyline(lineOptions);
             //call the method processFinish of FetchUrl to pass distance and duration
-            delegate.processFinish(distance,duration,distanceInt);
-
+            delegate.processFinish(distance, duration, distanceInt);
         }
     }
 
-    void setMap (GoogleMap map){
+    void setMap(GoogleMap map) {
         this.map = map;
     }
 
-
+    //interface to communicate with FetchUrl
+    public interface AsyncResponse {
+        void processFinish(String distance, String duration, String distanceInt);
+    }
 }
 

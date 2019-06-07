@@ -129,7 +129,7 @@
     <string name="showInMaps">map</string>
     <string name="new_notification">New notification!</string>
     <string name="notification_message">Open the notification section ...</string>
-    
+
     <string name="gps">Please allow the GPS!</string>
     <string name="err_name">Name is required!</string>
     <string name="err_desc">Description in required!</string>
@@ -151,5 +151,12 @@
     <string name="map_distance" translatable="false">Km:</string>
 
     <string name="exitMap">Press back to exit from map mode!</string>
-    <string name="exitMap">Press back to exit from map mode!</string>
+    <string name="modPassword">Modify Password</string>
+    <string name="passwordHint">New Password</string>
+    <string name="passwordRepHint">Repeat Password</string>
+    <string name="err_gen">Ops... something went wrong!</string>
+    <string name="deleteTitle">Delete account</string>
+    <string name="deleteDesc">This operation will remove your account permanently, are you sure that you want to continue?</string>
+    <string name="deleteCompleted">Account deleted!</string>
+    <string name="err_passSame">Passwords are not the same, please insert them correctly!</string>
 </resources>

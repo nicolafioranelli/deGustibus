@@ -27,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.R;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,7 +37,6 @@ import java.util.Map;
 public class ReviewsFragment extends Fragment {
 
     /* Database references */
-    private DatabaseReference databaseReference;
     private DatabaseReference reviewReference;
 
     /* Value Event Listeners */
@@ -54,16 +52,14 @@ public class ReviewsFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private ReviewsAdapter adapter;
     private ReviewsComparable review;
-    private String sortBy="NULL";
+    private String sortBy = "NULL";
     private View view;
 
     public ReviewsFragment() {
         // Required empty public constructor
     }
 
-    /* In the onCreate method all variables containing useful information are set in a way that other
-     * methods can use them once called.
-     */
+    /* Lifecycle */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +86,7 @@ public class ReviewsFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_reviews, container, false);
         getActivity().setTitle(getResources().getString(R.string.reviews));
 
-        empty=rootView.findViewById(R.id.emptyLayout);
+        empty = rootView.findViewById(R.id.emptyLayout);
         progressBar = rootView.findViewById(R.id.progress_horizontal);
         recyclerView = rootView.findViewById(R.id.recyclerView);
         view = rootView;
@@ -109,37 +105,6 @@ public class ReviewsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    //show an AlertDialog in order to choose how to sort the reviews
-    private void showSortDialog() {
-        String byName=getResources().getText(R.string.by_name).toString();
-        String byRating=getResources().getText(R.string.by_rating).toString();
-        String byDate=getResources().getText(R.string.by_date).toString();
-        String[] options={byName, byRating, byDate};
-        AlertDialog.Builder builder= new AlertDialog.Builder(getContext());
-        builder.setTitle(getResources().getText(R.string.sort_by).toString());
-        builder.setIcon(R.drawable.ic_action_sort);
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which==0){
-                    sortBy="byName";
-                    loadAdapter();
-                }
-                if(which==1){
-                    sortBy="byRating";
-                    loadAdapter();
-                }
-                if(which==2){
-                    sortBy="byDate";
-                    loadAdapter();
-                }
-
-            }
-        });
-        builder.create().show();
-    }
-
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -149,7 +114,38 @@ public class ReviewsFragment extends Fragment {
             Log.e("MAD", "onDetach: ", e);
         }
     }
+    // end Lifecycle
 
+    /* Helpers */
+    //show an AlertDialog in order to choose how to sort the reviews
+    private void showSortDialog() {
+        String byName = getResources().getText(R.string.by_name).toString();
+        String byRating = getResources().getText(R.string.by_rating).toString();
+        String byDate = getResources().getText(R.string.by_date).toString();
+        String[] options = {byName, byRating, byDate};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getResources().getText(R.string.sort_by).toString());
+        builder.setIcon(R.drawable.ic_action_sort);
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    sortBy = "byName";
+                    loadAdapter();
+                }
+                if (which == 1) {
+                    sortBy = "byRating";
+                    loadAdapter();
+                }
+                if (which == 2) {
+                    sortBy = "byDate";
+                    loadAdapter();
+                }
+
+            }
+        });
+        builder.create().show();
+    }
 
     /**
      * This method allows to download data from Firebase through different calls to Event Listeners.
@@ -171,13 +167,13 @@ public class ReviewsFragment extends Fragment {
                         list.set(i, review);
                     }
                 }
-                if(exists) {
+                if (exists) {
                     adapter.updateData(list);
                 } else {
                     //if the retrieved review is not already in the list, it is added
                     list.add(review);
                     //Sort the reviews, if asked
-                    if(sortBy.compareTo("byName")==0){
+                    if (sortBy.compareTo("byName") == 0) {
                         Collections.sort(list, new Comparator<ReviewsComparable>() {
                             public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Name
@@ -185,7 +181,7 @@ public class ReviewsFragment extends Fragment {
                             }
                         });
                     }
-                    if(sortBy.compareTo("byRating")==0){
+                    if (sortBy.compareTo("byRating") == 0) {
                         Collections.sort(list, new Comparator<ReviewsComparable>() {
                             public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Rating
@@ -193,16 +189,16 @@ public class ReviewsFragment extends Fragment {
                             }
                         });
                     }
-                    if(sortBy.compareTo("byDate")==0){
+                    if (sortBy.compareTo("byDate") == 0) {
                         Collections.sort(list, new Comparator<ReviewsComparable>() {
                             public int compare(ReviewsComparable obj1, ReviewsComparable obj2) {
                                 // ## Order By Date
-                                String date1=obj1.getDate().substring(6)+ // get yyyy
-                                        obj1.getDate().substring(3,5)+ // get MM
-                                        obj1.getDate().substring(0,2); // get dd
-                                String date2=obj2.getDate().substring(6)+ // get yyyy
-                                        obj2.getDate().substring(3,5)+ // get MM
-                                        obj2.getDate().substring(0,2); // get dd
+                                String date1 = obj1.getDate().substring(6) + // get yyyy
+                                        obj1.getDate().substring(3, 5) + // get MM
+                                        obj1.getDate().substring(0, 2); // get dd
+                                String date2 = obj2.getDate().substring(6) + // get yyyy
+                                        obj2.getDate().substring(3, 5) + // get MM
+                                        obj2.getDate().substring(0, 2); // get dd
                                 return date1.compareTo(date2);
                             }
                         });
@@ -221,13 +217,13 @@ public class ReviewsFragment extends Fragment {
 
     /* This method retrieves data about the reviews */
     private void retrieveData(String key, final DataRetrieveCallback callback) {
-        final String userKey=key;
-        reviewReference = databaseReference.child("ratings").child("riders").child(user.getUid()).child(key);
+        final String userKey = key;
+        reviewReference = FirebaseDatabase.getInstance().getReference().child("ratings").child("riders").child(user.getUid()).child(key);
         reviewListener = reviewReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> user = (HashMap<String, Object>) dataSnapshot.getValue();
-                user.put("key",userKey);
+                user.put("key", userKey);
                 callback.onCallback(user);
             }
 
@@ -247,59 +243,56 @@ public class ReviewsFragment extends Fragment {
         progressRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    // no reviews are available
+                    empty.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                } else {
+                    //at least one review exist
+                    //check out all riders who received reviews
+                    for (DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                        //if there is a child who's key is current rider's key
+                        if (dSnapshot.getKey().compareTo(user.getUid()) == 0) {
+                            //Set the "No reviews available" LayoutdatabaseReference to INVISIBLE
+                            empty.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.VISIBLE);
 
-                    if(dataSnapshot.getValue() == null){
-                        // no reviews are available
-                        empty.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }else{
-                        //at least one review exist
-
-                        //check out all riders who received reviews
-                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                            //if there is a child who's key is current rider's key
-                            if(dSnapshot.getKey().compareTo(user.getUid())==0){
-
-                                //Set the "No reviews available" LayoutdatabaseReference to INVISIBLE
-                                empty.setVisibility(View.GONE);
-                                progressBar.setVisibility(View.VISIBLE);
-
-                                progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        //for each review of the current rider
-                                        for(DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
-                                            retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
-                                                @Override
-                                                public void onCallback(Map user) {
-                                                    /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
-                                                    review = null;
-                                                    review = new ReviewsComparable();
-                                                    review.setName(user.get("name").toString());
-                                                    review.setDate(user.get("date").toString());
-                                                    review.setRating(user.get("value").toString());
-                                                    review.setComment(user.get("comment").toString());
-                                                    review.setKey(user.get("key").toString());
-                                                    callback.onCallback(review);
-                                                }
-                                            });
-                                        }
-                                        view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
-                                        view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE                                    );
+                            progressRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    //for each review of the current rider
+                                    for (DataSnapshot dSnapshot : dataSnapshot.getChildren()) {
+                                        retrieveData(dSnapshot.getKey(), new DataRetrieveCallback() {
+                                            @Override
+                                            public void onCallback(Map user) {
+                                                /* This method retrieves the information of the reviews and will add them to the item to be passed to the adapter */
+                                                review = null;
+                                                review = new ReviewsComparable();
+                                                review.setName(user.get("name").toString());
+                                                review.setDate(user.get("date").toString());
+                                                review.setRating(user.get("rating").toString());
+                                                review.setComment(user.get("comment").toString());
+                                                review.setKey(user.get("key").toString());
+                                                callback.onCallback(review);
+                                            }
+                                        });
                                     }
+                                    view.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
+                                    view.findViewById(R.id.recyclerView).setVisibility(View.VISIBLE);
+                                }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        // A review cannot be deleted
-                                    }
-                                });
-                            }else{
-                                // the selected userhas not yet been reviewed
-                                empty.setVisibility(View.VISIBLE);
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // A review cannot be deleted
+                                }
+                            });
+                        } else {
+                            // the selected userhas not yet been reviewed
+                            empty.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
+                }
 
             }
 
@@ -309,10 +302,9 @@ public class ReviewsFragment extends Fragment {
             }
         });
     }
+    // helpers
 
     /* Interfaces for callbacks */
-
-
     public interface DataRetrieveCallback {
         void onCallback(Map user);
     }

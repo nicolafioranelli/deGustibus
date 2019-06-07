@@ -1,15 +1,10 @@
 package com.madness.deliveryman.map;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -24,8 +19,6 @@ import android.widget.TextView;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.LocationCallback;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -34,15 +27,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.R;
-import com.madness.deliveryman.incoming.IncomingData;
-import com.madness.deliveryman.map.FetchUrl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,25 +39,29 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUrl.AsyncFetchResponse {
 
-    private Boolean mLocationPermissionGaranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13;
-
+    LatLng currentLocation;
+    FetchUrl fetchUrl = new FetchUrl();
+    /* Location */
+    private Boolean mLocationPermissionGaranted = false;
+    private GoogleMap googleMap;
+    /* Widgets */
     private MapView mapView;
     private TextView streetAddress;
     private TextView routeLenght;
     private TextView routeTime;
-    private GoogleMap googleMap;
+
+    /* Data */
     private String locationAddress;
     private String name;
     private String orderId;
+    private Address address;
+
+    /* Firebase */
     private DatabaseReference databaseReference;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseUser user;
-    private IncomingData incomingData;
-    private Address address;
-    LatLng currentLocation;
-    FetchUrl fetchUrl = new FetchUrl();
 
     public MapFragment() {
         // Required empty public constructor
@@ -89,8 +81,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
         name = getArguments().getString("name");
         orderId = getArguments().getString("orderId");
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,11 +125,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
     }
 
     //translates the destination address and makes the url request
-    private void mapOperations (){
-
+    private void mapOperations() {
         //find the address
         address = geoLocate(locationAddress);
-        //converte Location into LatLong
+        //convert Location into LatLong
         LatLng destination = new LatLng(address.getLatitude(), address.getLongitude());
         //adding the restaurant marker into the map
         googleMap.addMarker(new MarkerOptions()
@@ -192,9 +181,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
             //when finds the position, update the map
             @Override
             public void onLocationResult(String key, GeoLocation location) {
-                currentLocation = new LatLng(location.latitude,location.longitude);
+                currentLocation = new LatLng(location.latitude, location.longitude);
                 mapOperations();
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -202,22 +192,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
     }
 
     //moving the camera to latLng with zoom
-    private void moveCamera(LatLng latLng,float zoom){
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+    private void moveCamera(LatLng latLng, float zoom) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     //runtime permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mLocationPermissionGaranted = false;
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-
-                //something is garanted
-                if(grantResults.length > 0) {
-                    //something is not garanted
-                    for(int i = 0; i<grantResults.length; i++){
-                        if(grantResults[i]!=PackageManager.PERMISSION_GRANTED){
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                //something is granted
+                if (grantResults.length > 0) {
+                    //something is not granted
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGaranted = false;
                             return;
                         }
@@ -231,21 +220,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
     }
 
     // process of transforming a street address or other description of a location into a (latitude, longitude) coordinate (address)
-    private Address geoLocate(String addressName){
+    private Address geoLocate(String addressName) {
         Geocoder geocoder = new Geocoder(this.getContext());
         List<Address> list = new ArrayList<>();
-        try{
+        try {
             //Returns an array of Addresses that are known to describe the named location
-            list = geocoder.getFromLocationName(addressName,1);
-        }catch (IOException e){
+            list = geocoder.getFromLocationName(addressName, 1);
+        } catch (IOException e) {
 
         }
 
-        if(list.size() > 0){
+        if (list.size() > 0) {
             //return the first result
             return list.get(0);
-        }
-        else return null;
+        } else return null;
 
     }
 
@@ -267,5 +255,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, FetchUr
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.map_key);
         return url;
     }
-
 }

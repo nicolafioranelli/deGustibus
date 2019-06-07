@@ -41,43 +41,59 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.madness.deliveryman.reviews.ReviewsFragment;
 import com.madness.deliveryman.auth.LoginActivity;
 import com.madness.deliveryman.incoming.IncomingFragment;
 import com.madness.deliveryman.location.Tracker;
+import com.madness.deliveryman.map.MapFragment;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 import com.madness.deliveryman.profile.EditProfileFragment;
 import com.madness.deliveryman.profile.ProfileFragment;
-import com.madness.deliveryman.map.MapFragment;
+import com.madness.deliveryman.reviews.ReviewsFragment;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.ProfileListener, OnMapReadyCallback, IncomingFragment.Maps {
 
+    /* Notifications */
     private static final int REQUEST_PERMISSIONS = 100;
     private final String CHANNEL_ID = "channelDeliveryMan";
     private final int NOTIFICATION_ID = 001;
+
+    /* Widgets */
     private Toolbar toolbar;
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private Switch available;
+    private TextView userName;
+    private TextView userEmail;
+    private CircleImageView userPhoto;
+
+    /* Data */
     private Fragment fragment;
     private FragmentManager fragmentManager;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseUser user;
-    private boolean gps_permission;
-    private Tracker tracker;
-    private LocationCallback locationCallback;
     private boolean avail;
-    private Switch available;
     private DatabaseReference databaseReference;
     private DatabaseReference listenerReference;
     private ValueEventListener listener;
 
-    /* Check if connection is enabled! */
+    /* Firebase */
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseUser user;
+    private Query availReference;
+    private ValueEventListener availListener;
+
+    /* Position */
+    private Tracker tracker;
+    private LocationCallback locationCallback;
+
+    /* Helpers */
     public static boolean isNetworkAvailable(Context context) {
         try {
             ConnectivityManager cm = (ConnectivityManager) context
@@ -93,6 +109,7 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
+    /* Lifecycle */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +134,6 @@ public class HomeActivity extends AppCompatActivity
             }
         };
 
-
         fragmentManager = getSupportFragmentManager();
         if (getIntent().hasExtra("newCreation")) {
             try {
@@ -135,6 +151,16 @@ public class HomeActivity extends AppCompatActivity
             } catch (Exception e) {
                 Log.e("MAD", "onCreate: ", e);
             }
+        } else {
+            try {
+                fragment = null;
+                Class fragmentClass;
+                fragmentClass = HomeFragment.class;
+                fragment = (Fragment) fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+            } catch (Exception e) {
+                Log.e("MAD", "onCreate: ", e);
+            }
         }
 
         drawer = findViewById(R.id.drawer_layout);
@@ -146,48 +172,34 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        final TextView userName = navigationView.getHeaderView(0).findViewById(R.id.nameNav);
+        userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
+        userEmail = navigationView.getHeaderView(0).findViewById(R.id.userEmail);
+        userPhoto = navigationView.getHeaderView(0).findViewById(R.id.userImage);
         try {
             listenerReference = databaseReference.child("riders").child(user.getUid());
             listener = listenerReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if (objectMap.get("name") != null) {
-                            try {
-                                fragment = null;
-                                Class fragmentClass;
-                                fragmentClass = HomeFragment.class;
-                                fragment = (Fragment) fragmentClass.newInstance();
-                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
-                            } catch (Exception e) {
-                                Log.e("MAD", "onCreate: ", e);
-                            }
-                            userName.setText(objectMap.get("name").toString());
-                            avail = (boolean) objectMap.get("available");
-                            if (avail) {
-                                available.setChecked(true);
-                            } else {
-                                available.setChecked(false);
-                            }
-                        }else {
-                            try {
-                                fragment = null;
-                                Class fragmentClass;
-                                fragmentClass = EditProfileFragment.class;
-                                fragment = (Fragment) fragmentClass.newInstance();
-
-                                Bundle args = new Bundle();
-                                args.putBoolean("isNew", true);
-                                fragment.setArguments(args);
-
-                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "EditProfile").commit();
-                                navigationView.getMenu().getItem(1).setChecked(true);
-                            } catch (Exception e) {
-                                Log.e("MAD", "onCreate: ", e);
-                            }
+                    if (dataSnapshot.hasChild("name")) {
+                        userName.setText(dataSnapshot.child("name").getValue(String.class));
+                        avail = dataSnapshot.child("available").getValue(Boolean.class);
+                        userEmail.setText(dataSnapshot.child("email").getValue(String.class));
+                        if (avail) {
+                            available.setChecked(true);
+                        } else {
+                            available.setChecked(false);
                         }
+                        String photo = null;
+                        if (dataSnapshot.hasChild("photo")) {
+                            photo = dataSnapshot.child("photo").getValue(String.class);
+                        }
+
+                        /* Glide */
+                        GlideApp.with(getApplicationContext())
+                                .load(photo)
+                                .placeholder(R.drawable.user_profile)
+                                .into(userPhoto);
+                    }
                 }
 
                 @Override
@@ -256,15 +268,24 @@ public class HomeActivity extends AppCompatActivity
         });
 
         if (user != null) {
-            // at the beginning the user is not available
-            available.setChecked(false);
-            Map<String, Object> m = new HashMap<String, Object>();
-            m.put("available", false);
-            FirebaseDatabase.getInstance().getReference()
-                    .child("riders")
-                    .child(user.getUid())
-                    .updateChildren(m);
+            availReference = FirebaseDatabase.getInstance().getReference().child("orders").orderByChild("deliverymanID").equalTo(user.getUid());
+            availListener = availReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.child("status").getValue(String.class).equals("delivering") || snapshot.child("status").getValue(String.class).equals("elaboration")) {
+                                available.setClickable(false);
+                            }
+                        }
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         createNotificationChannel();
@@ -289,42 +310,6 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String name = CHANNEL_ID;
-            String description = "desc";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void makeNotification(String type, String description) {
-
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
-        // it simply call the `onNewIntent()` method
-        intent.putExtra("notification", "open");
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // show a new notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
-        builder.setContentTitle(type);
-        builder.setContentText(description);
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setContentIntent(pendingIntent);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -343,20 +328,39 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        // resume the tracking
+        if (tracker != null && tracker.isStartUpdates()) {
+            tracker.startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // stop tracking
+        if (tracker != null && tracker.isStartUpdates())
+            tracker.stopLocationUpdates();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if (authStateListener != null) {
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
-        try {
-            Map<String, Object> m = new HashMap<String, Object>();
-            m.put("available",false);
-            FirebaseDatabase.getInstance().getReference()
-                    .child("riders")
-                    .child(user.getUid())
-                    .updateChildren(m);
-        } catch (Exception e) {
+    }
+    // end Lifecycle
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            listenerReference.removeEventListener(listener);
+            availReference.removeEventListener(availListener);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -368,14 +372,6 @@ public class HomeActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // stop tracking
-        if (tracker != null && tracker.isStartUpdates())
-            tracker.stopLocationUpdates();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -450,42 +446,6 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void editProfileClick() {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = EditProfileFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "editProfileClick: ", e);
-        }
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "EditProfile");
-        ft.addToBackStack("PROFILE");
-        ft.commit();
-    }
-
-    @Override
-    public void reviewsClick() {
-        try {
-            fragment = null;
-            Class fragmentClass;
-            fragmentClass = ReviewsFragment.class;
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            Log.e("MAD", "reviewsClick: ", e);
-        }
-
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.flContent, fragment, "RestarantReviews");
-        ft.addToBackStack("PROFILE");
-        ft.commit();
-    }
-
     private void updateMenu() {
         fragment = fragmentManager.findFragmentById(R.id.flContent);
         if (fragment != null) {
@@ -549,24 +509,81 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
+    // end Helpers
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            listenerReference.removeEventListener(listener);
-        }catch (Exception e){
-            e.printStackTrace();
+    /* Notifications */
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = CHANNEL_ID;
+            String description = "desc";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
+    private void makeNotification(String type, String description) {
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);  // it avoid to recreate the activiy
+        // it simply call the `onNewIntent()` method
+        intent.putExtra("notification", "open");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // show a new notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
+        builder.setSmallIcon(R.drawable.ic_toolbar_notifications);
+        builder.setContentTitle(type);
+        builder.setContentText(description);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+    }
+    // end Notifications
+
+    /* Methods for interfaces */
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        // resume the tracking
-        if (tracker != null && tracker.isStartUpdates()) {
-            tracker.startLocationUpdates();
+    public void editProfileClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = EditProfileFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "editProfileClick: ", e);
         }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "EditProfile");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
+    }
+
+    @Override
+    public void reviewsClick() {
+        try {
+            fragment = null;
+            Class fragmentClass;
+            fragmentClass = ReviewsFragment.class;
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            Log.e("MAD", "reviewsClick: ", e);
+        }
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.flContent, fragment, "RestaurantReviews");
+        ft.addToBackStack("PROFILE");
+        ft.commit();
     }
 
     @Override
@@ -580,7 +597,7 @@ public class HomeActivity extends AppCompatActivity
             Bundle args = new Bundle();
             args.putString("name", name);
             args.putString("address", address);
-            args.putString("orderId",orderId);
+            args.putString("orderId", orderId);
             Fragment fragment = new MapFragment();
             fragment.setArguments(args);
             fragmentManager = getSupportFragmentManager();
@@ -589,4 +606,5 @@ public class HomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+    // end Methods for interfaces
 }

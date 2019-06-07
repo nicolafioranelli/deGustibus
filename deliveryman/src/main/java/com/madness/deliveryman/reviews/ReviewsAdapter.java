@@ -6,8 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.RatingBar;
+import android.widget.TextView;
+
 import com.madness.deliveryman.R;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
 
     /**
      * Generate a single listitem
+     *
      * @param viewGroup
      * @param i
      * @return
@@ -40,7 +42,8 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
 
     /**
      * Populate the listitem
-     * @param holder reviewholder
+     *
+     * @param holder   reviewholder
      * @param position in the set
      */
     @Override
@@ -55,6 +58,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
 
     /**
      * Get the size of the set
+     *
      * @return
      */
     @Override
@@ -64,6 +68,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
 
     /**
      * Update the set of reviews
+     *
      * @param viewModels
      */
     public void updateData(List<ReviewsComparable> viewModels) {

@@ -21,9 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.LocationCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,39 +39,40 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madness.deliveryman.notifications.NotificationsFragment;
 
-import java.security.spec.ECField;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
-    private Boolean mLocationPermissionGaranted = false;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 13;
+    /* Data */
+    private Boolean mLocationPermissionGaranted = false;
+    private Context mContext;
 
+    /* Widgets */
     private MapView mapView;
     private TextView mileage;
+
+    /* Maps */
     private GoogleMap googleMap;
-    private FirebaseUser user;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    // Declare Context variable at class level in Fragment
-    private Context mContext;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    // Initialise mContext from onAttach()
+    /* Lifecycle */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
     }
 
     @Override
@@ -83,20 +81,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment and add the title
         final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         getActivity().setTitle("deGustibus");
-
         mileage = rootView.findViewById(R.id.tv_home_km);
         mapView = rootView.findViewById(R.id.home_map_view);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         getLocationPermission();
-       /* //Set up a callback object that will be activated when the instance of GoogleMap is ready to be used
-        mapView.getMapAsync(this);*/
-
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null) {
+        if (user != null) {
             final TextView userName = rootView.findViewById(R.id.welcomeName);
             databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -106,10 +100,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         if (objectMap.get("name") != null) {
                             userName.setText(objectMap.get("name").toString());
                             //transforms from meters to km
-                            if(objectMap.containsKey("totalKM")){
-                                Double km = Double.parseDouble(objectMap.get("totalKM").toString())/1000;
+                            if (objectMap.containsKey("totalKM")) {
+                                Double km = Double.parseDouble(objectMap.get("totalKM").toString()) / 1000;
                                 mileage.setText(String.format("%.2f", km) + " Km");
-                            }else{
+                            } else {
                                 mileage.setText("0 Km");
                             }
                             rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
@@ -129,7 +123,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
         }
-
         return rootView;
     }
 
@@ -160,6 +153,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
         return super.onOptionsItemSelected(item);
     }
+    // end Lifecycle
+
+    /* Helpers */
     //Manipulates the map once available. This callback is triggered when the map is ready to be used.
     @Override
     public void onMapReady(GoogleMap map) {
@@ -174,24 +170,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         getDeviceLocation();
         //Initialize Google Play Services
         googleMap.setMyLocationEnabled(true);
-
-
     }
+
     //getting the device current location
     private void getDeviceLocation() {
-
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
-
-        try{
-            if(mLocationPermissionGaranted){
+        try {
+            if (mLocationPermissionGaranted) {
                 final Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
-                            Location currentLocation = (Location)task.getResult();
-                            if(currentLocation!=null){
-                                moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                        if (task.isSuccessful()) {
+                            Location currentLocation = (Location) task.getResult();
+                            if (currentLocation != null) {
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                             }
 
                         }
@@ -199,22 +192,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 });
             }
 
-        }catch (SecurityException e){
+        } catch (SecurityException e) {
 
         }
     }
+
     //runtime permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mLocationPermissionGaranted = false;
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-
-                //something is garanted
-                if(grantResults.length > 0) {
-                    //something is not garanted
-                    for(int i = 0; i<grantResults.length; i++){
-                        if(grantResults[i]!=PackageManager.PERMISSION_GRANTED){
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                //something is granted
+                if (grantResults.length > 0) {
+                    //something is not granted
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGaranted = false;
                             return;
                         }
@@ -226,6 +219,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     }
+
     // checking location permissions for display the current position on map
     private void getLocationPermission() {
         //list of permission to check
@@ -246,8 +240,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(this.getActivity(), permission, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+
     //moving the camera to latLng with zoom
-    private void moveCamera(LatLng latLng,float zoom){
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+    private void moveCamera(LatLng latLng, float zoom) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
+    // end Helpers
 }

@@ -116,5 +116,12 @@
     <string name="map_address">Indirizzo:</string>
     <string name="map_time">Durata:</string>
     <string name="exitMap">Premi indietro per uscire dalla modalità mappa!</string>
-    <string name="exitMap">Premi indietro per uscire dalla modalità mappa!</string>
+    <string name="modPassword">Modifica Password</string>
+    <string name="passwordHint">Nuova Password</string>
+    <string name="passwordRepHint">Ripeti Password</string>
+    <string name="err_gen">Ops... qualcosa è andato storto!</string>
+    <string name="deleteDesc">Questa operazione rimuoverà il tuo account in modo permanente, sei sicuro di voler continuare?</string>
+    <string name="deleteTitle">Elimina account</string>
+    <string name="deleteCompleted">Account eliminato!</string>
+    <string name="err_passSame">Le password non coincidono!</string>
 </resources>

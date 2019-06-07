@@ -23,11 +23,8 @@
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/space8"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
             android:visibility="invisible">
 
             <LinearLayout
@@ -43,8 +40,8 @@
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:layout_gravity="center_horizontal"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"/>
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
 
                 <RatingBar
                     android:id="@+id/simpleRatingBar"

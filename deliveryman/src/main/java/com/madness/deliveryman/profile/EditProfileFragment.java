@@ -30,8 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -48,7 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madness.deliveryman.BuildConfig;
 import com.madness.deliveryman.GlideApp;
-import com.madness.deliveryman.HomeFragment;
+import com.madness.deliveryman.HomeActivity;
 import com.madness.deliveryman.R;
 
 import java.io.ByteArrayOutputStream;
@@ -78,17 +76,26 @@ public class EditProfileFragment extends Fragment {
     public EditProfileFragment() {
         // Required empty public constructor
     }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
+
     /* Define the listener here to manage clicks on the toolbar edit button */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
     }
+
     /* The method allows to retrieve the shared preferences and to let the toolbar be available */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settedProfile=false;
+        settedProfile = false;
         setHasOptionsMenu(true);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -113,7 +120,7 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         loadFromFirebase();
-        if(settedProfile)
+        if (settedProfile)
             getActivity().setTitle(getString(R.string.title_Edit));
         else
             getActivity().setTitle(getString(R.string.title_first_Edit));
@@ -146,23 +153,17 @@ public class EditProfileFragment extends Fragment {
                 Toast.makeText(getContext(), getResources().getString(R.string.saved), Toast.LENGTH_SHORT).show();
 
                 if (getArguments() != null) {
-
                     try {
-                        Fragment fragment = null;
-                        Class fragmentClass;
-                        fragmentClass = HomeFragment.class;
-                        fragment = (Fragment) fragmentClass.newInstance();
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "HOME").commit();
+                        startActivity(new Intent(getActivity().getApplicationContext(), HomeActivity.class));
+                        getActivity().finish(); // it terminate the activity
                     } catch (Exception e) {
                     }
 
                 } else {
-                    if(settedProfile){
+                    if (settedProfile) {
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate("PROFILE", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    }
-                    else{
+                    } else {
                         getActivity().finish();
                     }
                     return true;
@@ -374,10 +375,11 @@ public class EditProfileFragment extends Fragment {
         map.put("email", email.getText().toString());
         map.put("desc", desc.getText().toString());
         map.put("phone", phone.getText().toString());
-        if(getArguments()!= null) {
+        if (getArguments() != null) {
             map.put("totalKM", 0);
             map.put("rating", 0);
             map.put("count", 0);
+            map.put("available", false);
         }
 
         if (mImageUri != null) {
@@ -435,13 +437,6 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
-    }
-
     private void loadFromFirebase() {
         databaseReference.child("riders").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -453,7 +448,7 @@ public class EditProfileFragment extends Fragment {
                     email.setText(userData.get("email").toString());
                     desc.setText(userData.get("desc").toString());
                     phone.setText(userData.get("phone").toString());
-                    settedProfile=true;
+                    settedProfile = true;
 
                     String pic = null;
                     if (userData.get("photo") != null) {

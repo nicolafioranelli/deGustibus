@@ -79,7 +79,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void modifyDialog() {
         /* Create dialog and populate it with editText */
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Modify Password");
+        builder.setTitle(getString(R.string.modPassword));
 
         /* Linear layout for the Dialog */
         LinearLayout layout = new LinearLayout(getContext());
@@ -91,7 +91,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         /* Input edit text for the first password */
         final EditText input1 = new EditText(getContext());
-        input1.setHint("New password");
+        input1.setHint(getString(R.string.passwordHint));
         input1.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
         LinearLayout.LayoutParams etLp = new LinearLayout.LayoutParams(
@@ -103,7 +103,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         /* Input edit text for the confirm password */
         final EditText input2 = new EditText(getContext());
-        input2.setHint("Repeat password");
+        input2.setHint(getString(R.string.passwordRepHint));
         input2.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
         input2.setLayoutParams(etLp);
@@ -127,7 +127,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         final AlertDialog dialog = builder.create();
         dialog.show();
 
-        /* Ovveride of the on click listeners in order to manage update and password check */
+        /* Override of the on click listeners in order to manage update and password check */
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,9 +145,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     update(secondPassword);
                     closeDialog = true;
                 } else {
-                    Toast.makeText(getContext(), "Passwords are not the same, please insert them correctly!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.err_passSame), Toast.LENGTH_LONG).show();
                 }
-
 
                 if (closeDialog)
                     dialog.dismiss();
@@ -165,9 +164,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(getContext(), "Password changed successfully!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), getString(R.string.psw_changed), Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getContext(), "Ops... something went wrong!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.err_gen), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -177,8 +176,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void deleteDialog() {
         /* Create dialog and populate it with editText */
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Delete account");
-        builder.setMessage("This operation will remove your account permanently, are you sure that you want to continue?");
+        builder.setTitle(getString(R.string.deleteTitle));
+        builder.setMessage(getString(R.string.deleteDesc));
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -189,9 +188,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        pref = getActivity().getSharedPreferences("Profile", Context.MODE_PRIVATE);
-                                        pref.edit().clear().apply();
-                                        Toast.makeText(getContext(), "Account deleted", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), getString(R.string.deleteCompleted), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });

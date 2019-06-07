@@ -14,26 +14,19 @@ import java.net.URL;
 
 
 class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.AsyncResponse {
-    GoogleMap map;
     public AsyncFetchResponse delegate = null;
+    GoogleMap map;
 
     //things to do when PointParser finish
     @Override
     public void processFinish(String distance, String duration, String distanceInt) {
         //call the method processFinish of MapFragment to pass distance and duration
-        delegate.processFetchFinish(distance,duration,distanceInt);
+        delegate.processFetchFinish(distance, duration, distanceInt);
 
     }
-
-    //interface to comunicate with MapFragment
-    public interface AsyncFetchResponse {
-        void processFetchFinish(String distance, String duration, String distanceInt);
-    }
-
 
     @Override
     protected String doInBackground(String... strings) {
-
         // For storing data from web service
         String data = "";
         try {
@@ -49,7 +42,7 @@ class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.A
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         PointsParser parserTask = new PointsParser();
-        //set the delegate of the pasertask as this (FetchUrl)
+        //set the delegate of the parsertask as this (FetchUrl)
         parserTask.delegate = this;
         parserTask.setMap(map);
         // Invokes the thread for parsing the JSON data
@@ -90,7 +83,12 @@ class FetchUrl extends AsyncTask<String, Void, String> implements PointsParser.A
         return data;
     }
 
-     void setMap (GoogleMap map){
+    void setMap(GoogleMap map) {
         this.map = map;
+    }
+
+    //interface to communicate with MapFragment
+    public interface AsyncFetchResponse {
+        void processFetchFinish(String distance, String duration, String distanceInt);
     }
 }

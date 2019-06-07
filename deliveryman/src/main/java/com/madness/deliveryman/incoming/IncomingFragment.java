@@ -1,17 +1,13 @@
 package com.madness.deliveryman.incoming;
 
 import android.content.Context;
-import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,26 +29,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class IncomingFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
     private DatabaseReference databaseReference;
     private ValueEventListener emptyListener;
     private FirebaseRecyclerAdapter adapter;
     private FirebaseUser user;
     private Maps mapsInterface;
-    private int km;
-    private HashMap<String, Object> map;
 
     public IncomingFragment() {
         // Required empty public constructor();
     }
 
+    /* Lifecycle */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,9 +54,9 @@ public class IncomingFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof Maps){
+        if (context instanceof Maps) {
             mapsInterface = (Maps) context;
-        }else{
+        } else {
             throw new ClassCastException(context.toString() + "must implement maplistener");
         }
     }
@@ -79,7 +71,9 @@ public class IncomingFragment extends Fragment {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         recyclerView = rootView.findViewById(R.id.recyclerView);
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         rootView.findViewById(R.id.progress_horizontal).setVisibility(View.VISIBLE);
@@ -119,7 +113,7 @@ public class IncomingFragment extends Fragment {
                 holder.date.setText(model.getDeliveryDate());
                 holder.hour.setText(model.getDeliveryHour());
                 holder.customerAddress.setText(model.getCustomerAddress());
-                holder.price.setText("€ "+model.getTotalPrice());
+                holder.price.setText("€ " + model.getTotalPrice());
 
                 databaseReference.child("customers").child(model.getCustomerID()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -156,33 +150,8 @@ public class IncomingFragment extends Fragment {
                     }
                 });
 
-                if(model.getStatus().equals("incoming")){
-                    holder.map.setVisibility(View.GONE);
-                }
-                else if(model.getStatus().equals("elaboration")){
-                    // show the position of the restaurant
-                    holder.map.setVisibility(View.VISIBLE);
-                    holder.map.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mapsInterface.callMaps(holder.restaurant.getText().toString(),holder.restaurantAddres.getText().toString(),model.getOrderID());
-                        }
-                    });
-                }else if(model.getStatus().equals("delivering")){
-                    // show the position of the customer
-                    holder.map.setVisibility(View.VISIBLE);
-                    holder.map.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mapsInterface.callMaps(holder.customer.getText().toString(),holder.customerAddress.getText().toString(),model.getOrderID());
-                        }
-                    });
-                }else if (model.getStatus().equals("done")||model.getStatus().equals("refused")){
-                    // hide the map
-                    holder.map.setVisibility(View.GONE);
-                }
-
                 if (model.getStatus().equals("incoming")) {
+                    holder.map.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.VISIBLE);
                     holder.button.setVisibility(View.VISIBLE);
                     holder.status.setText(R.string.status_incoming);
@@ -198,15 +167,27 @@ public class IncomingFragment extends Fragment {
                             accept(position, model.getRestaurantID());
                         }
                     });
+                    holder.status.setTextColor(getResources().getColor(R.color.theme_colorTertiary));
                 } else if (model.getStatus().equals("refused")) {
                     holder.status.setText(R.string.status_refused);
                     holder.refuse.setVisibility(View.GONE);
                     holder.button.setVisibility(View.GONE);
+                    holder.map.setVisibility(View.GONE);
+                    holder.status.setTextColor(Color.RED);
                 } else if (model.getStatus().equals("done")) {
                     holder.status.setText(R.string.status_done);
                     holder.refuse.setVisibility(View.GONE);
                     holder.button.setVisibility(View.GONE);
+                    holder.map.setVisibility(View.GONE);
                 } else if (model.getStatus().equals("elaboration")) {
+                    // show the position of the restaurant
+                    holder.map.setVisibility(View.VISIBLE);
+                    holder.map.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mapsInterface.callMaps(holder.restaurant.getText().toString(), holder.restaurantAddres.getText().toString(), model.getOrderID());
+                        }
+                    });
                     holder.status.setText(R.string.status_elaboration);
                     holder.button.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.VISIBLE);
@@ -218,11 +199,21 @@ public class IncomingFragment extends Fragment {
                             //adding km to total km routes from rider
                         }
                     });
+                    holder.status.setTextColor(getResources().getColor(R.color.colorAccent));
                 } else if (model.getStatus().equals("delivering")) {
+                    // show the position of the customer
+                    holder.map.setVisibility(View.VISIBLE);
+                    holder.map.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mapsInterface.callMaps(holder.customer.getText().toString(), holder.customerAddress.getText().toString(), model.getOrderID());
+                        }
+                    });
                     holder.status.setText(R.string.status_delivering);
                     holder.button.setVisibility(View.GONE);
                     holder.refuse.setVisibility(View.GONE);
                     holder.refuse.setText(R.string.buttonDeliver);
+                    holder.status.setTextColor(getResources().getColor(R.color.colorAccent));
                 }
                 rootView.findViewById(R.id.progress_horizontal).setVisibility(View.GONE);
             }
@@ -266,7 +257,9 @@ public class IncomingFragment extends Fragment {
         super.onDetach();
         databaseReference.removeEventListener(emptyListener);
     }
+    // end Lifecycle
 
+    /* Helpers */
     private void refuse(final int position, final String restaurantID) {
         Query refuseQuery = databaseReference.child("orders").child(adapter.getRef(position).getKey());
         refuseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -428,8 +421,8 @@ public class IncomingFragment extends Fragment {
         });
     }
 
-    public interface Maps{
-        public void callMaps(String name, String address,String orderId);
+    public interface Maps {
+        public void callMaps(String name, String address, String orderId);
     }
-
+    // end Helpers
 }

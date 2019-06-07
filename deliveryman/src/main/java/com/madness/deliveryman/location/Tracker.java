@@ -3,16 +3,13 @@ package com.madness.deliveryman.location;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -21,26 +18,21 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executor;
-
 public class Tracker {
 
+    private static String TAG = "Tracker";
+    private static int DELAY = 60; // in seconds
     private String userId;
     private Context context;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
-    private static String TAG = "Tracker";
     private LocationCallback locationCallback;
     private boolean startUpdates = false;
-    private static int DELAY = 60; // in seconds
 
     public Tracker(Context context, String userId, LocationCallback locationCallback) {
         this.context = context;
@@ -111,7 +103,7 @@ public class Tracker {
         });*/
 
 
-        locationCallback = new LocationCallback(){
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
@@ -129,7 +121,6 @@ public class Tracker {
 
 
     }
-
 
 
     public void startLocationUpdates() {
@@ -151,8 +142,7 @@ public class Tracker {
     }
 
 
-
-    public void storePostionOnFirebase(double latitude, double longitude){
+    public void storePostionOnFirebase(double latitude, double longitude) {
 
         // store using geofire
         GeoFire geoFire = new GeoFire(FirebaseDatabase
@@ -164,15 +154,15 @@ public class Tracker {
                 userId,
                 new GeoLocation(latitude, longitude),
                 new GeoFire.CompletionListener() {
-            @Override
-            public void onComplete(String key, DatabaseError error) {
-                if (error != null) {
-                    System.err.println("There was an error saving the location to GeoFire: " + error);
-                } else {
-                    System.out.println("Location saved on server successfully!");
-                }
-            }
-        });
+                    @Override
+                    public void onComplete(String key, DatabaseError error) {
+                        if (error != null) {
+                            System.err.println("There was an error saving the location to GeoFire: " + error);
+                        } else {
+                            System.out.println("Location saved on server successfully!");
+                        }
+                    }
+                });
     }
 
     public boolean isStartUpdates() {

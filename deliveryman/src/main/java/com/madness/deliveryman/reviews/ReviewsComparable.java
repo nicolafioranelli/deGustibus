@@ -29,7 +29,8 @@ public class ReviewsComparable {
     }
 
     public String getRating() {
-        return rating;}
+        return rating;
+    }
 
 
     public void setRating(String rating) {
